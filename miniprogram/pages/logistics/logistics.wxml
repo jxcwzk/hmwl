@@ -1,0 +1,38 @@
+<view class="container">
+  <view class="express-card">
+    <view class="card-header">
+      <text class="express-number">单号：{{expressInfo.number}}</text>
+      <text class="express-status">{{expressInfo.status}}</text>
+    </view>
+    <view class="logistics-timeline">
+      <view class="timeline-item active">
+        <view class="timeline-dot"></view>
+        <view class="timeline-content">
+          <text class="timeline-text">{{expressInfo.latestStatus}}</text>
+          <text class="timeline-time">{{expressInfo.latestTime}}</text>
+        </view>
+      </view>
+      <view class="timeline-item" wx:for="{{expressInfo.history}}" wx:key="index">
+        <view class="timeline-dot"></view>
+        <view class="timeline-line"></view>
+        <view class="timeline-content">
+          <text class="timeline-text">{{item.text}}</text>
+          <text class="timeline-time">{{item.time}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="map-section">
+    <text class="section-title">物流地图</text>
+    <view class="map-placeholder">
+      <text class="map-icon">🗺️</text>
+      <text class="map-text">实时位置地图</text>
+    </view>
+  </view>
+
+  <view class="action-buttons">
+    <button class="action-btn" bindtap="buyAgain">再次购买</button>
+    <button class="action-btn" bindtap="complain">投诉建议</button>
+  </view>
+</view>

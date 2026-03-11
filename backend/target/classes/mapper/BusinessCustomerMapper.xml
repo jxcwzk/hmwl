@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hmwl.mapper.BusinessCustomerMapper">
+    <select id="selectByBusinessUserId" resultType="com.hmwl.entity.BusinessCustomer">
+        SELECT * FROM business_customer WHERE business_user_id = #{businessUserId}
+    </select>
+    <select id="selectByBusinessUserIdAndType" resultType="com.hmwl.entity.BusinessCustomer">
+        SELECT * FROM business_customer WHERE business_user_id = #{businessUserId} AND type = #{type}
+    </select>
+</mapper>

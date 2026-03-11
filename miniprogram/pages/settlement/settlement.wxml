@@ -1,0 +1,27 @@
+<view class="container">
+  <view class="card">
+    <view class="title">财务结算</view>
+    <input class="input" placeholder="请输入结算编号" bindinput="onSettlementNoInput" />
+    <view class="button" bindtap="searchSettlement">查询</view>
+  </view>
+  
+  <view class="list" wx:if="{{settlementList.length > 0}}">
+    <view class="list-item" wx:for="{{settlementList}}" wx:key="id">
+      <view>
+        <view class="text">结算编号：{{item.settlementNo}}</view>
+        <view class="text">结算类型：{{getSettlementTypeText(item.type)}}</view>
+        <view class="text">金额：¥{{item.amount}}</view>
+        <view class="text">状态：{{getStatusText(item.status)}}</view>
+      </view>
+      <view class="button small" bindtap="viewSettlementDetail" data-id="{{item.id}}">详情</view>
+    </view>
+  </view>
+  
+  <view class="loading" wx:else>
+    {{loading ? '加载中...' : '暂无结算数据'}}
+  </view>
+  
+  <view class="button" bindtap="addSettlement">新增结算</view>
+  <view class="button" style="margin-top: 16rpx; background-color: #67C23A;" bindtap="reconciliation">对账管理</view>
+  <view class="button" style="margin-top: 16rpx; background-color: #E6A23C;" bindtap="statistics">统计分析</view>
+</view>

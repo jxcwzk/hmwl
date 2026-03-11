@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="search-section">
+    <view class="search-bar">
+      <input class="search-input" placeholder="请输入快递单号" value="{{expressNumber}}" bindinput="bindExpressNumberInput" />
+      <button class="scan-btn" bindtap="scanCode">
+        <text class="scan-icon">📷</text>
+      </button>
+    </view>
+    <button class="search-btn" bindtap="searchExpress">查询</button>
+  </view>
+
+  <view class="result-section" wx:if="{{hasResult}}">
+    <view class="express-card">
+      <view class="card-header">
+        <text class="express-number">单号：{{expressInfo.number}}</text>
+        <text class="express-status">{{expressInfo.status}}</text>
+      </view>
+      <view class="logistics-timeline">
+        <view class="timeline-item active">
+          <view class="timeline-dot"></view>
+          <view class="timeline-content">
+            <text class="timeline-text">{{expressInfo.latestStatus}}</text>
+            <text class="timeline-time">{{expressInfo.latestTime}}</text>
+          </view>
+        </view>
+        <view class="timeline-item" wx:for="{{expressInfo.history}}" wx:key="index">
+          <view class="timeline-dot"></view>
+          <view class="timeline-line"></view>
+          <view class="timeline-content">
+            <text class="timeline-text">{{item.text}}</text>
+            <text class="timeline-time">{{item.time}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="history-section">
+    <text class="section-title">历史查询</text>
+    <view class="history-list">
+      <view class="history-item" wx:for="{{historyList}}" wx:key="index" bindtap="selectHistory" data-number="{{item.number}}">
+        <text class="history-number">{{item.number}}</text>
+        <text class="history-time">{{item.time}}</text>
+      </view>
+      <view class="history-empty" wx:if="{{historyList.length === 0}}">
+        <text>暂无历史查询记录</text>
+      </view>
+    </view>
+  </view>
+</view>

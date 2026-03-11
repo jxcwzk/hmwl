@@ -1,0 +1,296 @@
+/* CSS变量定义 */
+:root {
+  --primary-color: #E60012;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --text-light: #999999;
+  --background-light: #f5f5f5;
+  --background-white: #ffffff;
+  --border-color: #f0f0f0;
+  --shadow-light: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 5rpx 15rpx rgba(0, 0, 0, 0.1);
+  --border-radius-sm: 5rpx;
+  --border-radius-md: 10rpx;
+  --border-radius-lg: 30rpx;
+  --spacing-xs: 10rpx;
+  --spacing-sm: 15rpx;
+  --spacing-md: 20rpx;
+  --spacing-lg: 40rpx;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 40rpx;
+  --height-search: 60rpx;
+  --height-function: 120rpx;
+}
+
+.container {
+  padding: var(--spacing-md);
+  background-color: var(--background-light);
+  min-height: 100vh;
+  font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 顶部搜索栏 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.search-input {
+  flex: 1;
+  height: var(--height-search);
+  background-color: var(--background-white);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--spacing-md);
+  margin-right: var(--spacing-sm);
+  box-shadow: var(--shadow-light);
+}
+
+.search-icon {
+  font-size: 20rpx;
+  margin-right: var(--spacing-xs);
+  color: var(--text-light);
+}
+
+.search-placeholder {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+}
+
+.scan-btn {
+  width: var(--height-search);
+  height: var(--height-search);
+  background-color: var(--background-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-light);
+}
+
+.scan-icon {
+  font-size: 30rpx;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+}
+
+.loading-spinner {
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid rgba(0, 0, 0, 0.1);
+  border-top: 4rpx solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-sm);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-medium);
+}
+
+/* 错误状态 */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  background-color: var(--background-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-light);
+}
+
+.error-icon {
+  font-size: 60rpx;
+  margin-bottom: var(--spacing-sm);
+}
+
+.error-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-medium);
+  margin-bottom: var(--spacing-md);
+}
+
+.retry-btn {
+  padding: 0 var(--spacing-lg);
+  height: 48rpx;
+  line-height: 48rpx;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+/* 核心功能区 */
+.core-functions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.function-item {
+  background-color: var(--background-white);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s;
+  min-height: var(--height-function);
+}
+
+.function-item:hover {
+  transform: translateY(-5rpx);
+  box-shadow: var(--shadow-medium);
+}
+
+.function-icon {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xs);
+}
+
+.function-text {
+  font-size: var(--font-size-xs);
+  color: var(--text-dark);
+}
+
+/* 物流动态 */
+.logistics-section {
+  background-color: var(--background-white);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  box-shadow: var(--shadow-light);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.section-title {
+  font-size: var(--font-size-md);
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.section-more {
+  font-size: var(--font-size-sm);
+  color: var(--text-light);
+}
+
+.logistics-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.logistics-item {
+  padding: var(--spacing-sm);
+  border: 1rpx solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+}
+
+.logistics-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.express-number {
+  font-size: var(--font-size-sm);
+  color: var(--text-medium);
+}
+
+.express-status {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.logistics-detail {
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+}
+
+.logistics-empty {
+  text-align: center;
+  padding: var(--spacing-lg) 0;
+  color: var(--text-light);
+  font-size: var(--font-size-sm);
+}
+
+/* 活动推荐 */
+.activity-section {
+  background-color: var(--background-white);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-light);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.activity-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background-color: #f9f9f9;
+  border-radius: var(--border-radius-sm);
+  border-left: 4rpx solid var(--primary-color);
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-size: var(--font-size-sm);
+  font-weight: bold;
+  color: var(--text-dark);
+  margin-bottom: 5rpx;
+  display: block;
+}
+
+.activity-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-medium);
+  display: block;
+}
+
+.activity-tag {
+  background-color: var(--primary-color);
+  color: white;
+  font-size: var(--font-size-xs);
+  padding: 5rpx 10rpx;
+  border-radius: 10rpx;
+}

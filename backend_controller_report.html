@@ -1,0 +1,849 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码审查报告</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #666;
+            margin-top: 20px;
+        }
+        .summary {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .summary-item {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 15px;
+            background-color: #e3f2fd;
+            border-radius: 20px;
+        }
+        .file-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .file-path {
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        .issue {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-left: 4px solid #ff9800;
+            border-radius: 4px;
+        }
+        .issue-type {
+            font-weight: bold;
+            color: #f57c00;
+        }
+        .issue-line {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .issue-message {
+            margin-top: 5px;
+        }
+        .severity {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .severity-high {
+            background-color: #ffcdd2;
+            color: #c62828;
+        }
+        .severity-medium {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+        .severity-low {
+            background-color: #e8f5e8;
+            color: #2e7d32;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>代码审查报告</h1>
+        <div class="summary">
+            <h2>审查摘要</h2>
+            <div class="summary-item">总文件数: 14</div>
+            <div class="summary-item">问题文件数: 14</div>
+            <div class="summary-item">总问题数: 115</div>
+            <div class="summary-item">严重问题: 0</div>
+            <div class="summary-item">中等问题: 0</div>
+            <div class="summary-item">轻微问题: 115</div>
+        </div>
+        
+        <h2>详细问题</h2>
+        <div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\BusinessCustomerController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 13 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 50 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\BusinessRecipientController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 14 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 31 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 36 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 51 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\BusinessUserController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 13 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\CustomerController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\DriverController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\NetworkPointController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 13 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\OrderController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 26 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 31 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 46 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\RouteController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\SettlementController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 reconciliation 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 statistics 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\TestController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 13 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 test 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\TestEncodingController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 15 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 31 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 34 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 36 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 39 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 48 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 50 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 53 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\TestInsertController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 14 行</span>
+                    <div class="issue-message">操作符前后应添加空格</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 test 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\UserController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 login 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 logout 缺少Javadoc注释</div>
+                </div></div>
+<div class="file-section">
+                <div class="file-path">d:\hmwl-4\backend\src\main\java\com\hmwl\controller\VehicleController.java</div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 25 行</span>
+                    <div class="issue-message">行长度超过120个字符</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 30 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">代码风格</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 45 行</span>
+                    <div class="issue-message">左大括号应与前面的代码在同一行</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">类缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 getById 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 save 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 update 缺少Javadoc注释</div>
+                </div>
+                <div class="issue">
+                    <span class="issue-type">注释规范</span>
+                    <span class="severity severity-low">轻微</span>
+                    <span class="issue-line">第 1 行</span>
+                    <div class="issue-message">方法 delete 缺少Javadoc注释</div>
+                </div></div>
+        
+        <div class="footer">
+            <p>报告生成时间: 2026-03-08 22:36:08</p>
+            <p>基于阿里巴巴Java编码规范</p>
+        </div>
+    </div>
+</body>
+</html>
+        

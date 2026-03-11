@@ -1,0 +1,12 @@
+# Tasks
+- [x] Task 1: 创建首页组件 Home.vue
+  - [x] SubTask 1.1: 设计首页布局和统计卡片
+  - [x] SubTask 1.2: 实现订单状态统计功能
+  - [x] SubTask 1.3: 添加快捷入口
+- [x] Task 2: 添加路由配置
+  - [x] SubTask 2.1: 在router/index.js添加首页路由
+  - [x] SubTask 2.2: 设置默认跳转到首页
+- [x] Task 3: 更新菜单配置
+  - [x] SubTask 3.1: 在App.vue添加首页菜单项
+  - [x] SubTask 3.2: 处理菜单点击跳转
+- [x] Task 4: 验证功能

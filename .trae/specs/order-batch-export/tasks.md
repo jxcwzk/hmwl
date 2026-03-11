@@ -1,0 +1,11 @@
+# Tasks
+- [x] Task 1: 安装xlsx依赖库
+- [x] Task 2: 添加表格多选列和批量导出按钮
+  - [x] SubTask 2.1: 添加el-table的selection列
+  - [x] SubTask 2.2: 添加批量导出按钮
+  - [x] SubTask 2.3: 添加多选数据绑定
+- [x] Task 3: 实现批量导出Excel功能
+  - [x] SubTask 3.1: 导入xlsx库
+  - [x] SubTask 3.2: 编写导出函数
+  - [x] SubTask 3.3: 定义导出的字段
+- [x] Task 4: 验证功能

@@ -1,0 +1,82 @@
+<view class="container">
+  <view class="user-info-section">
+    <view class="user-avatar">
+      <text class="avatar-icon">👤</text>
+    </view>
+    <view class="user-details">
+      <text class="user-name">用户名</text>
+      <text class="user-level">会员等级：普通会员</text>
+    </view>
+  </view>
+
+  <view class="service-section">
+    <text class="section-title">我的服务</text>
+    <view class="service-grid">
+      <view class="service-item" bindtap="navigateToCoupons">
+        <text class="service-icon">🎫</text>
+        <text class="service-text">我的优惠券</text>
+      </view>
+      <view class="service-item" bindtap="navigateToPoints">
+        <text class="service-icon">⭐</text>
+        <text class="service-text">我的积分</text>
+      </view>
+      <view class="service-item" bindtap="navigateToAddress">
+        <text class="service-icon">📍</text>
+        <text class="service-text">地址管理</text>
+      </view>
+      <view class="service-item" bindtap="navigateToCustomerService">
+        <text class="service-icon">💬</text>
+        <text class="service-text">客服中心</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="order-section">
+    <view class="section-header">
+      <text class="section-title">我的订单</text>
+      <text class="section-more" bindtap="navigateToOrder">查看全部</text>
+    </view>
+    <view class="order-status">
+      <view class="order-item" bindtap="navigateToOrder">
+        <text class="order-icon">📋</text>
+        <text class="order-text">全部</text>
+      </view>
+      <view class="order-item" bindtap="navigateToOrder">
+        <text class="order-icon">💳</text>
+        <text class="order-text">待付款</text>
+      </view>
+      <view class="order-item" bindtap="navigateToOrder">
+        <text class="order-icon">📦</text>
+        <text class="order-text">待取件</text>
+      </view>
+      <view class="order-item" bindtap="navigateToOrder">
+        <text class="order-icon">🚛</text>
+        <text class="order-text">运输中</text>
+      </view>
+      <view class="order-item" bindtap="navigateToOrder">
+        <text class="order-icon">✅</text>
+        <text class="order-text">已完成</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="settings-section">
+    <text class="section-title">设置</text>
+    <view class="setting-list">
+      <view class="setting-item" bindtap="navigateToAccountSetting">
+        <text class="setting-text">账号设置</text>
+        <text class="setting-arrow">›</text>
+      </view>
+      <view class="setting-item" bindtap="navigateToPrivacySetting">
+        <text class="setting-text">隐私设置</text>
+        <text class="setting-arrow">›</text>
+      </view>
+      <view class="setting-item" bindtap="navigateToAbout">
+        <text class="setting-text">关于我们</text>
+        <text class="setting-arrow">›</text>
+      </view>
+    </view>
+  </view>
+
+  <button class="logout-btn" bindtap="logout">退出登录</button>
+</view>

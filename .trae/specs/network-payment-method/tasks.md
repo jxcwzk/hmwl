@@ -1,0 +1,12 @@
+# Tasks
+- [x] Task 1: 后端Order实体类增加networkPaymentMethod字段
+  - [x] SubTask 1.1: 修改Order.java增加networkPaymentMethod字段
+  - [x] SubTask 1.2: 修改数据库init.sql增加network_payment_method字段
+  - [x] SubTask 1.3: 重新编译打包后端
+- [x] Task 2: 前端费用信息卡片增加网点付款方式选项
+  - [x] SubTask 2.1: 在Order.vue费用卡片中增加网点付款方式下拉框
+  - [x] SubTask 2.2: 确保表单绑定networkPaymentMethod字段
+- [x] Task 3: 验证前后端连接和数据保存
+  - [x] SubTask 3.1: 重启后端服务
+  - [x] SubTask 3.2: 测试创建订单时网点付款方式保存
+  - [x] SubTask 3.3: 测试编辑订单时网点付款方式回显

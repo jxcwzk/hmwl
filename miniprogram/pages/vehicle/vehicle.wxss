@@ -1,0 +1,6 @@
+/* vehicle.wxss */
+.button.small {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  margin-top: 0;
+}

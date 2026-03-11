@@ -1,0 +1,25 @@
+<view class="container">
+  <view class="card">
+    <view class="title">司机管理</view>
+    <input class="input" placeholder="请输入司机姓名" bindinput="onDriverNameInput" />
+    <view class="button" bindtap="searchDriver">查询</view>
+  </view>
+  
+  <view class="list" wx:if="{{driverList.length > 0}}">
+    <view class="list-item" wx:for="{{driverList}}" wx:key="id">
+      <view>
+        <view class="text">姓名：{{item.name}}</view>
+        <view class="text">电话：{{item.phone}}</view>
+        <view class="text">身份证号：{{item.idCard}}</view>
+        <view class="text">绑定车辆：{{item.vehicleId || '未绑定'}}</view>
+      </view>
+      <view class="button small" bindtap="viewDriverDetail" data-id="{{item.id}}">详情</view>
+    </view>
+  </view>
+  
+  <view class="loading" wx:else>
+    {{loading ? '加载中...' : '暂无司机数据'}}
+  </view>
+  
+  <view class="button" bindtap="addDriver">新增司机</view>
+</view>

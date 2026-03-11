@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="card">
+    <view class="title">网点管理</view>
+    <input class="input" placeholder="请输入网点名称" bindinput="onNetworkNameInput" />
+    <view class="button" bindtap="searchNetwork">查询</view>
+  </view>
+  
+  <view class="list" wx:if="{{networkList.length > 0}}">
+    <view class="list-item" wx:for="{{networkList}}" wx:key="id">
+      <view>
+        <view class="text">网点名称：{{item.name}}</view>
+        <view class="text">网点编码：{{item.code}}</view>
+        <view class="text">联系人：{{item.contactPerson}}</view>
+        <view class="text">电话：{{item.phone}}</view>
+        <view class="text">地址：{{item.address}}</view>
+      </view>
+      <view class="button small" bindtap="viewNetworkDetail" data-id="{{item.id}}">详情</view>
+    </view>
+  </view>
+  
+  <view class="loading" wx:else>
+    {{loading ? '加载中...' : '暂无网点数据'}}
+  </view>
+  
+  <view class="button" bindtap="addNetwork">新增网点</view>
+</view>

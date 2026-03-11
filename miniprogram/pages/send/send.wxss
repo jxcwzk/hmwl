@@ -1,0 +1,148 @@
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.section {
+  background-color: white;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15rpx;
+  color: #333;
+}
+
+.send-mode {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 10rpx;
+}
+
+.mode-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  background-color: #f9f9f9;
+  width: 45%;
+  transition: all 0.3s;
+}
+
+.mode-item.active {
+  background-color: #ffe6e8;
+  border: 2rpx solid #E60012;
+}
+
+.mode-icon {
+  font-size: 40rpx;
+  margin-bottom: 10rpx;
+}
+
+.mode-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.info-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.form-label {
+  width: 100rpx;
+  font-size: 14px;
+  color: #666;
+}
+
+.form-input {
+  flex: 1;
+  height: 60rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 5rpx;
+  padding: 0 15rpx;
+  font-size: 14px;
+}
+
+.form-picker {
+  flex: 1;
+  height: 60rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 5rpx;
+  padding: 0 15rpx;
+  display: flex;
+  align-items: center;
+}
+
+.picker-text {
+  font-size: 14px;
+  color: #333;
+}
+
+.service-types {
+  display: flex;
+  gap: 15rpx;
+  flex-wrap: wrap;
+}
+
+.service-item {
+  padding: 10rpx 20rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 20rpx;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.service-item.active {
+  background-color: #E60012;
+  color: white;
+  border-color: #E60012;
+}
+
+.cost-estimate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
+.cost-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.cost-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #E60012;
+}
+
+.submit-btn {
+  background-color: #E60012;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  height: 80rpx;
+  border-radius: 10rpx;
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.submit-btn::after {
+  border: none;
+}

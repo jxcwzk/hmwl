@@ -1,0 +1,722 @@
+{
+  "backend\\src\\main\\java\\com\\hmwl\\Application.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\BusinessCustomerController.java": [
+    {
+      "type": "代码风格",
+      "line": 16,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 19,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 52,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 82,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 92,
+      "message": "左大括号应与前面的代码在同一行"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\BusinessRecipientController.java": [
+    {
+      "type": "代码风格",
+      "line": 17,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 20,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 40,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 40,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 63,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 93,
+      "message": "左大括号应与前面的代码在同一行"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\BusinessUserController.java": [
+    {
+      "type": "代码风格",
+      "line": 16,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 19,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 52,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 82,
+      "message": "左大括号应与前面的代码在同一行"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\CustomerController.java": [
+    {
+      "type": "代码风格",
+      "line": 25,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 30,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 save 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 update 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 delete 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\DriverController.java": [
+    {
+      "type": "代码风格",
+      "line": 25,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 30,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 save 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 update 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 delete 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\NetworkPointController.java": [
+    {
+      "type": "代码风格",
+      "line": 13,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 25,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 30,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 save 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 update 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 delete 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\OrderController.java": [
+    {
+      "type": "代码风格",
+      "line": 5,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 57,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 90,
+      "message": "左大括号应与前面的代码在同一行"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\RouteController.java": [
+    {
+      "type": "代码风格",
+      "line": 5,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 56,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 89,
+      "message": "左大括号应与前面的代码在同一行"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\SettlementController.java": [
+    {
+      "type": "代码风格",
+      "line": 25,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 30,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 save 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 update 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 delete 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 reconciliation 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 statistics 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\TestController.java": [
+    {
+      "type": "代码风格",
+      "line": 13,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 test 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\TestEncodingController.java": [
+    {
+      "type": "代码风格",
+      "line": 15,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 31,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 34,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 36,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 39,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 48,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 50,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 53,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\TestInsertController.java": [
+    {
+      "type": "代码风格",
+      "line": 14,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 test 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\UserController.java": [
+    {
+      "type": "代码风格",
+      "line": 25,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 30,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 save 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 update 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 delete 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 login 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 logout 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\controller\\VehicleController.java": [
+    {
+      "type": "代码风格",
+      "line": 25,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 30,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "代码风格",
+      "line": 45,
+      "message": "左大括号应与前面的代码在同一行"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 save 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 update 缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 delete 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\BranchSettle.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\BusinessCustomer.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\BusinessRecipient.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\BusinessUser.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\Customer.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\Driver.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\NetworkPoint.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\Order.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\Route.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\Settlement.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\User.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\entity\\Vehicle.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\BranchSettleServiceImpl.java": [
+    {
+      "type": "代码风格",
+      "line": 10,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\BusinessCustomerServiceImpl.java": [
+    {
+      "type": "代码风格",
+      "line": 12,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\BusinessRecipientServiceImpl.java": [
+    {
+      "type": "代码风格",
+      "line": 14,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "异常处理",
+      "line": 39,
+      "message": "不要捕获通用的Exception，应捕获具体的异常类型"
+    },
+    {
+      "type": "异常处理",
+      "line": 55,
+      "message": "不要捕获通用的Exception，应捕获具体的异常类型"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "方法 getById 缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\BusinessUserServiceImpl.java": [
+    {
+      "type": "代码风格",
+      "line": 10,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\CustomerServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\DriverServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\NetworkPointServiceImpl.java": [
+    {
+      "type": "代码风格",
+      "line": 10,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\OrderServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\RouteServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\SettlementServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\UserServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\service\\impl\\VehicleServiceImpl.java": [
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ],
+  "backend\\src\\main\\java\\com\\hmwl\\test\\CharsetTest.java": [
+    {
+      "type": "代码风格",
+      "line": 15,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "代码风格",
+      "line": 15,
+      "message": "操作符前后应添加空格"
+    },
+    {
+      "type": "代码风格",
+      "line": 38,
+      "message": "行长度超过120个字符"
+    },
+    {
+      "type": "异常处理",
+      "line": 46,
+      "message": "不要捕获通用的Exception，应捕获具体的异常类型"
+    },
+    {
+      "type": "注释规范",
+      "line": 1,
+      "message": "类缺少Javadoc注释"
+    }
+  ]
+}

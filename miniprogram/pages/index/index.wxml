@@ -1,0 +1,85 @@
+<view class="container">
+  <!-- 顶部搜索栏 -->
+  <view class="search-bar">
+    <view class="search-input" bindtap="navigateToQuery">
+      <text class="search-icon">🔍</text>
+      <text class="search-placeholder">请输入快递单号</text>
+    </view>
+    <view class="scan-btn" bindtap="scanCode">
+      <text class="scan-icon">📷</text>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:if="{{error}}" class="error-container">
+    <text class="error-icon">⚠️</text>
+    <text class="error-text">加载失败</text>
+    <button class="retry-btn" bindtap="retryLoad">重新加载</button>
+  </view>
+
+  <!-- 内容区域 -->
+  <view wx:if="{{!loading && !error}}">
+    <!-- 核心功能区 -->
+    <view class="core-functions">
+      <view class="function-item" bindtap="navigateToSend" aria-label="寄件">
+        <view class="function-icon">📦</view>
+        <text class="function-text">寄件</text>
+      </view>
+      <view class="function-item" bindtap="navigateToQuery" aria-label="查件">
+        <view class="function-icon">📋</view>
+        <text class="function-text">查件</text>
+      </view>
+      <view class="function-item" bindtap="navigateToOrder" aria-label="我的订单">
+        <view class="function-icon">📄</view>
+        <text class="function-text">我的订单</text>
+      </view>
+      <view class="function-item" bindtap="navigateToNetwork" aria-label="网点查询">
+        <view class="function-icon">🏪</view>
+        <text class="function-text">网点查询</text>
+      </view>
+    </view>
+
+    <!-- 物流动态 -->
+    <view class="logistics-section">
+      <view class="section-header">
+        <text class="section-title">物流动态</text>
+        <text class="section-more" bindtap="navigateToOrder">查看全部</text>
+      </view>
+      <view class="logistics-list">
+        <view class="logistics-item" wx:for="{{logisticsList}}" wx:key="number">
+          <view class="logistics-info">
+            <text class="express-number">{{item.number}}</text>
+            <text class="express-status">{{item.status}}</text>
+          </view>
+          <text class="logistics-detail">{{item.detail}}</text>
+        </view>
+        <view class="logistics-empty" wx:if="{{logisticsList.length === 0}}">
+          <text>暂无物流动态</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 活动推荐 -->
+    <view class="activity-section">
+      <view class="section-header">
+        <text class="section-title">活动推荐</text>
+        <text class="section-more" bindtap="navigateToActivity">查看全部</text>
+      </view>
+      <view class="activity-list">
+        <view class="activity-item" wx:for="{{activityList}}" wx:key="index">
+          <view class="activity-content">
+            <text class="activity-title">{{item.title}}</text>
+            <text class="activity-desc">{{item.desc}}</text>
+          </view>
+          <view class="activity-tag">{{item.tag}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

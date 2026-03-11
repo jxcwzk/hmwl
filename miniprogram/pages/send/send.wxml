@@ -1,0 +1,96 @@
+<view class="container">
+  <view class="section">
+    <text class="section-title">寄件方式</text>
+    <view class="send-mode">
+      <view class="mode-item {{selectedMode === 'pickup' ? 'active' : ''}}" bindtap="selectMode" data-mode="pickup">
+        <text class="mode-icon">📦</text>
+        <text class="mode-text">上门取件</text>
+      </view>
+      <view class="mode-item {{selectedMode === '网点' ? 'active' : ''}}" bindtap="selectMode" data-mode="网点">
+        <text class="mode-icon">🏪</text>
+        <text class="mode-text">网点寄件</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">寄件人信息</text>
+    <view class="info-form">
+      <view class="form-item">
+        <text class="form-label">姓名</text>
+        <input class="form-input" placeholder="请输入姓名" value="{{sender.name}}" bindinput="bindSenderInput" data-field="name" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">电话</text>
+        <input class="form-input" placeholder="请输入电话" value="{{sender.phone}}" bindinput="bindSenderInput" data-field="phone" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">地址</text>
+        <input class="form-input" placeholder="请输入地址" value="{{sender.address}}" bindinput="bindSenderInput" data-field="address" />
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">收件人信息</text>
+    <view class="info-form">
+      <view class="form-item">
+        <text class="form-label">姓名</text>
+        <input class="form-input" placeholder="请输入姓名" value="{{receiver.name}}" bindinput="bindReceiverInput" data-field="name" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">电话</text>
+        <input class="form-input" placeholder="请输入电话" value="{{receiver.phone}}" bindinput="bindReceiverInput" data-field="phone" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">地址</text>
+        <input class="form-input" placeholder="请输入地址" value="{{receiver.address}}" bindinput="bindReceiverInput" data-field="address" />
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">物品信息</text>
+    <view class="info-form">
+      <view class="form-item">
+        <text class="form-label">物品类型</text>
+        <picker class="form-picker" bindchange="bindGoodsTypeChange" value="{{goodsTypeIndex}}" range="{{goodsTypes}}">
+          <view class="picker-text">{{goodsTypes[goodsTypeIndex]}}</view>
+        </picker>
+      </view>
+      <view class="form-item">
+        <text class="form-label">重量(kg)</text>
+        <input class="form-input" placeholder="请输入重量" value="{{goods.weight}}" bindinput="bindGoodsInput" data-field="weight" />
+      </view>
+      <view class="form-item">
+        <text class="form-label">数量</text>
+        <input class="form-input" placeholder="请输入数量" value="{{goods.quantity}}" bindinput="bindGoodsInput" data-field="quantity" />
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">服务类型</text>
+    <view class="service-types">
+      <view class="service-item {{selectedService === 'standard' ? 'active' : ''}}" bindtap="selectService" data-service="standard">
+        <text class="service-text">标准快递</text>
+      </view>
+      <view class="service-item {{selectedService === 'express' ? 'active' : ''}}" bindtap="selectService" data-service="express">
+        <text class="service-text">加急</text>
+      </view>
+      <view class="service-item {{selectedService === 'cold' ? 'active' : ''}}" bindtap="selectService" data-service="cold">
+        <text class="service-text">冷链</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section">
+    <text class="section-title">费用估算</text>
+    <view class="cost-estimate">
+      <text class="cost-label">预计费用：</text>
+      <text class="cost-value">¥{{estimatedCost}}</text>
+    </view>
+  </view>
+
+  <button class="submit-btn" bindtap="submitOrder">确认寄件</button>
+</view>

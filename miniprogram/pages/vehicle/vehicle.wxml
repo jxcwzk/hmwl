@@ -1,0 +1,24 @@
+<view class="container">
+  <view class="card">
+    <view class="title">车辆管理</view>
+    <input class="input" placeholder="请输入车牌号" bindinput="onLicensePlateInput" />
+    <view class="button" bindtap="searchVehicle">查询</view>
+  </view>
+  
+  <view class="list" wx:if="{{vehicleList.length > 0}}">
+    <view class="list-item" wx:for="{{vehicleList}}" wx:key="id">
+      <view>
+        <view class="text">车牌号：{{item.licensePlate}}</view>
+        <view class="text">车型：{{item.vehicleType}}</view>
+        <view class="text">载重：{{item.loadCapacity}}吨</view>
+      </view>
+      <view class="button small" bindtap="viewVehicleDetail" data-id="{{item.id}}">详情</view>
+    </view>
+  </view>
+  
+  <view class="loading" wx:else>
+    {{loading ? '加载中...' : '暂无车辆数据'}}
+  </view>
+  
+  <view class="button" bindtap="addVehicle">新增车辆</view>
+</view>

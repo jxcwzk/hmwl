@@ -1,0 +1,12 @@
+# Tasks
+- [x] Task 1: 后端添加二维码生成和上传功能
+  - [x] SubTask 1.1: 在pom.xml添加二维码生成依赖(qrcode)
+  - [x] SubTask 1.2: 创建二维码生成服务类
+  - [x] SubTask 1.3: 修改OrderController添加二维码生成接口
+  - [x] SubTask 1.4: 数据库增加qr_code_url字段
+- [x] Task 2: 前端添加二维码显示区域
+  - [x] SubTask 2.1: 在订单基本信息卡片右侧添加二维码区域
+  - [x] SubTask 2.2: 添加二维码显示组件
+- [x] Task 3: 订单创建时自动生成二维码
+  - [x] SubTask 3.1: 修改订单保存逻辑，创建后自动生成二维码
+- [x] Task 4: 验证功能

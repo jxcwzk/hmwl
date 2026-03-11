@@ -1,0 +1,42 @@
+<view class="container">
+  <!-- 订单分类 -->
+  <view class="order-tabs">
+    <view class="order-tab {{activeTab === 'all' ? 'active' : ''}}" bindtap="switchTab" data-tab="all">全部</view>
+    <view class="order-tab {{activeTab === 'pending' ? 'active' : ''}}" bindtap="switchTab" data-tab="pending">待付款</view>
+    <view class="order-tab {{activeTab === 'pickup' ? 'active' : ''}}" bindtap="switchTab" data-tab="pickup">待取件</view>
+    <view class="order-tab {{activeTab === 'transport' ? 'active' : ''}}" bindtap="switchTab" data-tab="transport">运输中</view>
+    <view class="order-tab {{activeTab === 'completed' ? 'active' : ''}}" bindtap="switchTab" data-tab="completed">已完成</view>
+  </view>
+
+  <!-- 订单列表 -->
+  <view class="order-list">
+    <view class="order-item" wx:for="{{orderList}}" wx:key="index" bindtap="viewOrderDetail">
+      <view class="order-header">
+        <text class="order-time">{{item.time}}</text>
+        <text class="order-status">{{item.status}}</text>
+      </view>
+      <view class="order-content">
+        <text class="order-number">单号：{{item.number}}</text>
+        <text class="order-service">{{item.service}}</text>
+        <view class="order-info">
+          <text class="info-label">寄件人：</text>
+          <text class="info-value">{{item.sender}}</text>
+        </view>
+        <view class="order-info">
+          <text class="info-label">收件人：</text>
+          <text class="info-value">{{item.receiver}}</text>
+        </view>
+      </view>
+      <view class="order-footer">
+        <text class="order-cost">¥{{item.cost}}</text>
+        <view class="order-actions">
+          <button class="action-btn secondary" bindtap="cancelOrder" data-index="{{index}}">取消订单</button>
+          <button class="action-btn primary" bindtap="payOrder" data-index="{{index}}">{{item.action}}</button>
+        </view>
+      </view>
+    </view>
+    <view class="empty-order" wx:if="orderList.length === 0">
+      <text>暂无{{activeTab === 'all' ? '' : activeTab === 'pending' ? '待付款' : activeTab === 'pickup' ? '待取件' : activeTab === 'transport' ? '运输中' : '已完成'}}订单</text>
+    </view>
+  </view>
+</view>
