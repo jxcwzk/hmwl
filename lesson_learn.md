@@ -384,3 +384,102 @@ businessUserList.value = res.data || res
 3. **前端容错**：前端请求库增加格式兼容性处理
 4. **测试验证**：修改前后端接口后要在前端实际测试
 5. **错误诊断**：优先使用浏览器控制台和后端日志排查问题
+
+---
+
+## 10. GitHub 机密扫描保护机制与敏感凭证管理
+
+### 问题描述
+- GitHub 推送被阻止，显示 "Push cannot contain secrets" 错误
+- GitHub 检测到代码中包含腾讯云 COS 的 Secret ID/Secret Key 等敏感凭证
+- 机密扫描保护机制触发，禁止将密钥等敏感信息提交到公共仓库
+
+### 根本原因
+
+#### 10.1 敏感凭证硬编码
+- **application.yml**：直接写入 COS Secret ID 和 Secret Key
+- **CosTest.java**：测试代码中硬编码了凭证
+- **文档文件**：cos-config.md、lesson_learn.md 等文档中包含真实凭证示例
+
+#### 10.2 历史提交包含敏感信息
+- 即使当前代码已修复，GitHub 仍会扫描历史提交中的敏感凭证
+- 需要清理 Git 历史才能彻底解决问题
+
+### 解决方案
+
+#### 10.3 创建本地开发配置文件
+创建 `application-dev.yml`，用于本地开发：
+```yaml
+cos:
+  secretId: YOUR_LOCAL_SECRET_ID
+  secretKey: YOUR_LOCAL_SECRET_KEY
+  bucketName: jxcwzk-1342353267
+  region: ap-shanghai
+  baseUrl: https://jxcwzk-1342353267.cos.ap-shanghai.myqcloud.com
+```
+
+将 `application-dev.yml` 加入 `.gitignore`：
+```gitignore
+# 本地开发配置（敏感凭证）
+application-dev.yml
+```
+
+#### 10.4 修改 application.yml 使用环境变量
+```yaml
+cos:
+  secretId: ${COS_SECRET_ID}
+  secretKey: ${COS_SECRET_KEY}
+  bucketName: jxcwzk-1342353267
+  region: ap-shanghai
+  baseUrl: https://jxcwzk-1342353267.cos.ap-shanghai.myqcloud.com
+```
+
+#### 10.5 修改 CosConfig.java 支持环境变量
+```java
+@Value("${cos.secretId:${COS_SECRET_ID}}")
+private String secretId;
+
+@Value("${cos.secretKey:${COS_SECRET_KEY}}")
+private String secretKey;
+```
+
+#### 10.6 修改测试代码使用参数传入
+```java
+String secretId = System.getProperty("cos.secretId", System.getenv("COS_SECRET_ID"));
+String secretKey = System.getProperty("cos.secretKey", System.getenv("COS_SECRET_KEY"));
+
+if (secretId == null || secretId.isEmpty()) {
+    System.out.println("错误: 请通过 -D 参数或环境变量传入 COS 凭证");
+    System.exit(1);
+}
+```
+
+运行测试：
+```bash
+java -Dcos.secretId=YOUR_ID -Dcos.secretKey=YOUR_KEY CosTest
+```
+
+#### 10.7 清理 Git 历史
+使用 `git filter-branch` 或 `git rebase` 清理包含敏感凭证的旧提交：
+```bash
+# 方法一：使用 filter-branch
+git filter-branch --force --tree-filter '...' --tag-name-filter cat -- --all
+
+# 方法二：重新初始化仓库（最彻底）
+git update-ref -d HEAD
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+```
+
+#### 10.8 强制推送
+```bash
+git push -u origin main --force
+```
+
+### 预防措施
+1. **永不硬编码凭证**：敏感信息绝对不能直接写在代码或配置文件中
+2. **环境变量管理**：生产环境使用环境变量注入凭证
+3. **本地配置文件隔离**：使用 `.gitignore` 排除本地配置文件
+4. **文档示例使用占位符**：文档中的配置示例使用占位符，不要使用真实值
+5. **敏感凭证轮换**：如果凭证泄露，立即在腾讯云控制台更换新的密钥
+6. **GitHub 推送保护**：启用 GitHub 机密扫描，及时发现并修复问题
