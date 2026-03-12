@@ -2,6 +2,7 @@ package com.hmwl.controller;
 
 import com.hmwl.entity.Settlement;
 import com.hmwl.service.SettlementService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,38 @@ public class SettlementController {
      * 分页获取结算列表
      * @param current 当前页码
      * @param size 每页大小
+     * @param customerId 客户ID（可选）
+     * @param status 结算状态（可选）：0-未结算 1-已结算 2-已付款
+     * @param startDate 开始日期（可选）
+     * @param endDate 结束日期（可选）
      * @return 分页后的结算列表
      */
     @GetMapping("/page")
-    public IPage<Settlement> page(@RequestParam(defaultValue = "1") Integer current, @RequestParam(defaultValue = "10") Integer size) {
+    public IPage<Settlement> page(
+            @RequestParam(defaultValue = "1") Integer current,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(required = false) Long customerId,
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
         Page<Settlement> page = new Page<>(current, size);
-        return settlementService.page(page);
+        QueryWrapper<Settlement> queryWrapper = new QueryWrapper<>();
+
+        if (customerId != null) {
+            queryWrapper.eq("customer_id", customerId);
+        }
+        if (status != null) {
+            queryWrapper.eq("status", status);
+        }
+        if (startDate != null && !startDate.isEmpty()) {
+            queryWrapper.ge("create_time", startDate);
+        }
+        if (endDate != null && !endDate.isEmpty()) {
+            queryWrapper.le("create_time", endDate);
+        }
+
+        queryWrapper.orderByDesc("create_time");
+        return settlementService.page(page, queryWrapper);
     }
 
     /**
