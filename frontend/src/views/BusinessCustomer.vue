@@ -18,7 +18,7 @@
       <el-table v-loading="loading" :data="businessCustomerList" style="width: 100%">
         <el-table-column prop="id" label="客户ID" width="100"></el-table-column>
         <el-table-column prop="customerName" label="客户名称"></el-table-column>
-        <el-table-column prop="contact" label="联系方式"></el-table-column>
+        <el-table-column prop="phone" label="联系电话"></el-table-column>
         <el-table-column prop="address" label="地址"></el-table-column>
         <el-table-column prop="businessUserId" label="业务用户ID"></el-table-column>
         <el-table-column prop="type" label="类型"></el-table-column>
@@ -45,8 +45,8 @@
         <el-form-item label="客户名称">
           <el-input v-model="form.customerName"></el-input>
         </el-form-item>
-        <el-form-item label="联系方式">
-          <el-input v-model="form.contact"></el-input>
+        <el-form-item label="联系电话">
+          <el-input v-model="form.phone"></el-input>
         </el-form-item>
         <el-form-item label="地址">
           <el-input v-model="form.address" type="textarea"></el-input>

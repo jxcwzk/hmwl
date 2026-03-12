@@ -264,3 +264,16 @@ CREATE TABLE IF NOT EXISTS `sender_image` (
   KEY `idx_order_id` (`order_id`),
   CONSTRAINT `fk_sender_image_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 创建货物图片表 (依赖 orders)
+CREATE TABLE IF NOT EXISTS `goods_image` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `order_id` bigint DEFAULT NULL,
+  `image_url` varchar(1000) DEFAULT NULL,
+  `status` int DEFAULT NULL,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_order_id` (`order_id`),
+  CONSTRAINT `fk_goods_image_order` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -120,8 +120,13 @@ public class OrderController {
         settlement.setSettlementNo(generateSettlementNo());
         settlement.setType(0);
         settlement.setOrderId(order.getId());
+        settlement.setOrderNo(order.getOrderNo());
         settlement.setCustomerId(order.getBusinessUserId());
-        settlement.setAmount(order.getTotalFee());
+        settlement.setOrderAmount(order.getTotalFee());
+        double recommendedPrice = order.getTotalFee() != null ? order.getTotalFee() * 1.4286 : 0.0;
+        settlement.setRecommendedPrice(Math.round(recommendedPrice * 100) / 100.0);
+        settlement.setFinalAmount(Math.round(recommendedPrice * 100) / 100.0);
+        settlement.setAmount(Math.round(recommendedPrice * 100) / 100.0);
         settlement.setStatus(0);
         settlement.setPaymentMethod(order.getPaymentMethod());
         settlement.setCreateTime(new Date());

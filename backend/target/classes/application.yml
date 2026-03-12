@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hmwl?useUnicode=true&characterEncoding=utf-8&characterSetResults=utf8mb4&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: ${DB_PASSWORD:Jxcwzk7226456!}
+    password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
   http:
     encoding:
@@ -43,3 +43,9 @@ server:
     context-path: /api
   tomcat:
     uri-encoding: UTF-8
+
+distance:
+  mode: straight
+  map:
+    provider: tencent
+    api-key: ${MAP_API_KEY:}

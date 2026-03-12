@@ -1,12 +1,16 @@
 package com.hmwl.controller;
 
 import com.hmwl.entity.BusinessUser;
-import com.hmwl.service.BusinessUserService;
+import com.hmwl.mapper.BusinessUserMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,8 +23,13 @@ import java.util.List;
 @RequestMapping("/business-user")
 public class BusinessUserController {
 
+    private static final Logger log = LoggerFactory.getLogger(BusinessUserController.class);
+
     @Autowired
-    private BusinessUserService businessUserService;
+    private BusinessUserMapper businessUserMapper;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     /**
      * 获取所有企业用户列表
@@ -28,7 +37,7 @@ public class BusinessUserController {
      */
     @GetMapping("/list")
     public List<BusinessUser> list() {
-        return businessUserService.list();
+        return businessUserMapper.selectList(null);
     }
 
     /**
@@ -38,10 +47,9 @@ public class BusinessUserController {
      * @return 分页后的企业用户列表
      */
     @GetMapping("/page")
-    public IPage<BusinessUser> page(@RequestParam(defaultValue = "1") Integer current, 
-                                   @RequestParam(defaultValue = "10") Integer size) {
+    public IPage<BusinessUser> page(@RequestParam(defaultValue = "1") Integer current, @RequestParam(defaultValue = "10") Integer size) {
         Page<BusinessUser> page = new Page<>(current, size);
-        return businessUserService.page(page);
+        return businessUserMapper.selectPage(page, null);
     }
 
     /**
@@ -51,7 +59,7 @@ public class BusinessUserController {
      */
     @GetMapping("/{id}")
     public BusinessUser getById(@PathVariable Long id) {
-        return businessUserService.getById(id);
+        return businessUserMapper.selectById(id);
     }
 
     /**
@@ -61,7 +69,7 @@ public class BusinessUserController {
      */
     @PostMapping
     public boolean save(@RequestBody BusinessUser businessUser) {
-        return businessUserService.save(businessUser);
+        return businessUserMapper.insert(businessUser) > 0;
     }
 
     /**
@@ -71,7 +79,7 @@ public class BusinessUserController {
      */
     @PutMapping
     public boolean update(@RequestBody BusinessUser businessUser) {
-        return businessUserService.updateById(businessUser);
+        return businessUserMapper.updateById(businessUser) > 0;
     }
 
     /**
@@ -81,6 +89,6 @@ public class BusinessUserController {
      */
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable Long id) {
-        return businessUserService.removeById(id);
+        return businessUserMapper.deleteById(id) > 0;
     }
 }

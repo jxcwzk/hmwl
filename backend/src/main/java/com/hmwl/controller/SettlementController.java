@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 结算控制器
@@ -111,12 +113,92 @@ public class SettlementController {
     }
 
     /**
+     * 根据订单创建结算记录
+     * @param orderId 订单ID
+     * @return 创建的结算记录
+     */
+    @PostMapping("/create-from-order/{orderId}")
+    public Map<String, Object> createFromOrder(@PathVariable Long orderId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Settlement settlement = settlementService.createFromOrder(orderId);
+            result.put("success", true);
+            result.put("data", settlement);
+            result.put("message", "结算记录创建成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 更新最终结算金额
+     * @param id 结算ID
+     * @param finalAmount 最终金额
+     * @return 更新结果
+     */
+    @PutMapping("/update-amount/{id}")
+    public Map<String, Object> updateFinalAmount(@PathVariable Long id, @RequestParam Double finalAmount) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            boolean success = settlementService.updateFinalAmount(id, finalAmount);
+            result.put("success", success);
+            result.put("message", success ? "金额更新成功" : "金额更新失败");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 更新结算状态
+     * @param id 结算ID
+     * @param status 状态：0-待确认 1-已确认 2-已开票 3-已收款
+     * @return 更新结果
+     */
+    @PutMapping("/update-status/{id}")
+    public Map<String, Object> updateStatus(@PathVariable Long id, @RequestParam Integer status) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            boolean success = settlementService.updateStatus(id, status);
+            result.put("success", success);
+            result.put("message", success ? "状态更新成功" : "状态更新失败");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 计算推荐客户价
+     * @param orderAmount 订单金额
+     * @return 推荐价格
+     */
+    @GetMapping("/calculate-recommended")
+    public Map<String, Object> calculateRecommended(@RequestParam Double orderAmount) {
+        Map<String, Object> result = new HashMap<>();
+        if (orderAmount == null || orderAmount <= 0) {
+            result.put("orderAmount", 0.0);
+            result.put("recommendedPrice", 0.0);
+            result.put("profitRate", 0.30);
+        } else {
+            double recommendedPrice = orderAmount * 1.4286;
+            result.put("orderAmount", orderAmount);
+            result.put("recommendedPrice", Math.round(recommendedPrice * 100) / 100.0);
+            result.put("profitRate", 0.30);
+        }
+        return result;
+    }
+
+    /**
      * 对账管理
      * @return 对账结果
      */
     @GetMapping("/reconciliation")
     public Object reconciliation() {
-        // 对账管理逻辑
         return "对账管理";
     }
 
@@ -126,7 +208,6 @@ public class SettlementController {
      */
     @GetMapping("/statistics")
     public Object statistics() {
-        // 统计分析逻辑
         return "统计分析";
     }
 }

@@ -1,9 +1,11 @@
 package com.hmwl.entity;
 
 import lombok.Data;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 
 @Data
+@TableName("user")
 public class User {
     private Long id;
     private String username;
