@@ -1,0 +1,49 @@
+<view class="container">
+  <view class="tabs">
+    <view class="tab {{activeTab === 'sender' ? 'active' : ''}}" bindtap="switchTab" data-tab="sender">发件人</view>
+    <view class="tab {{activeTab === 'recipient' ? 'active' : ''}}" bindtap="switchTab" data-tab="recipient">收件人</view>
+  </view>
+
+  <view class="list">
+    <view class="item" wx:for="{{activeTab === 'sender' ? senders : recipients}}" wx:key="id">
+      <view class="info">
+        <text class="name">{{item.customerName}}</text>
+        <text class="phone">{{item.contact}}</text>
+        <text class="address">{{item.address}}</text>
+      </view>
+      <view class="actions">
+        <text class="edit" bindtap="editContact" data-id="{{item.id}}">编辑</text>
+        <text class="delete" bindtap="deleteContact" data-id="{{item.id}}">删除</text>
+      </view>
+    </view>
+    <view class="empty" wx:if="{{activeTab === 'sender' && senders.length === 0 || activeTab === 'recipient' && recipients.length === 0}}">
+      <text>暂无{{activeTab === 'sender' ? '发件人' : '收件人'}}信息</text>
+    </view>
+  </view>
+
+  <button class="add-btn" bindtap="addContact">新增{{activeTab === 'sender' ? '发件人' : '收件人'}}</button>
+
+  <view class="modal" wx:if="{{showModal}}">
+    <view class="modal-content">
+      <view class="modal-header">{{editingId ? '编辑' : '新增'}}{{activeTab === 'sender' ? '发件人' : '收件人'}}</view>
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="label">姓名</text>
+          <input class="input" value="{{form.customerName}}" bindinput="onInput" data-field="customerName" placeholder="请输入姓名" />
+        </view>
+        <view class="form-item">
+          <text class="label">电话</text>
+          <input class="input" value="{{form.contact}}" bindinput="onInput" data-field="contact" type="number" placeholder="请输入电话" />
+        </view>
+        <view class="form-item">
+          <text class="label">地址</text>
+          <textarea class="textarea" value="{{form.address}}" bindinput="onInput" data-field="address" placeholder="请输入地址" />
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="cancel" bindtap="closeModal">取消</button>
+        <button class="confirm" bindtap="submitForm">确定</button>
+      </view>
+    </view>
+  </view>
+</view>

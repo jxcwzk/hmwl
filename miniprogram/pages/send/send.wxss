@@ -12,43 +12,27 @@
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
 }
 
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
 .section-title {
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 15rpx;
   color: #333;
 }
 
-.send-mode {
+.header-actions {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 10rpx;
+  gap: 20rpx;
 }
 
-.mode-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20rpx;
-  border-radius: 10rpx;
-  background-color: #f9f9f9;
-  width: 45%;
-  transition: all 0.3s;
-}
-
-.mode-item.active {
-  background-color: #ffe6e8;
-  border: 2rpx solid #E60012;
-}
-
-.mode-icon {
-  font-size: 40rpx;
-  margin-bottom: 10rpx;
-}
-
-.mode-text {
+.action-btn {
   font-size: 14px;
-  color: #333;
+  color: #E60012;
 }
 
 .info-form {
@@ -63,8 +47,22 @@
   gap: 20rpx;
 }
 
+.form-item-full {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.form-item-full .form-label {
+  width: 100%;
+  margin-bottom: 10rpx;
+}
+
+.form-item-full .form-input {
+  width: 100%;
+}
+
 .form-label {
-  width: 100rpx;
+  width: 140rpx;
   font-size: 14px;
   color: #666;
 }
@@ -86,6 +84,7 @@
   padding: 0 15rpx;
   display: flex;
   align-items: center;
+  background-color: #fff;
 }
 
 .picker-text {
@@ -93,43 +92,73 @@
   color: #333;
 }
 
-.service-types {
-  display: flex;
-  gap: 15rpx;
-  flex-wrap: wrap;
-}
-
-.service-item {
-  padding: 10rpx 20rpx;
-  border: 1rpx solid #ddd;
-  border-radius: 20rpx;
-  font-size: 14px;
-  color: #666;
-  transition: all 0.3s;
-}
-
-.service-item.active {
-  background-color: #E60012;
-  color: white;
-  border-color: #E60012;
-}
-
-.cost-estimate {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.goods-photos {
   padding: 10rpx 0;
 }
 
-.cost-label {
-  font-size: 14px;
-  color: #666;
+.photo-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
 }
 
-.cost-value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #E60012;
+.photo-item {
+  position: relative;
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-delete {
+  position: absolute;
+  top: 5rpx;
+  right: 5rpx;
+  width: 36rpx;
+  height: 36rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.photo-add {
+  width: 150rpx;
+  height: 150rpx;
+  border: 2rpx dashed #ddd;
+  border-radius: 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+}
+
+.photo-add-icon {
+  font-size: 40rpx;
+  color: #999;
+  line-height: 1;
+}
+
+.photo-add-text {
+  font-size: 12px;
+  color: #999;
+  margin-top: 10rpx;
+}
+
+.photo-tip {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  margin-top: 15rpx;
 }
 
 .submit-btn {
@@ -145,4 +174,92 @@
 
 .submit-btn::after {
   border: none;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 16rpx;
+  width: 80%;
+  max-width: 600rpx;
+  overflow: hidden;
+}
+
+.modal-header {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.modal-body .form-item {
+  margin-bottom: 20rpx;
+}
+
+.modal-body .label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.modal-body .input {
+  width: 100%;
+  height: 60rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 5rpx;
+  padding: 0 15rpx;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal-body .textarea {
+  width: 100%;
+  min-height: 120rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 5rpx;
+  padding: 15rpx;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid #eee;
+}
+
+.modal-footer button {
+  flex: 1;
+  border: none;
+  border-radius: 0;
+  font-size: 16px;
+  height: 90rpx;
+  line-height: 90rpx;
+}
+
+.modal-footer .cancel {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.modal-footer .confirm {
+  background-color: #E60012;
+  color: white;
 }
