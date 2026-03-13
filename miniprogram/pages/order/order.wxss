@@ -3,6 +3,38 @@
   min-height: 100vh;
 }
 
+.login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+  background-color: white;
+  margin: 20rpx;
+  border-radius: 10rpx;
+}
+
+.prompt-text {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 30rpx;
+}
+
+.login-btn {
+  background-color: #07c160;
+  color: white;
+  font-size: 14px;
+  padding: 10rpx 40rpx;
+  border-radius: 30rpx;
+}
+
+.loading-more {
+  text-align: center;
+  padding: 20rpx;
+  color: #999;
+  font-size: 12px;
+}
+
 /* 订单分类 */
 .order-tabs {
   display: flex;

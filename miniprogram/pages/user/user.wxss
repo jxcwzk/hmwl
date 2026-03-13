@@ -47,6 +47,30 @@
   display: block;
 }
 
+.user-status {
+  font-size: 12px;
+  color: #ffeb3b;
+  display: block;
+  margin-top: 10rpx;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 5rpx 10rpx;
+  border-radius: 5rpx;
+}
+
+.login-btn {
+  background-color: #07c160;
+  color: white;
+  font-size: 16px;
+  height: 80rpx;
+  border-radius: 10rpx;
+  margin: 20rpx;
+  border: none;
+}
+
+.login-btn::after {
+  border: none;
+}
+
 .service-section {
   background-color: white;
   border-radius: 10rpx;

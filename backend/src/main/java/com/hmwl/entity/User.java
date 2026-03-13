@@ -14,6 +14,10 @@ public class User {
     private String phone;
     private String wechat;
     private String password;
+    private String openid;
+    private Integer status;
+    private Long businessUserId;
+    private Long driverId;
     private Date createTime;
     private Date updateTime;
 }

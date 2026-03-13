@@ -5,6 +5,7 @@
     "pages/query/query",
     "pages/order/order",
     "pages/user/user",
+    "pages/address/address",
     "pages/logistics/logistics",
     "pages/network-point/network-point",
     "pages/activity/activity"

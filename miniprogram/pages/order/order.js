@@ -1,140 +1,103 @@
+const app = getApp()
+const api = require('../../utils/api.js')
+
 Page({
   data: {
     activeTab: 'all',
-    orderList: [
-      {
-        number: 'SF1234567890',
-        time: '2026-03-07 10:00:00',
-        status: '运输中',
-        service: '标准快递',
-        sender: '张三 13800138000',
-        receiver: '李四 13900139000',
-        cost: '20',
-        action: '查看物流'
-      },
-      {
-        number: 'SF0987654321',
-        time: '2026-03-06 15:30:00',
-        status: '待付款',
-        service: '加急',
-        sender: '王五 13700137000',
-        receiver: '赵六 13600136000',
-        cost: '35',
-        action: '立即付款'
-      },
-      {
-        number: 'SF2468135790',
-        time: '2026-03-05 09:15:00',
-        status: '已完成',
-        service: '标准快递',
-        sender: '孙七 13500135000',
-        receiver: '周八 13400134000',
-        cost: '15',
-        action: '再次寄件'
-      }
-    ]
+    orderList: [],
+    loading: false,
+    currentPage: 1,
+    pageSize: 10,
+    total: 0,
+    hasMore: true,
+    isLoggedIn: false,
+    userInfo: null
   },
 
-  switchTab(e) {
-    const tab = e.currentTarget.dataset.tab;
-    this.setData({
-      activeTab: tab
-    });
-    
-    // 模拟不同状态的订单
-    if (tab === 'all') {
-      this.setData({
-        orderList: [
-          {
-            number: 'SF1234567890',
-            time: '2026-03-07 10:00:00',
-            status: '运输中',
-            service: '标准快递',
-            sender: '张三 13800138000',
-            receiver: '李四 13900139000',
-            cost: '20',
-            action: '查看物流'
-          },
-          {
-            number: 'SF0987654321',
-            time: '2026-03-06 15:30:00',
-            status: '待付款',
-            service: '加急',
-            sender: '王五 13700137000',
-            receiver: '赵六 13600136000',
-            cost: '35',
-            action: '立即付款'
-          },
-          {
-            number: 'SF2468135790',
-            time: '2026-03-05 09:15:00',
-            status: '已完成',
-            service: '标准快递',
-            sender: '孙七 13500135000',
-            receiver: '周八 13400134000',
-            cost: '15',
-            action: '再次寄件'
-          }
-        ]
-      });
-    } else if (tab === 'pending') {
-      this.setData({
-        orderList: [
-          {
-            number: 'SF0987654321',
-            time: '2026-03-06 15:30:00',
-            status: '待付款',
-            service: '加急',
-            sender: '王五 13700137000',
-            receiver: '赵六 13600136000',
-            cost: '35',
-            action: '立即付款'
-          }
-        ]
-      });
-    } else if (tab === 'pickup') {
-      this.setData({
-        orderList: []
-      });
-    } else if (tab === 'transport') {
-      this.setData({
-        orderList: [
-          {
-            number: 'SF1234567890',
-            time: '2026-03-07 10:00:00',
-            status: '运输中',
-            service: '标准快递',
-            sender: '张三 13800138000',
-            receiver: '李四 13900139000',
-            cost: '20',
-            action: '查看物流'
-          }
-        ]
-      });
-    } else {
-      this.setData({
-        orderList: [
-          {
-            number: 'SF2468135790',
-            time: '2026-03-05 09:15:00',
-            status: '已完成',
-            service: '标准快递',
-            sender: '孙七 13500135000',
-            receiver: '周八 13400134000',
-            cost: '15',
-            action: '再次寄件'
-          }
-        ]
-      });
+  onLoad() {
+    this.checkLoginStatus()
+  },
+
+  onShow() {
+    this.checkLoginStatus()
+    if (this.data.isLoggedIn) {
+      this.loadOrderList(true)
     }
   },
 
+  checkLoginStatus() {
+    const userInfo = wx.getStorageSync('userInfo')
+    if (userInfo && userInfo.status === 1 && userInfo.userType > 0) {
+      this.setData({
+        isLoggedIn: true,
+        userInfo: userInfo
+      })
+    } else {
+      this.setData({
+        isLoggedIn: false,
+        userInfo: null,
+        orderList: []
+      })
+    }
+  },
+
+  loadOrderList(refresh = false) {
+    if (!this.data.isLoggedIn) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      })
+      return
+    }
+
+    if (refresh) {
+      this.setData({
+        currentPage: 1,
+        orderList: [],
+        hasMore: true
+      })
+    }
+
+    if (!this.data.hasMore) {
+      return
+    }
+
+    this.setData({ loading: true })
+
+    api.getOrderList({
+      current: this.data.currentPage,
+      size: this.data.pageSize
+    }).then(data => {
+      const list = data.records || data || []
+      this.setData({
+        orderList: refresh ? list : [...this.data.orderList, ...list],
+        total: data.total || 0,
+        currentPage: this.data.currentPage + 1,
+        hasMore: this.data.orderList.length < (data.total || 0),
+        loading: false
+      })
+    }).catch(err => {
+      this.setData({ loading: false })
+      wx.showToast({
+        title: '加载失败',
+        icon: 'none'
+      })
+    })
+  },
+
+  switchTab(e) {
+    const tab = e.currentTarget.dataset.tab
+    this.setData({
+      activeTab: tab
+    })
+    this.loadOrderList(true)
+  },
+
   viewOrderDetail(e) {
-    const index = e.currentTarget.dataset.index;
-    const order = this.data.orderList[index];
+    const orderNo = e.currentTarget.dataset.orderno
     wx.navigateTo({
-      url: `/pages/logistics/logistics?number=${order.number}`
-    });
+      url: `/pages/logistics/logistics?number=${orderNo}`
+    })
   },
 
   cancelOrder(e) {
@@ -146,41 +109,52 @@ Page({
           wx.showToast({
             title: '订单已取消',
             icon: 'success'
-          });
-          // 模拟刷新订单列表
-          this.switchTab({ currentTarget: { dataset: { tab: this.data.activeTab } } });
+          })
+          this.loadOrderList(true)
         }
       }
-    });
+    })
   },
 
   payOrder(e) {
-    const index = e.currentTarget.dataset.index;
-    const order = this.data.orderList[index];
+    const order = e.currentTarget.dataset.order
     
-    if (order.status === '待付款') {
+    if (order.status === 0) {
       wx.showModal({
         title: '支付订单',
-        content: `确定支付¥${order.cost}吗？`,
+        content: `确定支付¥${order.totalFee}吗？`,
         success: (res) => {
           if (res.confirm) {
             wx.showToast({
               title: '支付成功',
               icon: 'success'
-            });
-            // 模拟刷新订单列表
-            this.switchTab({ currentTarget: { dataset: { tab: this.data.activeTab } } });
+            })
+            this.loadOrderList(true)
           }
         }
-      });
-    } else if (order.status === '运输中') {
+      })
+    } else if (order.status === 1) {
       wx.navigateTo({
-        url: `/pages/logistics/logistics?number=${order.number}`
-      });
-    } else if (order.status === '已完成') {
-      wx.navigateTo({
-        url: '/pages/send/send'
-      });
+        url: `/pages/logistics/logistics?number=${order.orderNo}`
+      })
     }
+  },
+
+  goToLogin() {
+    wx.switchTab({
+      url: '/pages/user/user'
+    })
+  },
+
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loading) {
+      this.loadOrderList()
+    }
+  },
+
+  onPullDownRefresh() {
+    this.loadOrderList(true).finally(() => {
+      wx.stopPullDownRefresh()
+    })
   }
-});
+})

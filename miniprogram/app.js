@@ -1,17 +1,16 @@
-// app.js
 App({
+  globalData: {
+    userInfo: null,
+    isLoggedIn: false
+  },
+
   onLaunch() {
-    // 初始化云开发
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       try {
         wx.cloud.init({
-          // env 参数说明：
-          //   env 参数决定接下来小程序发起的云开发调用（wx.cloud.xxx）会默认请求到哪个云环境的资源
-          //   此处请填入环境 ID, 环境 ID 可在云控制台获取
-          //   如不填则使用默认环境（第一个创建的环境）
-          env: 'default', // 使用默认环境
+          env: 'default',
           traceUser: true,
         })
         console.log('云开发初始化成功')
@@ -20,16 +19,71 @@ App({
       }
     }
 
-    this.globalData = {}
+    this.checkLoginStatus()
   },
-  
-  // 全局错误处理
+
+  checkLoginStatus() {
+    const userInfo = wx.getStorageSync('userInfo')
+    const token = wx.getStorageSync('token')
+
+    if (userInfo && token) {
+      this.globalData.userInfo = userInfo
+      this.globalData.isLoggedIn = true
+    }
+  },
+
+  login() {
+    return new Promise((resolve, reject) => {
+      wx.login({
+        success: res => {
+          console.log('wx.login success:', res)
+          if (res.code) {
+            const api = require('./utils/api.js')
+            api.login(res.code).then(data => {
+              console.log('登录成功:', data)
+              this.globalData.userInfo = data
+              this.globalData.isLoggedIn = true
+
+              wx.setStorageSync('userInfo', data)
+              wx.setStorageSync('token', 'wx_' + data.id)
+
+              resolve(data)
+            }).catch(err => {
+              console.error('登录失败:', err)
+              reject(err)
+            })
+          } else {
+            console.error('wx.login 没有返回 code')
+            reject(new Error('获取wx.login失败'))
+          }
+        },
+        fail: err => {
+          console.error('wx.login fail:', err)
+          reject(err)
+        }
+      })
+    })
+  },
+
+  getUserInfo() {
+    return this.globalData.userInfo
+  },
+
+  isLoggedIn() {
+    return this.globalData.isLoggedIn
+  },
+
+  logout() {
+    this.globalData.userInfo = null
+    this.globalData.isLoggedIn = false
+    wx.removeStorageSync('userInfo')
+    wx.removeStorageSync('token')
+  },
+
   onError(error) {
     console.error('全局错误:', error)
-    // 可以在这里添加错误上报逻辑
   },
-  
-  // 全局页面不存在处理
+
   onPageNotFound(res) {
     console.warn('页面不存在:', res)
     wx.redirectTo({

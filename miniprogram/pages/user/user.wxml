@@ -3,13 +3,20 @@
     <view class="user-avatar">
       <text class="avatar-icon">👤</text>
     </view>
-    <view class="user-details">
-      <text class="user-name">用户名</text>
-      <text class="user-level">会员等级：普通会员</text>
+    <view class="user-details" wx:if="{{isLoggedIn && userInfo}}">
+      <text class="user-name">{{userInfo.username || '微信用户'}}</text>
+      <text class="user-level">身份：{{userTypeText}}</text>
+      <text class="user-status" wx:if="{{statusText === '未激活' || userTypeText === '未分配身份'}}">请等待管理员分配身份</text>
+    </view>
+    <view class="user-details" wx:else>
+      <text class="user-name">点击登录</text>
+      <text class="user-level">登录后享受更多服务</text>
     </view>
   </view>
 
-  <view class="service-section">
+  <button wx:if="{{!isLoggedIn}}" class="login-btn" bindtap="handleLogin">微信登录</button>
+
+  <view class="service-section" wx:if="{{isLoggedIn}}">
     <text class="section-title">我的服务</text>
     <view class="service-grid">
       <view class="service-item" bindtap="navigateToCoupons">
@@ -31,7 +38,7 @@
     </view>
   </view>
 
-  <view class="order-section">
+  <view class="order-section" wx:if="{{isLoggedIn}}">
     <view class="section-header">
       <text class="section-title">我的订单</text>
       <text class="section-more" bindtap="navigateToOrder">查看全部</text>
@@ -78,5 +85,5 @@
     </view>
   </view>
 
-  <button class="logout-btn" bindtap="logout">退出登录</button>
+  <button wx:if="{{isLoggedIn}}" class="logout-btn" bindtap="logout">退出登录</button>
 </view>

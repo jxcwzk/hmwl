@@ -1,8 +1,9 @@
 spring:
+  profiles:
+    active: dev
   datasource:
     url: jdbc:mysql://localhost:3306/hmwl?useUnicode=true&characterEncoding=utf-8&characterSetResults=utf8mb4&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
   http:
     encoding:
@@ -43,6 +44,11 @@ server:
     context-path: /api
   tomcat:
     uri-encoding: UTF-8
+
+wechat:
+  miniprogram:
+    appid: wx02245e195631eabb
+    secret: ${WECHAT_MINIPROGRAM_SECRET:}
 
 distance:
   mode: straight
