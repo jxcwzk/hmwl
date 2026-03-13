@@ -15,6 +15,7 @@ import com.hmwl.service.SettlementService;
 import com.hmwl.dto.DistanceCalculateRequest;
 import com.hmwl.dto.DistanceCalculateResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/order")
@@ -41,13 +44,51 @@ public class OrderController {
     private DistanceCalculatorService distanceCalculatorService;
 
     /**
-     * 获取所有订单列表
+     * 获取订单列表，根据用户角色返回不同的订单
      * 
+     * @param userId 用户ID
+     * @param userType 用户类型
+     * @param businessUserId 业务用户ID
+     * @param driverId 司机ID
      * @return 订单列表
      */
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
-    public List<Order> list() {
-        return orderService.list();
+    public List<Order> list(
+            @RequestParam Long userId,
+            @RequestParam Integer userType,
+            @RequestParam(required = false) Long businessUserId) {
+        System.out.println("userId: " + userId);
+        System.out.println("userType: " + userType);
+        System.out.println("businessUserId: " + businessUserId);
+        
+        List<Order> orders = new ArrayList<>();
+        
+        if (userType == 1) { // 管理员
+            System.out.println("Admin: returning all orders");
+            orders = orderService.list();
+        } else if (userType == 2) { // 客户
+            System.out.println("Customer: returning orders for businessUserId: " + businessUserId);
+            if (businessUserId != null) {
+                // 直接遍历所有订单，手动过滤
+                List<Order> allOrders = orderService.list();
+                for (Order order : allOrders) {
+                    if (order.getBusinessUserId() != null && order.getBusinessUserId().equals(businessUserId)) {
+                        orders.add(order);
+                    }
+                }
+                System.out.println("Customer: found " + orders.size() + " orders");
+            } else {
+                System.out.println("Customer: businessUserId is null, returning empty list");
+            }
+        } else if (userType == 3) { // 司机
+            System.out.println("Driver: returning empty list (driverId not implemented yet)");
+            // 暂时返回空列表，因为 driver_id 字段还没有添加到数据库表中
+        } else {
+            System.out.println("Unknown user type: returning empty list");
+        }
+        
+        System.out.println("Final order count: " + orders.size());
+        return orders;
     }
 
     /**
@@ -195,5 +236,175 @@ public class OrderController {
         );
 
         return DistanceCalculateResponse.success(distance);
+    }
+
+    /**
+     * 指派订单给司机
+     * 
+     * @param params 包含订单ID和司机ID
+     * @return 操作结果
+     */
+    @PostMapping(value = "/assign-driver", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result assignDriver(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Long driverId = Long.valueOf(params.get("driverId").toString());
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        order.setDriverId(driverId);
+        order.setUpdateTime(new Date());
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("指派成功");
+        } else {
+            return Result.error("指派失败");
+        }
+    }
+
+    /**
+     * 指派网点给订单
+     * 
+     * @param params 包含订单ID和网点ID
+     * @return 操作结果
+     */
+    @PostMapping(value = "/assign-network", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result assignNetwork(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Long networkPointId = Long.valueOf(params.get("networkPointId").toString());
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        order.setNetworkPointId(networkPointId);
+        order.setUpdateTime(new Date());
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("指派成功");
+        } else {
+            return Result.error("指派失败");
+        }
+    }
+
+    /**
+     * 更新物流进度
+     * 
+     * @param params 包含订单ID、物流状态和物流进度
+     * @return 操作结果
+     */
+    @PostMapping(value = "/update-logistics", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result updateLogistics(@RequestBody Map<String, Object> params) {
+        try {
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            String logisticsStatus = params.get("logisticsStatus") != null ? (String) params.get("logisticsStatus") : "";
+            String logisticsProgress = params.get("logisticsProgress") != null ? (String) params.get("logisticsProgress") : "";
+            
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+            
+            order.setLogisticsStatus(logisticsStatus);
+            order.setLogisticsProgress(logisticsProgress);
+            order.setUpdateTime(new Date());
+            boolean success = orderService.updateById(order);
+            
+            if (success) {
+                return Result.success("更新成功");
+            } else {
+                return Result.error("更新失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("更新失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 网点提供报价
+     * 
+     * @param params 包含订单ID和底价
+     * @return 操作结果
+     */
+    @PostMapping(value = "/provide-price", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result providePrice(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Double baseFee = Double.valueOf(params.get("baseFee").toString());
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        order.setBaseFee(baseFee);
+        // 默认系数为1.4286
+        order.setCoefficient(1.4286);
+        // 计算客户报价
+        order.setTotalFee(baseFee * 1.4286);
+        order.setUpdateTime(new Date());
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("报价成功");
+        } else {
+            return Result.error("报价失败");
+        }
+    }
+
+    /**
+     * 管理员修改报价
+     * 
+     * @param params 包含订单ID和客户报价
+     * @return 操作结果
+     */
+    @PostMapping(value = "/update-price", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result updatePrice(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Double totalFee = Double.valueOf(params.get("totalFee").toString());
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        order.setTotalFee(totalFee);
+        order.setUpdateTime(new Date());
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("修改成功");
+        } else {
+            return Result.error("修改失败");
+        }
+    }
+
+    /**
+     * 获取司机的订单列表
+     * 
+     * @param driverId 司机ID
+     * @return 订单列表
+     */
+    @GetMapping(value = "/driver-list", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public List<Order> getDriverOrderList(@RequestParam Long driverId) {
+        return orderService.list(new QueryWrapper<Order>()
+                .eq("driver_id", driverId));
+    }
+
+    /**
+     * 获取网点的订单列表
+     * 
+     * @param networkPointId 网点ID
+     * @return 订单列表
+     */
+    @GetMapping(value = "/network-list", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public List<Order> getNetworkOrderList(@RequestParam Long networkPointId) {
+        return orderService.list(new QueryWrapper<Order>()
+                .eq("network_point_id", networkPointId));
     }
 }

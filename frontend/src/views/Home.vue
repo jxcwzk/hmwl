@@ -137,7 +137,13 @@ const recentOrders = ref([])
 
 const getOrderStats = async () => {
   try {
-    const res = await request.get('/order/list')
+    const res = await request.get('/order/list', {
+      params: {
+        userId: 1,
+        userType: 1,
+        businessUserId: 1
+      }
+    })
     const orders = res.data || res || []
     stats.value.total = orders.length
     stats.value.created = orders.filter(o => o.status === 0).length

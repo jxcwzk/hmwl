@@ -1,0 +1,10 @@
+-- 更新订单表结构，添加新字段
+ALTER TABLE orders ADD COLUMN driver_id BIGINT DEFAULT NULL COMMENT '司机ID';
+ALTER TABLE orders ADD COLUMN network_point_id BIGINT DEFAULT NULL COMMENT '网点ID';
+ALTER TABLE orders ADD COLUMN base_fee DECIMAL(10,2) DEFAULT 0 COMMENT '基础费用';
+ALTER TABLE orders ADD COLUMN coefficient DECIMAL(10,4) DEFAULT 1.4286 COMMENT '价格系数';
+ALTER TABLE orders ADD COLUMN logistics_status INT DEFAULT 0 COMMENT '物流状态';
+ALTER TABLE orders ADD COLUMN logistics_progress VARCHAR(255) DEFAULT NULL COMMENT '物流进度';
+
+-- 更新用户表结构，添加网点ID字段
+ALTER TABLE user ADD COLUMN network_point_id BIGINT DEFAULT NULL COMMENT '网点ID';

@@ -33,12 +33,47 @@
             <text class="info-label">货物：</text>
             <text class="info-value">{{item.goodsName}} × {{item.quantity}}</text>
           </view>
+          <view class="order-info" wx:if="{{userInfo.userType === 1 || userInfo.userType === 4}}">
+            <text class="info-label">基础费用：</text>
+            <text class="info-value">¥{{item.baseFee || 0}}</text>
+          </view>
+          <view class="order-info" wx:if="{{userInfo.userType === 1 || userInfo.userType === 2}}">
+            <text class="info-label">客户报价：</text>
+            <text class="info-value">¥{{item.totalFee || 0}}</text>
+          </view>
+          <view class="order-info" wx:if="{{userInfo.userType === 1 || userInfo.userType === 2 || userInfo.userType === 4}}">
+            <text class="info-label">物流进度：</text>
+            <text class="info-value">{{item.logisticsProgress || '待更新'}}</text>
+          </view>
         </view>
         <view class="order-footer">
-          <text class="order-cost">¥{{item.totalFee}}</text>
+          <text class="order-cost" wx:if="{{userInfo.userType === 2}}">¥{{item.totalFee || 0}}</text>
           <view class="order-actions">
-            <button class="action-btn secondary" catchtap="cancelOrder" data-index="{{index}}">取消</button>
-            <button class="action-btn primary" catchtap="payOrder" data-order="{{item}}">{{item.status === 0 ? '付款' : '查看物流'}}</button>
+            <!-- 管理员操作 -->
+            <view wx:if="{{userInfo.userType === 1}}">
+              <button class="action-btn secondary" catchtap="assignDriver" data-order="{{item}}">指派司机</button>
+              <button class="action-btn secondary" catchtap="assignNetwork" data-order="{{item}}">指派网点</button>
+              <button class="action-btn secondary" catchtap="updatePrice" data-order="{{item}}">修改价格</button>
+              <button class="action-btn primary" catchtap="viewOrderDetail" data-orderno="{{item.orderNo}}">查看详情</button>
+            </view>
+            
+            <!-- 网点操作 -->
+            <view wx:if="{{userInfo.userType === 4}}">
+              <button class="action-btn secondary" catchtap="providePrice" data-order="{{item}}">提供报价</button>
+              <button class="action-btn secondary" catchtap="updateLogistics" data-order="{{item}}">更新物流</button>
+              <button class="action-btn primary" catchtap="viewOrderDetail" data-orderno="{{item.orderNo}}">查看详情</button>
+            </view>
+            
+            <!-- 司机操作 -->
+            <view wx:if="{{userInfo.userType === 3}}">
+              <button class="action-btn primary" catchtap="viewOrderDetail" data-orderno="{{item.orderNo}}">查看详情</button>
+            </view>
+            
+            <!-- 客户操作 -->
+            <view wx:if="{{userInfo.userType === 2}}">
+              <button class="action-btn secondary" catchtap="cancelOrder" data-index="{{index}}">取消</button>
+              <button class="action-btn primary" catchtap="payOrder" data-order="{{item}}">{{item.status === 0 ? '付款' : '查看物流'}}</button>
+            </view>
           </view>
         </view>
       </view>

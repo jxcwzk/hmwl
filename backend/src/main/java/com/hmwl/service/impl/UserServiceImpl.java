@@ -107,6 +107,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 
                 user.setDriverId(driver.getId());
             }
+        } else if (userType == 4 && status == 1) {
+            // 网点角色，不需要自动创建网点记录，因为网点应该在系统中已经存在
+            // 网点管理员需要手动关联到具体的网点
         }
 
         user.setUserType(userType);

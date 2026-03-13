@@ -1,87 +1,74 @@
 <view class="container">
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">发件人信息</text>
-      <view class="header-actions">
-        <text class="action-btn" bindtap="addSender">新增</text>
-      </view>
-    </view>
-    <view class="info-form">
-      <view class="form-item">
-        <text class="form-label">选择发件人</text>
-        <picker class="form-picker" bindchange="bindSenderChange" value="{{senderIndex}}" range="{{senderList}}" range-key="customerName">
-          <view class="picker-text">{{senderIndex >= 0 ? senderList[senderIndex].customerName : '请选择发件人'}}</view>
+  <!-- 寄件人信息 -->
+  <view class="contact-section">
+    <view class="contact-item sender">
+      <view class="contact-icon sender-icon">寄</view>
+      <view class="contact-content">
+        <view class="contact-main" wx:if="{{senderIndex >= 0}}">
+          <view class="contact-header">
+            <text class="contact-name">{{senderList[senderIndex].customerName}}</text>
+            <text class="contact-phone">{{senderList[senderIndex].phone || senderList[senderIndex].contact}}</text>
+          </view>
+          <view class="contact-address">{{senderList[senderIndex].address}}</view>
+        </view>
+        <picker class="contact-picker" bindchange="bindSenderChange" value="{{senderIndex}}" range="{{senderList}}" range-key="customerName" wx:else>
+          <view class="picker-text">请选择发件人</view>
         </picker>
       </view>
-      <view class="form-item">
-        <text class="form-label">姓名</text>
-        <input class="form-input" placeholder="请输入姓名" value="{{sender.name}}" bindinput="bindSenderInput" data-field="name" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">电话</text>
-        <input class="form-input" placeholder="请输入电话" value="{{sender.phone}}" bindinput="bindSenderInput" data-field="phone" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">地址</text>
-        <input class="form-input" placeholder="请输入地址" value="{{sender.address}}" bindinput="bindSenderInput" data-field="address" />
-      </view>
+      <text class="address-book-btn" bindtap="addSender">地址簿</text>
     </view>
   </view>
 
-  <view class="section">
-    <view class="section-header">
-      <text class="section-title">收件人信息</text>
-      <view class="header-actions">
-        <text class="action-btn" bindtap="addReceiver">新增</text>
-      </view>
-    </view>
-    <view class="info-form">
-      <view class="form-item">
-        <text class="form-label">选择收件人</text>
-        <picker class="form-picker" bindchange="bindReceiverChange" value="{{receiverIndex}}" range="{{receiverList}}" range-key="customerName">
-          <view class="picker-text">{{receiverIndex >= 0 ? receiverList[receiverIndex].customerName : '请选择收件人'}}</view>
+  <!-- 收件人信息 -->
+  <view class="contact-section">
+    <view class="contact-item receiver">
+      <view class="contact-icon receiver-icon">收</view>
+      <view class="contact-content">
+        <view class="contact-main" wx:if="{{receiverIndex >= 0}}">
+          <view class="contact-header">
+            <text class="contact-name">{{receiverList[receiverIndex].customerName}}</text>
+            <text class="contact-phone">{{receiverList[receiverIndex].phone || receiverList[receiverIndex].contact}}</text>
+          </view>
+          <view class="contact-address">{{receiverList[receiverIndex].address}}</view>
+        </view>
+        <picker class="contact-picker" bindchange="bindReceiverChange" value="{{receiverIndex}}" range="{{receiverList}}" range-key="customerName" wx:else>
+          <view class="picker-text">请选择收件人</view>
         </picker>
       </view>
-      <view class="form-item">
-        <text class="form-label">姓名</text>
-        <input class="form-input" placeholder="请输入姓名" value="{{receiver.name}}" bindinput="bindReceiverInput" data-field="name" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">电话</text>
-        <input class="form-input" placeholder="请输入电话" value="{{receiver.phone}}" bindinput="bindReceiverInput" data-field="phone" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">地址</text>
-        <input class="form-input" placeholder="请输入地址" value="{{receiver.address}}" bindinput="bindReceiverInput" data-field="address" />
+      <text class="address-book-btn" bindtap="addReceiver">地址簿</text>
+    </view>
+  </view>
+
+  <!-- 货物信息 -->
+  <view class="section">
+    <view class="goods-section">
+      <text class="section-label">物品信息</text>
+      <text class="required-mark">必填</text>
+      <view class="goods-inputs">
+        <view class="form-item form-item-full">
+          <input class="form-input" placeholder="请输入货物描述" value="{{goods.description}}" bindinput="bindGoodsInput" data-field="description" />
+        </view>
+        <view class="form-item-row">
+          <view class="form-item half">
+            <text class="form-label">重量(kg)</text>
+            <input class="form-input" type="digit" placeholder="请输入重量" value="{{goods.weight}}" bindinput="bindGoodsInput" data-field="weight" />
+          </view>
+          <view class="form-item half">
+            <text class="form-label">体积(m³)</text>
+            <input class="form-input" type="digit" placeholder="请输入体积" value="{{goods.volume}}" bindinput="bindGoodsInput" data-field="volume" />
+          </view>
+        </view>
+        <view class="form-item form-item-full">
+          <input class="form-input" placeholder="请输入备注" value="{{goods.remark}}" bindinput="bindGoodsInput" data-field="remark" />
+        </view>
       </view>
     </view>
   </view>
 
+  <!-- 货物照片 -->
   <view class="section">
-    <text class="section-title">货物信息</text>
-    <view class="info-form">
-      <view class="form-item form-item-full">
-        <text class="form-label">描述</text>
-        <input class="form-input" placeholder="请输入货物描述" value="{{goods.description}}" bindinput="bindGoodsInput" data-field="description" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">重量(kg)</text>
-        <input class="form-input" type="digit" placeholder="请输入重量" value="{{goods.weight}}" bindinput="bindGoodsInput" data-field="weight" />
-      </view>
-      <view class="form-item">
-        <text class="form-label">体积(m³)</text>
-        <input class="form-input" type="digit" placeholder="请输入体积" value="{{goods.volume}}" bindinput="bindGoodsInput" data-field="volume" />
-      </view>
-      <view class="form-item form-item-full">
-        <text class="form-label">备注</text>
-        <input class="form-input" placeholder="请输入备注" value="{{goods.remark}}" bindinput="bindGoodsInput" data-field="remark" />
-      </view>
-    </view>
-  </view>
-
-  <view class="section">
-    <text class="section-title">货物照片</text>
-    <view class="goods-photos">
+    <view class="photos-section">
+      <text class="section-label">货物照片</text>
       <view class="photo-list">
         <view class="photo-item" wx:for="{{goodsPhotos}}" wx:key="index">
           <image class="photo-img" src="{{item}}" mode="aspectFill" bindtap="previewImage" data-url="{{item}}"></image>
@@ -96,8 +83,32 @@
     </view>
   </view>
 
-  <button class="submit-btn" bindtap="submitOrder">确认寄件</button>
+  <!-- 付款方式和预估总价 -->
+  <view class="section">
+    <view class="payment-price-section">
+      <view class="payment-option">
+        <text class="section-label">付款方式</text>
+        <text class="payment-text">寄付现结</text>
+        <text class="arrow-right">></text>
+      </view>
+      <view class="price-info">
+        <text class="price-label">预估总价</text>
+        <text class="price-value">¥ --</text>
+        <text class="price-detail">明细</text>
+      </view>
+    </view>
+  </view>
 
+  <!-- 下单按钮 -->
+  <view class="submit-section">
+    <view class="agreement">
+      <checkbox class="checkbox"></checkbox>
+      <text class="agreement-text">阅读并同意《电子运单契约条款》</text>
+    </view>
+    <button class="submit-btn" bindtap="submitOrder">下单</button>
+  </view>
+
+  <!-- 新增/编辑联系人模态框 -->
   <view class="modal" wx:if="{{showModal}}">
     <view class="modal-content">
       <view class="modal-header">{{modalType === 'edit' ? '编辑' : '新增'}}{{modalTitle}}</view>

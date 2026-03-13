@@ -1,68 +1,125 @@
 .container {
-  padding: 20rpx;
+  padding: 0;
   background-color: #f5f5f5;
   min-height: 100vh;
 }
 
-.section {
+/* 联系信息部分 */
+.contact-section {
   background-color: white;
-  border-radius: 10rpx;
+  margin-bottom: 1rpx;
   padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  border-bottom: 1rpx solid #f0f0f0;
 }
 
-.section-header {
+.contact-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15rpx;
+  gap: 15rpx;
+  min-height: 80rpx;
 }
 
-.section-title {
+.contact-icon {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+.contact-icon.sender-icon {
+  background-color: #E60012;
+}
+
+.contact-icon.receiver-icon {
+  background-color: #999;
+}
+
+.contact-content {
+  flex: 1;
+}
+
+.contact-main {
+  width: 100%;
+}
+
+.contact-header {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+  margin-bottom: 8rpx;
+}
+
+.contact-name {
   font-size: 16px;
   font-weight: bold;
   color: #333;
 }
 
-.header-actions {
-  display: flex;
-  gap: 20rpx;
+.contact-phone {
+  font-size: 14px;
+  color: #666;
 }
 
-.action-btn {
+.contact-address {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.3;
+  word-break: break-all;
+}
+
+.address-book-btn {
   font-size: 14px;
   color: #E60012;
 }
 
-.info-form {
+.contact-picker {
+  width: 100%;
+  height: 40rpx;
   display: flex;
-  flex-direction: column;
-  gap: 15rpx;
+  align-items: center;
+}
+
+.picker-text {
+  font-size: 14px;
+  color: #999;
+}
+
+/* 通用区块 */
+.section {
+  background-color: white;
+  margin-bottom: 20rpx;
+  padding: 20rpx;
+}
+
+/* 货物信息 */
+.goods-section {
+  margin-top: 10rpx;
+}
+
+.goods-inputs {
+  margin-top: 15rpx;
 }
 
 .form-item {
   display: flex;
   align-items: center;
   gap: 20rpx;
+  margin-bottom: 15rpx;
 }
 
 .form-item-full {
   flex-direction: column;
   align-items: flex-start;
-}
-
-.form-item-full .form-label {
-  width: 100%;
-  margin-bottom: 10rpx;
-}
-
-.form-item-full .form-input {
-  width: 100%;
+  gap: 10rpx;
 }
 
 .form-label {
-  width: 140rpx;
+  width: 120rpx;
   font-size: 14px;
   color: #666;
 }
@@ -71,35 +128,41 @@
   flex: 1;
   height: 60rpx;
   border: 1rpx solid #ddd;
-  border-radius: 5rpx;
+  border-radius: 8rpx;
   padding: 0 15rpx;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
-.form-picker {
-  flex: 1;
-  height: 60rpx;
-  border: 1rpx solid #ddd;
-  border-radius: 5rpx;
-  padding: 0 15rpx;
+.form-item-full .form-input {
+  width: 100%;
+}
+
+/* 表单行布局 */
+.form-item-row {
   display: flex;
-  align-items: center;
-  background-color: #fff;
+  gap: 20rpx;
+  margin-bottom: 15rpx;
 }
 
-.picker-text {
-  font-size: 14px;
-  color: #333;
+.form-item.half {
+  flex: 1;
 }
 
-.goods-photos {
-  padding: 10rpx 0;
+.form-item.half .form-input {
+  width: 100%;
+}
+
+/* 货物照片 */
+.photos-section {
+  margin-top: 10rpx;
 }
 
 .photo-list {
   display: flex;
   flex-wrap: wrap;
   gap: 20rpx;
+  margin-top: 15rpx;
 }
 
 .photo-item {
@@ -161,6 +224,77 @@
   margin-top: 15rpx;
 }
 
+/* 付款方式和预估总价 */
+.payment-price-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10rpx;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.payment-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.price-info {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.price-label {
+  font-size: 14px;
+  color: #666;
+}
+
+.price-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #E60012;
+}
+
+.price-detail {
+  font-size: 13px;
+  color: #999;
+  text-decoration: underline;
+}
+
+/* 下单按钮 */
+.submit-section {
+  padding: 20rpx;
+  background-color: white;
+  margin-bottom: 30rpx;
+}
+
+.agreement {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.checkbox {
+  width: 24rpx;
+  height: 24rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 4rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agreement-text {
+  font-size: 13px;
+  color: #666;
+}
+
 .submit-btn {
   background-color: #E60012;
   color: white;
@@ -168,14 +302,14 @@
   font-weight: bold;
   height: 80rpx;
   border-radius: 10rpx;
-  margin-top: 30rpx;
-  margin-bottom: 30rpx;
+  width: 100%;
 }
 
 .submit-btn::after {
   border: none;
 }
 
+/* 模态框 */
 .modal {
   position: fixed;
   top: 0;
@@ -224,7 +358,7 @@
   width: 100%;
   height: 60rpx;
   border: 1rpx solid #ddd;
-  border-radius: 5rpx;
+  border-radius: 8rpx;
   padding: 0 15rpx;
   font-size: 14px;
   box-sizing: border-box;
@@ -234,7 +368,7 @@
   width: 100%;
   min-height: 120rpx;
   border: 1rpx solid #ddd;
-  border-radius: 5rpx;
+  border-radius: 8rpx;
   padding: 15rpx;
   font-size: 14px;
   box-sizing: border-box;
@@ -262,4 +396,22 @@
 .modal-footer .confirm {
   background-color: #E60012;
   color: white;
+}
+
+/* 通用样式 */
+.section-label {
+  font-size: 15px;
+  color: #333;
+  font-weight: bold;
+}
+
+.required-mark {
+  font-size: 13px;
+  color: #E60012;
+  margin-left: 10rpx;
+}
+
+.arrow-right {
+  font-size: 16px;
+  color: #999;
 }

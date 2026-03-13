@@ -64,10 +64,17 @@ const getUserInfo = (userId) => {
 }
 
 const getOrderList = (params) => {
+  const userInfo = wx.getStorageSync('userInfo')
+  const data = {
+    userId: userInfo?.id,
+    userType: userInfo?.userType,
+    businessUserId: userInfo?.businessUserId,
+    ...params
+  }
   return request({
     url: '/order/list',
     method: 'GET',
-    data: params
+    data: data
   })
 }
 

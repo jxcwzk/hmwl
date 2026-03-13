@@ -118,9 +118,7 @@ Page({
     const field = e.currentTarget.dataset.field;
     const value = e.detail.value;
     this.setData({
-      [`sender.${field}`]: value,
-      senderIndex: -1,
-      senderId: null
+      [`sender.${field}`]: value
     });
   },
 
@@ -128,9 +126,7 @@ Page({
     const field = e.currentTarget.dataset.field;
     const value = e.detail.value;
     this.setData({
-      [`receiver.${field}`]: value,
-      receiverIndex: -1,
-      receiverId: null
+      [`receiver.${field}`]: value
     });
   },
 
@@ -278,17 +274,17 @@ Page({
   },
 
   submitOrder() {
-    if (!this.data.sender.name || !this.data.sender.phone || !this.data.sender.address) {
+    if (this.data.senderIndex < 0) {
       wx.showToast({
-        title: '请填写完整的发件人信息',
+        title: '请选择发件人',
         icon: 'none'
       });
       return;
     }
 
-    if (!this.data.receiver.name || !this.data.receiver.phone || !this.data.receiver.address) {
+    if (this.data.receiverIndex < 0) {
       wx.showToast({
-        title: '请填写完整的收件人信息',
+        title: '请选择收件人',
         icon: 'none'
       });
       return;
@@ -320,13 +316,13 @@ Page({
       data: {
         businessUserId: businessUserId,
         senderId: this.data.senderId,
-        senderName: this.data.sender.name,
-        senderPhone: this.data.sender.phone,
-        senderAddress: this.data.sender.address,
+        senderName: this.data.senderList[this.data.senderIndex].customerName,
+        senderPhone: this.data.senderList[this.data.senderIndex].phone || this.data.senderList[this.data.senderIndex].contact,
+        senderAddress: this.data.senderList[this.data.senderIndex].address,
         recipientId: this.data.receiverId,
-        receiverName: this.data.receiver.name,
-        receiverPhone: this.data.receiver.phone,
-        receiverAddress: this.data.receiver.address,
+        receiverName: this.data.receiverList[this.data.receiverIndex].customerName,
+        receiverPhone: this.data.receiverList[this.data.receiverIndex].phone || this.data.receiverList[this.data.receiverIndex].contact,
+        receiverAddress: this.data.receiverList[this.data.receiverIndex].address,
         goodsName: this.data.goods.description,
         weight: parseFloat(this.data.goods.weight) || 0,
         volume: parseFloat(this.data.goods.volume) || 0,
