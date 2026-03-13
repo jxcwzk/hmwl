@@ -1,5 +1,6 @@
 # 本地开发配置（敏感凭证）
 application-dev.yml
+application-prod.yml
 
 # Maven
 target/

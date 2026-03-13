@@ -1,0 +1,21 @@
+# 生产环境配置示例
+# 复制此文件为 application-prod.yml 并填入实际配置
+
+spring:
+  datasource:
+    url: jdbc:mysql:你的数据库地址:3306/hmwl?useUnicode=true&characterEncoding=utf-8&characterSetResults=utf8mb4&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: 你的数据库用户名
+    password: 你的数据库密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+cos:
+  secretId: 你的腾讯云SecretId
+  secretKey: 你的腾讯云SecretKey
+  bucketName: 你的COS桶名称
+  region: ap-shanghai
+  baseUrl: https://你的桶名称.cos.ap-shanghai.myqcloud.com
+
+wechat:
+  miniprogram:
+    appid: 你的微信小程序AppId
+    secret: 你的微信小程序Secret
