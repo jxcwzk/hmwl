@@ -5,12 +5,15 @@
         <div class="header-content">
           <h1>红美物流系统</h1>
           <div class="user-info">
-            <el-dropdown>
-              <span class="user-name">管理员</span>
+            <el-dropdown @command="handleUserCommand">
+              <span class="user-name">
+                <el-icon><UserFilled /></el-icon>
+                {{ currentUserName || '用户' }}
+              </span>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item>个人中心</el-dropdown-item>
-                  <el-dropdown-item>退出登录</el-dropdown-item>
+                  <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                  <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -83,13 +86,42 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { UserFilled } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
 const activeIndex = ref('1')
 const loading = ref(false)
+
+const currentUserName = ref('')
+
+onMounted(() => {
+  const userInfo = localStorage.getItem('userInfo')
+  if (userInfo) {
+    const user = JSON.parse(userInfo)
+    currentUserName.value = user.username || '用户'
+  }
+})
+
+const handleUserCommand = (command) => {
+  if (command === 'logout') {
+    ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      localStorage.removeItem('token')
+      localStorage.removeItem('userInfo')
+      ElMessage.success('已退出登录')
+      router.push('/login')
+    }).catch(() => {})
+  } else if (command === 'profile') {
+    ElMessage.info('个人中心功能开发中')
+  }
+}
 
 // 监听路由变化，更新活动菜单和页面标题
 watch(() => route.path, (newPath) => {
@@ -209,10 +241,10 @@ updateActiveIndex(route.path)
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
+  color: var(--color-text-primary);
   min-height: 100vh;
 }
 
@@ -221,13 +253,16 @@ updateActiveIndex(route.path)
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0 20px;
+  padding: 0 var(--spacing-lg);
+  height: 100%;
 }
 
 .header-content h1 {
   margin: 0;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  letter-spacing: -0.3px;
 }
 
 .user-info {
@@ -236,42 +271,81 @@ updateActiveIndex(route.path)
 }
 
 .user-name {
-  color: white;
+  color: rgba(255, 255, 255, 0.95);
   cursor: pointer;
   display: flex;
   align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
 }
 
 .user-name:hover {
-  text-decoration: underline;
+  background: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
 }
 
 .aside-container {
-  background-color: #f5f7fa;
-  transition: all 0.3s;
+  background-color: var(--color-surface) !important;
+  transition: all var(--transition-normal);
+  border-right: 1px solid var(--color-separator);
 }
 
 .el-menu {
   height: 100%;
-  border-right: none;
+  border-right: none !important;
+  background: transparent !important;
 }
 
 .el-main {
-  padding: 20px;
-  background-color: #f0f2f5;
+  padding: var(--spacing-lg);
+  background-color: var(--color-background);
 }
 
 .breadcrumb {
-  margin-bottom: 20px;
-  background-color: white;
-  padding: 10px 15px;
-  border-radius: 4px;
+  margin-bottom: var(--spacing-md);
+  background-color: var(--color-surface);
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
 }
 
-/* 过渡动画 */
+.el-breadcrumb__inner {
+  font-size: 14px !important;
+}
+
+.el-header {
+  background: linear-gradient(135deg, #007AFF 0%, #0055BB 100%) !important;
+  box-shadow: var(--shadow-md);
+}
+
+.el-menu-item {
+  border-radius: var(--radius-md) !important;
+  margin: 4px 12px !important;
+  padding: 0 16px !important;
+  height: 44px !important;
+  line-height: 44px !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.el-menu-item.is-active {
+  background-color: rgba(0, 122, 255, 0.12) !important;
+  color: var(--color-primary) !important;
+}
+
+.el-menu-item.is-active .el-icon {
+  color: var(--color-primary) !important;
+}
+
+.el-menu-item:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 
 .fade-enter-from,
@@ -279,7 +353,6 @@ updateActiveIndex(route.path)
   opacity: 0;
 }
 
-/* 响应式设计 */
 @media screen and (max-width: 768px) {
   .el-aside {
     width: 180px !important;
@@ -290,7 +363,12 @@ updateActiveIndex(route.path)
   }
   
   .el-main {
-    padding: 10px;
+    padding: var(--spacing-md);
+  }
+  
+  .el-menu-item {
+    margin: 2px 8px !important;
+    padding: 0 12px !important;
   }
 }
 
@@ -305,6 +383,7 @@ updateActiveIndex(route.path)
   
   .user-name {
     font-size: 12px;
+    padding: 4px 8px;
   }
 }
 </style>

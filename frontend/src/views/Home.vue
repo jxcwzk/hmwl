@@ -194,70 +194,94 @@ onMounted(() => {
 
 <style scoped>
 .home-container {
-  padding: 20px;
+  padding: var(--spacing-lg);
 }
 
 .stats-row {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .stat-card {
   cursor: pointer;
-  transition: transform 0.3s;
+  transition: all var(--transition-normal);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  background: var(--color-surface);
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
 }
 
 .stat-content {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: var(--spacing-sm);
+  width: 100%;
 }
 
 .stat-icon {
-  margin-right: 20px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-md);
+  flex-shrink: 0;
 }
 
 .created-card .stat-icon {
-  color: #909399;
+  background: rgba(0, 122, 255, 0.1);
+  color: var(--color-primary);
 }
 
 .processing-card .stat-icon {
-  color: #E6A23C;
+  background: rgba(255, 149, 0, 0.1);
+  color: var(--color-warning);
 }
 
 .completed-card .stat-icon {
-  color: #67C23A;
+  background: rgba(52, 199, 89, 0.1);
+  color: var(--color-success);
 }
 
 .total-card .stat-icon {
-  color: #409EFF;
+  background: rgba(90, 200, 250, 0.1);
+  color: var(--color-info);
 }
 
 .stat-info {
   flex: 1;
+  min-width: 0;
 }
 
 .stat-value {
-  font-size: 32px;
-  font-weight: bold;
-  color: #303133;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #909399;
-  margin-top: 5px;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
 }
 
 .quick-entry-row {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .quick-card {
   cursor: pointer;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  transition: all var(--transition-normal);
+}
+
+.quick-card:hover {
+  transform: translateY(-2px);
 }
 
 .quick-content {
@@ -265,18 +289,61 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  gap: 10px;
+  padding: var(--spacing-lg);
+  gap: var(--spacing-sm);
 }
 
 .quick-content span {
-  font-size: 16px;
-  color: #606266;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 .recent-row .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0;
+  border: none;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--color-text-primary);
+}
+
+:deep(.el-card) {
+  border-radius: var(--radius-lg);
+  border: none;
+}
+
+:deep(.el-table) {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+:deep(.el-table th.el-table__cell) {
+  background: var(--color-surface-secondary) !important;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+:deep(.el-tag) {
+  border-radius: var(--radius-full);
+  border: none;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    padding: var(--spacing-md);
+  }
+  
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .stat-value {
+    font-size: 22px;
+  }
 }
 </style>

@@ -1,0 +1,56 @@
+<view class="container">
+  <view class="tabs">
+    <view class="tab {{currentTab === 0 ? 'active' : ''}}" data-index="0" bindtap="switchTab">待接单</view>
+    <view class="tab {{currentTab === 1 ? 'active' : ''}}" data-index="1" bindtap="switchTab">配送中</view>
+    <view class="tab {{currentTab === 2 ? 'active' : ''}}" data-index="2" bindtap="switchTab">已完成</view>
+  </view>
+
+  <scroll-view scroll-y class="order-list" bindrefresherrefresh="onRefresh" refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}">
+    <view wx:if="{{orderList.length === 0}}" class="empty">
+      <text>暂无订单</text>
+    </view>
+    
+    <view class="order-card" wx:for="{{orderList}}" wx:key="id" data-id="{{item.id}}" bindtap="goToDetail">
+      <view class="order-header">
+        <text class="order-no">{{item.orderNo}}</text>
+        <text class="order-status {{item.statusClass}}">{{item.statusText}}</text>
+      </view>
+      
+      <view class="order-route">
+        <view class="route-point">
+          <view class="point-dot start"></view>
+          <view class="point-info">
+            <text class="label">发货人</text>
+            <text class="name">{{item.senderName}}</text>
+            <text class="phone">{{item.senderPhone}}</text>
+            <text class="address">{{item.senderAddress}}</text>
+          </view>
+        </view>
+        <view class="route-line"></view>
+        <view class="route-point">
+          <view class="point-dot end"></view>
+          <view class="point-info">
+            <text class="label">收货人</text>
+            <text class="name">{{item.receiverName}}</text>
+            <text class="phone">{{item.receiverPhone}}</text>
+            <text class="address">{{item.receiverAddress}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="order-footer">
+        <text class="goods-info">{{item.goodsName}} · {{item.goodsWeight}}kg</text>
+        <text class="create-time">{{item.createTime}}</text>
+      </view>
+      
+      <view class="order-actions" wx:if="{{item.status === 0}}" catchtap="preventTap">
+        <button class="btn-reject" size="mini" data-id="{{item.id}}" catchtap="showRejectModal">拒单</button>
+        <button class="btn-accept" size="mini" data-id="{{item.id}}" catchtap="acceptOrder">接单</button>
+      </view>
+    </view>
+  </scroll-view>
+
+  <modal show="{{rejectModalShow}}" title="拒单原因" confirm-text="确定" cancel-text="取消" bindconfirm="confirmReject" bindcancel="closeRejectModal">
+    <textarea class="reject-reason" placeholder="请输入拒单原因" bindinput="onRejectReasonInput"></textarea>
+  </modal>
+</view>

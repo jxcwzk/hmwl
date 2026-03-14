@@ -8,10 +8,14 @@ package com.hmwl.controller;
 
 import com.hmwl.entity.Order;
 import com.hmwl.entity.Settlement;
+import com.hmwl.entity.OrderAssignHistory;
+import com.hmwl.entity.Driver;
 import com.hmwl.service.OrderService;
 import com.hmwl.service.QrCodeService;
 import com.hmwl.service.DistanceCalculatorService;
 import com.hmwl.service.SettlementService;
+import com.hmwl.service.OrderAssignHistoryService;
+import com.hmwl.service.DriverService;
 import com.hmwl.dto.DistanceCalculateRequest;
 import com.hmwl.dto.DistanceCalculateResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -22,10 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/order")
@@ -43,6 +44,12 @@ public class OrderController {
     @Autowired
     private DistanceCalculatorService distanceCalculatorService;
 
+    @Autowired
+    private OrderAssignHistoryService orderAssignHistoryService;
+
+    @Autowired
+    private DriverService driverService;
+
     /**
      * 获取订单列表，根据用户角色返回不同的订单
      * 
@@ -53,7 +60,7 @@ public class OrderController {
      * @return 订单列表
      */
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
-    public List<Order> list(
+    public Result list(
             @RequestParam Long userId,
             @RequestParam Integer userType,
             @RequestParam(required = false) Long businessUserId) {
@@ -88,7 +95,7 @@ public class OrderController {
         }
         
         System.out.println("Final order count: " + orders.size());
-        return orders;
+        return Result.success(orders);
     }
 
     /**
@@ -406,5 +413,248 @@ public class OrderController {
     public List<Order> getNetworkOrderList(@RequestParam Long networkPointId) {
         return orderService.list(new QueryWrapper<Order>()
                 .eq("network_point_id", networkPointId));
+    }
+
+    // ========== 订单分配优化相关API ==========
+
+    /**
+     * 批量分配订单给司机
+     * 
+     * @param params 包含订单ID列表和司机ID
+     * @return 操作结果
+     */
+    @PostMapping(value = "/batch-assign", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result batchAssign(@RequestBody Map<String, Object> params) {
+        List<Long> orderIds = (List<Long>) params.get("orderIds");
+        Long driverId = Long.valueOf(params.get("driverId").toString());
+        Long operatorId = params.get("operatorId") != null ? Long.valueOf(params.get("operatorId").toString()) : null;
+        String operatorName = params.get("operatorName") != null ? params.get("operatorName").toString() : "系统";
+        
+        Driver driver = driverService.getById(driverId);
+        if (driver == null) {
+            return Result.error("司机不存在");
+        }
+        
+        int successCount = 0;
+        int skipCount = 0;
+        
+        for (Long orderId : orderIds) {
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                skipCount++;
+                continue;
+            }
+            if (order.getDriverId() != null) {
+                skipCount++;
+                continue;
+            }
+            
+            order.setDriverId(driverId);
+            order.setStatus(1);
+            order.setUpdateTime(new Date());
+            boolean success = orderService.updateById(order);
+            
+            if (success) {
+                orderAssignHistoryService.saveAssignRecord(
+                    orderId, order.getOrderNo(), driverId, driver.getName(),
+                    operatorId, operatorName, 1, "批量分配"
+                );
+                successCount++;
+            }
+        }
+        
+        Map<String, Object> result = new HashMap<>();
+        result.put("successCount", successCount);
+        result.put("skipCount", skipCount);
+        result.put("totalCount", orderIds.size());
+        
+        return Result.success(result);
+    }
+
+    /**
+     * 获取推荐司机列表（智能推荐）
+     * 
+     * @param orderId 订单ID（可选，用于计算距离）
+     * @return 推荐司机列表
+     */
+    @GetMapping(value = "/recommend-drivers", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result recommendDrivers(@RequestParam(required = false) Long orderId) {
+        List<Driver> allDrivers = driverService.list();
+        
+        QueryWrapper<Order> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("status", 1, 3, 4);
+        List<Order> allOrders = orderService.list(queryWrapper);
+        
+        Map<Long, Integer> driverWorkload = new HashMap<>();
+        for (Order order : allOrders) {
+            if (order.getDriverId() != null) {
+                driverWorkload.put(order.getDriverId(), driverWorkload.getOrDefault(order.getDriverId(), 0) + 1);
+            }
+        }
+        
+        List<Map<String, Object>> recommendedList = new ArrayList<>();
+        for (Driver driver : allDrivers) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("driverId", driver.getId());
+            item.put("driverName", driver.getName());
+            item.put("driverPhone", driver.getPhone());
+            
+            int workload = driverWorkload.getOrDefault(driver.getId(), 0);
+            item.put("currentWorkload", workload);
+            
+            double score = 100.0 - (workload * 10.0);
+            if (score < 0) score = 0;
+            item.put("score", score);
+            
+            item.put("status", 1);
+            
+            recommendedList.add(item);
+        }
+        
+        recommendedList.sort((a, b) -> Double.compare((Double) b.get("score"), (Double) a.get("score")));
+        
+        return Result.success(recommendedList);
+    }
+
+    /**
+     * 获取分配历史
+     * 
+     * @param orderId 订单ID（可选）
+     * @param limit 返回数量限制
+     * @return 分配历史列表
+     */
+    @GetMapping(value = "/assign-history", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result getAssignHistory(@RequestParam(required = false) Long orderId, 
+                                   @RequestParam(defaultValue = "20") Integer limit) {
+        List<OrderAssignHistory> history;
+        if (orderId != null) {
+            history = orderAssignHistoryService.getByOrderId(orderId);
+        } else {
+            history = orderAssignHistoryService.getRecent(limit);
+        }
+        return Result.success(history);
+    }
+
+    // ========== 司机端小程序相关API ==========
+
+    /**
+     * 司机接单
+     * 
+     * @param params 包含订单ID和司机ID
+     * @return 操作结果
+     */
+    @PostMapping(value = "/driver/accept", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result driverAccept(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Long driverId = Long.valueOf(params.get("driverId").toString());
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        if (order.getDriverId() != null && !order.getDriverId().equals(driverId)) {
+            return Result.error("订单已分配给其他司机");
+        }
+        
+        order.setDriverId(driverId);
+        order.setStatus(1);
+        order.setUpdateTime(new Date());
+        
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("接单成功");
+        } else {
+            return Result.error("接单失败");
+        }
+    }
+
+    /**
+     * 司机拒单
+     * 
+     * @param params 包含订单ID、司机ID和拒绝原因
+     * @return 操作结果
+     */
+    @PostMapping(value = "/driver/reject", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result driverReject(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Long driverId = Long.valueOf(params.get("driverId").toString());
+        String reason = params.get("reason") != null ? params.get("reason").toString() : "司机拒单";
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        if (order.getDriverId() != null && !order.getDriverId().equals(driverId)) {
+            return Result.error("订单已分配给其他司机");
+        }
+        
+        order.setDriverId(null);
+        order.setStatus(0);
+        order.setLogisticsProgress(reason);
+        order.setUpdateTime(new Date());
+        
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("拒单成功");
+        } else {
+            return Result.error("拒单失败");
+        }
+    }
+
+    /**
+     * 司机更新订单状态
+     * 
+     * @param params 包含订单ID、新状态和备注
+     * @return 操作结果
+     */
+    @PostMapping(value = "/driver/update-status", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result driverUpdateStatus(@RequestBody Map<String, Object> params) {
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Integer newStatus = Integer.valueOf(params.get("status").toString());
+        String remark = params.get("remark") != null ? params.get("remark").toString() : "";
+        
+        Order order = orderService.getById(orderId);
+        if (order == null) {
+            return Result.error("订单不存在");
+        }
+        
+        String statusText = "";
+        switch (newStatus) {
+            case 2:
+                statusText = "已取货";
+                break;
+            case 3:
+                statusText = "配送中";
+                break;
+            case 4:
+                statusText = "已送达";
+                break;
+            case 5:
+                statusText = "已完成";
+                break;
+            default:
+                statusText = "状态更新";
+        }
+        
+        if (!remark.isEmpty()) {
+            order.setLogisticsProgress(statusText + "：" + remark);
+        } else {
+            order.setLogisticsProgress(statusText);
+        }
+        
+        order.setStatus(newStatus);
+        order.setUpdateTime(new Date());
+        
+        boolean success = orderService.updateById(order);
+        
+        if (success) {
+            return Result.success("状态更新成功");
+        } else {
+            return Result.error("状态更新失败");
+        }
     }
 }

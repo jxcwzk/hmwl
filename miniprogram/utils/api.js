@@ -1,7 +1,19 @@
 const app = getApp()
 const config = require('./config.js')
 
-const BASE_URL = config.dev.baseUrl
+const getBaseUrl = () => {
+  const systemInfo = wx.getSystemInfoSync()
+  const platform = systemInfo.platform
+  
+  if (platform === 'devtools') {
+    return config.dev.baseUrl
+  }
+  return config.dev.ipUrl || config.dev.baseUrl
+}
+
+const BASE_URL = getBaseUrl()
+
+console.log('当前API地址:', BASE_URL)
 
 const request = (options) => {
   return new Promise((resolve, reject) => {
@@ -172,6 +184,64 @@ const deleteContact = (id) => {
   })
 }
 
+const getDriverOrderList = (driverId) => {
+  return request({
+    url: '/order/driver-list',
+    method: 'GET',
+    data: { driverId }
+  })
+}
+
+const driverAcceptOrder = (orderId, driverId) => {
+  return request({
+    url: '/order/driver/accept',
+    method: 'POST',
+    data: { orderId, driverId }
+  })
+}
+
+const driverRejectOrder = (orderId, driverId, reason) => {
+  return request({
+    url: '/order/driver/reject',
+    method: 'POST',
+    data: { orderId, driverId, reason }
+  })
+}
+
+const driverUpdateStatus = (orderId, status, remark) => {
+  return request({
+    url: '/order/driver/update-status',
+    method: 'POST',
+    data: { orderId, status, remark }
+  })
+}
+
+const uploadReceiptImage = (orderId, filePath) => {
+  return new Promise((resolve, reject) => {
+    const token = wx.getStorageSync('token')
+    wx.uploadFile({
+      url: BASE_URL + '/order/receipt-image/upload',
+      filePath: filePath,
+      name: 'file',
+      header: {
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      formData: {
+        orderId: orderId
+      },
+      success: (res) => {
+        const data = JSON.parse(res.data)
+        if (data.code === 200) {
+          resolve(data.data)
+        } else {
+          reject(new Error(data.message || '上传失败'))
+        }
+      },
+      fail: reject
+    })
+  })
+}
+
 module.exports = {
   request,
   login,
@@ -189,5 +259,10 @@ module.exports = {
   addRecipient,
   updateContact,
   deleteContact,
+  getDriverOrderList,
+  driverAcceptOrder,
+  driverRejectOrder,
+  driverUpdateStatus,
+  uploadReceiptImage,
   BASE_URL
 }

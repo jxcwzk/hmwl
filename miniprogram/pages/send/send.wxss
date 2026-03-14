@@ -7,40 +7,45 @@
 /* 联系信息部分 */
 .contact-section {
   background-color: white;
-  margin-bottom: 1rpx;
-  padding: 20rpx;
+  margin-bottom: 16rpx;
+  padding: 24rpx;
   border-bottom: 1rpx solid #f0f0f0;
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 15rpx;
+  gap: 20rpx;
   min-height: 80rpx;
 }
 
 .contact-icon {
-  width: 40rpx;
-  height: 40rpx;
+  width: 56rpx;
+  height: 56rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.contact-icon.sender-icon {
+  background: linear-gradient(135deg, #E60012 0%, #FF6B6B 100%);
+}
+
+.contact-icon.receiver-icon {
+  background: linear-gradient(135deg, #52C41A 0%, #95DE64 100%);
+}
+
+.icon-text {
+  font-size: 24rpx;
   font-weight: bold;
   color: white;
 }
 
-.contact-icon.sender-icon {
-  background-color: #E60012;
-}
-
-.contact-icon.receiver-icon {
-  background-color: #999;
-}
-
 .contact-content {
   flex: 1;
+  min-width: 0;
 }
 
 .contact-main {
@@ -50,88 +55,107 @@
 .contact-header {
   display: flex;
   align-items: center;
-  gap: 15rpx;
+  gap: 16rpx;
   margin-bottom: 8rpx;
 }
 
 .contact-name {
-  font-size: 16px;
+  font-size: 30rpx;
   font-weight: bold;
   color: #333;
 }
 
 .contact-phone {
-  font-size: 14px;
+  font-size: 26rpx;
   color: #666;
 }
 
 .contact-address {
-  font-size: 14px;
+  font-size: 26rpx;
   color: #666;
-  line-height: 1.3;
+  line-height: 1.4;
   word-break: break-all;
 }
 
 .address-book-btn {
-  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.btn-text {
+  font-size: 24rpx;
   color: #E60012;
+  background-color: #FFF2E6;
+  padding: 10rpx 20rpx;
+  border-radius: 24rpx;
 }
 
 .contact-picker {
   width: 100%;
-  height: 40rpx;
+  height: 60rpx;
   display: flex;
   align-items: center;
 }
 
 .picker-text {
-  font-size: 14px;
+  font-size: 28rpx;
   color: #999;
 }
 
 /* 通用区块 */
 .section {
   background-color: white;
-  margin-bottom: 20rpx;
-  padding: 20rpx;
+  margin-bottom: 16rpx;
+  padding: 24rpx;
 }
 
 /* 货物信息 */
 .goods-section {
-  margin-top: 10rpx;
+  margin-top: 0;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
 }
 
 .goods-inputs {
-  margin-top: 15rpx;
+  margin-top: 16rpx;
 }
 
 .form-item {
   display: flex;
   align-items: center;
   gap: 20rpx;
-  margin-bottom: 15rpx;
+  margin-bottom: 20rpx;
 }
 
 .form-item-full {
   flex-direction: column;
   align-items: flex-start;
-  gap: 10rpx;
+  gap: 12rpx;
 }
 
 .form-label {
-  width: 120rpx;
-  font-size: 14px;
+  width: 140rpx;
+  font-size: 26rpx;
   color: #666;
 }
 
 .form-input {
   flex: 1;
-  height: 60rpx;
-  border: 1rpx solid #ddd;
-  border-radius: 8rpx;
-  padding: 0 15rpx;
-  font-size: 14px;
+  height: 72rpx;
+  border: 1rpx solid #e5e5e5;
+  border-radius: 12rpx;
+  padding: 0 20rpx;
+  font-size: 26rpx;
   box-sizing: border-box;
+  background-color: #fafafa;
+}
+
+.form-input:focus {
+  border-color: #E60012;
+  background-color: white;
 }
 
 .form-item-full .form-input {
@@ -268,41 +292,48 @@
 
 /* 下单按钮 */
 .submit-section {
-  padding: 20rpx;
+  padding: 24rpx;
   background-color: white;
-  margin-bottom: 30rpx;
+  margin-bottom: 40rpx;
 }
 
 .agreement {
   display: flex;
   align-items: center;
-  gap: 10rpx;
-  margin-bottom: 20rpx;
+  gap: 12rpx;
+  margin-bottom: 24rpx;
 }
 
 .checkbox {
-  width: 24rpx;
-  height: 24rpx;
-  border: 1rpx solid #ddd;
+  width: 32rpx;
+  height: 32rpx;
+  border: 1rpx solid #d9d9d9;
   border-radius: 4rpx;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: white;
 }
 
 .agreement-text {
-  font-size: 13px;
+  font-size: 24rpx;
   color: #666;
 }
 
 .submit-btn {
-  background-color: #E60012;
+  background: linear-gradient(135deg, #E60012 0%, #FF6B6B 100%);
   color: white;
-  font-size: 16px;
+  font-size: 32rpx;
   font-weight: bold;
-  height: 80rpx;
-  border-radius: 10rpx;
+  height: 96rpx;
+  border-radius: 48rpx;
   width: 100%;
+  box-shadow: 0 8rpx 24rpx rgba(230, 0, 18, 0.3);
+}
+
+.submit-btn:active {
+  opacity: 0.9;
+  transform: scale(0.98);
 }
 
 .submit-btn::after {

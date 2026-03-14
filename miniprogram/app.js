@@ -45,7 +45,7 @@ App({
               this.globalData.isLoggedIn = true
 
               wx.setStorageSync('userInfo', data)
-              wx.setStorageSync('token', 'wx_' + data.id)
+              wx.setStorageSync('token', data.token)
 
               resolve(data)
             }).catch(err => {

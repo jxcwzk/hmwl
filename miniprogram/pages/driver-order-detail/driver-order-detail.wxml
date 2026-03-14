@@ -1,0 +1,90 @@
+<view class="container">
+  <view class="status-section">
+    <view class="status-title">当前状态</view>
+    <view class="status-value {{order.statusClass}}">{{order.statusText}}</view>
+    <view class="logistics-progress" wx:if="{{order.logisticsProgress}}">
+      {{order.logisticsProgress}}
+    </view>
+  </view>
+
+  <view class="route-section">
+    <view class="section-title">配送路线</view>
+    <view class="route-card">
+      <view class="route-point">
+        <view class="point-icon start">
+          <text>寄</text>
+        </view>
+        <view class="point-content">
+          <view class="point-header">
+            <text class="point-name">{{order.senderName}}</text>
+            <text class="point-phone">{{order.senderPhone}}</text>
+          </view>
+          <view class="point-address">{{order.senderAddress}}</view>
+        </view>
+      </view>
+      
+      <view class="route-divider"></view>
+      
+      <view class="route-point">
+        <view class="point-icon end">
+          <text>收</text>
+        </view>
+        <view class="point-content">
+          <view class="point-header">
+            <text class="point-name">{{order.receiverName}}</text>
+            <text class="point-phone">{{order.receiverPhone}}</text>
+          </view>
+          <view class="point-address">{{order.receiverAddress}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="goods-section">
+    <view class="section-title">货物信息</view>
+    <view class="goods-card">
+      <view class="goods-item">
+        <text class="label">货物名称</text>
+        <text class="value">{{order.goodsName || '-'}}</text>
+      </view>
+      <view class="goods-item">
+        <text class="label">货物重量</text>
+        <text class="value">{{order.goodsWeight || '-'}} kg</text>
+      </view>
+      <view class="goods-item">
+        <text class="label">货物体积</text>
+        <text class="value">{{order.goodsVolume || '-'}} m³</text>
+      </view>
+      <view class="goods-item" wx:if="{{order.remark}}">
+        <text class="label">备注</text>
+        <text class="value">{{order.remark}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="receipt-section" wx:if="{{order.status >= 4}}">
+    <view class="section-title">回单凭证</view>
+    <view class="receipt-card">
+      <view class="receipt-image" wx:if="{{order.receiptImage}}" bindtap="previewReceipt">
+        <image mode="aspectFit" src="{{order.receiptImage}}"></image>
+      </view>
+      <view class="upload-receipt" wx:else bindtap="uploadReceipt">
+        <text class="icon">+</text>
+        <text class="text">上传回单</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="action-section">
+    <view class="status-flow" wx:if="{{order.status > 0 && order.status < 5}}">
+      <button class="flow-btn {{order.status >= 2 ? 'active' : ''}}" bindtap="updateStatus" data-status="2">已取货</button>
+      <button class="flow-btn {{order.status >= 3 ? 'active' : ''}}" bindtap="updateStatus" data-status="3">配送中</button>
+      <button class="flow-btn {{order.status >= 4 ? 'active' : ''}}" bindtap="updateStatus" data-status="4">已送达</button>
+    </view>
+    
+    <view class="remark-section" wx:if="{{order.status > 0 && order.status < 5}}">
+      <input class="remark-input" placeholder="添加配送备注（可选）" bindinput="onRemarkInput" value="{{remark}}"></input>
+      <button class="remark-btn" bindtap="submitRemark">提交备注</button>
+    </view>
+  </view>
+</view>

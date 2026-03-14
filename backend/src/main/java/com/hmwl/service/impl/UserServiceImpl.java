@@ -37,6 +37,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private DriverMapper driverMapper;
 
     @Override
+    public User login(String username, String password) {
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, username);
+        wrapper.eq(User::getStatus, 1);
+        wrapper.last("LIMIT 1");
+        User user = this.getOne(wrapper);
+        
+        if (user == null) {
+            wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(User::getUsername, username);
+            wrapper.last("LIMIT 1");
+            user = this.getOne(wrapper);
+        }
+        
+        if (user == null) {
+            return null;
+        }
+        
+        if (user.getPassword() != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        
+        return null;
+    }
+
+    @Override
     public User wxLogin(String code) {
         System.out.println("========== 微信登录开始 ==========");
         System.out.println("AppID: " + appid);

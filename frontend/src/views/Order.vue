@@ -1,48 +1,118 @@
 <template>
-  <div>
-    <el-card>
+  <div class="order-page">
+    <el-card class="main-card">
       <template #header>
-        <div class="card-header">
-          <span>订单管理</span>
-          <div>
-            <el-button type="success" @click="handleBatchExport">批量导出</el-button>
-            <el-button type="primary" @click="handleAdd">新增订单</el-button>
+        <div class="card-header-custom">
+          <div class="header-left">
+            <el-icon class="header-icon"><Tickets /></el-icon>
+            <span class="header-title">订单管理</span>
+          </div>
+          <div class="header-actions">
+            <el-button class="action-btn export-btn" @click="handleBatchExport">
+              <el-icon><Download /></el-icon>
+              批量导出
+            </el-button>
+            <el-button class="action-btn primary-btn" type="primary" @click="handleAdd">
+              <el-icon><Plus /></el-icon>
+              新增订单
+            </el-button>
           </div>
         </div>
       </template>
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="订单编号">
-          <el-input v-model="searchForm.orderNo" placeholder="请输入订单编号"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-        </el-form-item>
-      </el-form>
-      <el-table v-loading="loading" :data="orderList" style="width: 100%" @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column prop="id" label="订单ID" width="100"></el-table-column>
-        <el-table-column prop="orderNo" label="订单编号"></el-table-column>
-        <el-table-column prop="orderType" label="订单类型"></el-table-column>
-        <el-table-column prop="senderName" label="发件人"></el-table-column>
-        <el-table-column prop="receiverName" label="收件人"></el-table-column>
-        <el-table-column prop="totalFee" label="总费用"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
-        <el-table-column label="操作" width="200">
-          <template #default="scope">
-            <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      ></el-pagination>
+      
+      <div class="search-section">
+        <el-form :inline="true" :model="searchForm" class="search-form">
+          <el-form-item label="" class="search-item">
+            <el-input 
+              v-model="searchForm.orderNo" 
+              placeholder="请输入订单编号搜索"
+              class="search-input"
+              clearable
+              @keyup.enter="handleSearch"
+            >
+              <template #prefix>
+                <el-icon><Search /></el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item class="search-btn-item">
+            <el-button type="primary" class="search-btn" @click="handleSearch">
+              <el-icon><Search /></el-icon>
+              搜索
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      
+      <div class="table-container">
+        <el-table 
+          v-loading="loading" 
+          :data="orderList" 
+          class="order-table"
+          @selection-change="handleSelectionChange"
+          row-key="id"
+        >
+          <el-table-column type="selection" width="50" align="center"></el-table-column>
+          <el-table-column prop="id" label="ID" width="80" align="center"></el-table-column>
+          <el-table-column prop="orderNo" label="订单编号" min-width="160">
+            <template #default="scope">
+              <span class="order-no">{{ scope.row.orderNo || '-' }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="orderType" label="类型" width="100" align="center">
+            <template #default="scope">
+              <el-tag size="small" :type="scope.row.orderType === '1' ? 'warning' : 'primary'">
+                {{ scope.row.orderType === '1' ? '整车' : '零担' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="senderName" label="发件人" min-width="120"></el-table-column>
+          <el-table-column prop="receiverName" label="收件人" min-width="120"></el-table-column>
+          <el-table-column prop="totalFee" label="费用" width="120" align="right">
+            <template #default="scope">
+              <span class="fee-amount">¥{{ scope.row.totalFee || 0 }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="status" label="状态" width="120" align="center">
+            <template #default="scope">
+              <div class="status-cell">
+                <span class="status-dot" :class="getStatusClass(scope.row.status)"></span>
+                {{ getStatusText(scope.row.status) }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="160" align="center" fixed="right">
+            <template #default="scope">
+              <div class="action-buttons">
+                <el-button type="primary" size="small" class="edit-btn" @click="handleEdit(scope.row)">
+                  <el-icon><Edit /></el-icon>
+                  编辑
+                </el-button>
+                <el-button type="danger" size="small" class="delete-btn" @click="handleDelete(scope.row.id)">
+                  <el-icon><Delete /></el-icon>
+                  删除
+                </el-button>
+              </div>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      
+      <div class="pagination-container">
+        <div class="pagination-info">
+          共 <span class="total-count">{{ total }}</span> 条记录
+        </div>
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="sizes, prev, pager, next, jumper"
+          :total="total"
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        ></el-pagination>
+      </div>
     </el-card>
 
     <el-dialog v-model="dialogVisible" title="订单详情" width="1100px" class="order-detail-dialog" :show-close="true">
@@ -302,10 +372,10 @@
                   <el-table-column prop="name" label="网点名称" show-overflow-tooltip></el-table-column>
                   <el-table-column prop="contactPerson" label="负责人" width="80"></el-table-column>
                   <el-table-column prop="phone" label="电话" width="100"></el-table-column>
-                  <el-table-column label="操作" width="80" fixed="right">
+                  <el-table-column label="操作" width="120" fixed="right">
                     <template #default="scope">
-                      <el-button type="primary" size="small" link @click="handleEditNetworkPoint(scope.row)">编辑</el-button>
-                      <el-button type="danger" size="small" link @click="handleDeleteNetworkPoint(scope.row.id)">删除</el-button>
+                      <el-button type="primary" size="small" class="mini-btn" @click="handleEditNetworkPoint(scope.row)">编辑</el-button>
+                      <el-button type="danger" size="small" class="mini-btn-danger" @click="handleDeleteNetworkPoint(scope.row.id)">删除</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -708,7 +778,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import QRCode from 'qrcode'
 import html2pdf from 'html2pdf.js'
 import * as XLSX from 'xlsx'
-import { Warning, Document, User, UserFilled, Box, Money, Picture, PriceTag, OfficeBuilding } from '@element-plus/icons-vue'
+import { Warning, Document, User, UserFilled, Box, Money, Picture, PriceTag, OfficeBuilding, Tickets, Download, Plus, Search, Edit, Delete } from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -1298,6 +1368,10 @@ const getStatusType = (status) => {
   return statusMap[status] || 'info'
 }
 
+const getStatusClass = (status) => {
+  return `status-${status}`
+}
+
 const getStatusText = (status) => {
   const textMap = {
     0: '已创建',
@@ -1760,34 +1834,391 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.order-detail-dialog :deep(.el-dialog__header) {
-  padding: 4px 4px;
-  margin: 0;
-  background-color: #f5f7fa;
+.order-page {
+  padding: var(--spacing-lg);
+  min-height: calc(100vh - 120px);
 }
 
-.order-detail-dialog :deep(.el-dialog__title) {
-  font-size: 13px;
-  font-weight: 600;
+.main-card {
+  border-radius: var(--radius-lg);
+  border: none;
+  box-shadow: var(--shadow-md);
 }
 
-.order-detail-dialog :deep(.el-dialog__body) {
-  padding: 8px 12px;
-  max-height: 94vh;
+.main-card :deep(.el-card__header) {
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-separator);
 }
 
-.card-header {
+.main-card :deep(.el-card__body) {
+  padding: 0;
+}
+
+.card-header-custom {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.header-icon {
+  font-size: 20px;
+  color: var(--color-primary);
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.primary-btn {
+  background: var(--color-primary);
+  border: none;
+}
+
+.primary-btn:hover {
+  background: #0066DD;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.export-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+.export-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.search-section {
+  padding: var(--spacing-lg);
+  background: var(--color-surface-secondary);
+  border-bottom: 1px solid var(--color-separator);
+}
+
 .search-form {
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.search-item {
+  flex: 1;
+  max-width: 400px;
+  margin-right: 0;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.search-input :deep(.el-input__wrapper) {
+  border-radius: var(--radius-full);
+  padding: 4px 16px;
+  box-shadow: none !important;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.search-input :deep(.el-input__wrapper:hover) {
+  border-color: var(--color-primary);
+}
+
+.search-input :deep(.el-input__wrapper.is-focus) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15) !important;
+}
+
+.search-btn-item {
+  margin-right: 0;
+}
+
+.search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  border: none;
+  font-weight: 500;
+}
+
+.search-btn:hover {
+  background: #0066DD;
+}
+
+.table-container {
+  padding: var(--spacing-md);
+}
+
+.order-table {
+  width: 100%;
+}
+
+.order-table :deep(.el-table__header-wrapper th) {
+  background: var(--color-surface-secondary) !important;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.order-table :deep(.el-table__row) {
+  transition: all var(--transition-fast);
+}
+
+.order-table :deep(.el-table__row:hover > td) {
+  background: rgba(0, 122, 255, 0.04) !important;
+}
+
+.order-table :deep(.el-table__cell) {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-separator);
+}
+
+.order-no {
+  font-family: 'SF Mono', Monaco, monospace;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.fee-amount {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.status-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.status-0 {
+  background: var(--ios-gray);
+}
+
+.status-dot.status-1 {
+  background: var(--color-warning);
+}
+
+.status-dot.status-2 {
+  background: var(--color-success);
+}
+
+.status-dot.status-3 {
+  background: var(--color-danger);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--color-primary);
+  border: none;
+  color: white;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.edit-btn:hover {
+  background: #0066DD;
+  transform: translateY(-1px);
+}
+
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--color-danger);
+  border: none;
+  color: white;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.delete-btn:hover {
+  background: #E63333;
+  transform: translateY(-1px);
+}
+
+.mini-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  background: var(--color-primary);
+  border: none;
+  color: white;
+  font-size: 11px;
+  border-radius: var(--radius-xs);
+}
+
+.mini-btn:hover {
+  background: #0066DD;
+}
+
+.mini-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  background: var(--color-danger);
+  border: none;
+  color: white;
+  font-size: 11px;
+  border-radius: var(--radius-xs);
+}
+
+.mini-btn-danger:hover {
+  background: #E63333;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-separator);
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.total-count {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.pagination-container :deep(.el-pagination) {
+  --el-pagination-bg-color: var(--color-surface);
+  --el-pagination-text-color: var(--color-text-secondary);
+  --el-pagination-button-bg-color: var(--color-surface);
+  --el-pagination-hover-color: var(--color-primary);
+}
+
+.pagination-container :deep(.el-pagination.is-background .el-pager li) {
+  border-radius: var(--radius-md);
+  margin: 0 4px;
+  font-weight: 500;
+}
+
+.pagination-container :deep(.el-pagination.is-background .el-pager li.is-active) {
+  background: var(--color-primary);
+}
+
+.pagination-container :deep(.el-pagination.is-background .el-pager li:hover:not(.is-active)) {
+  color: var(--color-primary);
+}
+
+.pagination-container :deep(.el-select) {
+  --el-select-input-focus-border-color: var(--color-primary);
+}
+
+.order-detail-dialog :deep(.el-dialog__header) {
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: 0;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0055BB 100%);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.order-detail-dialog :deep(.el-dialog__title) {
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+}
+
+.order-detail-dialog :deep(.el-dialog__body) {
+  padding: var(--spacing-md);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.card-header-custom-dialog {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.search-form-dialog {
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
 }
 
 .dialog-footer {
   text-align: right;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid var(--color-separator);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+}
+
+.dialog-footer .el-button {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  padding: 10px 20px;
+}
+
+.dialog-footer .el-button--success {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.dialog-footer .el-button--success:hover {
+  background: #2DB543;
+  border-color: #2DB543;
 }
 
 .flex {
@@ -1799,26 +2230,31 @@ onMounted(() => {
 }
 
 .upload-demo {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-md);
 }
 
 .image-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .image-item-wrapper {
   position: relative;
-  width: 100px;
+  width: 90px;
 }
 
 .image-item {
-  width: 100px;
-  height: 100px;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
+  width: 90px;
+  height: 90px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.image-item:hover {
+  transform: scale(1.05);
 }
 
 .image-actions {
@@ -1827,10 +2263,10 @@ onMounted(() => {
 }
 
 .no-images {
-  color: #909399;
-  padding: 20px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+  color: var(--color-text-tertiary);
+  padding: var(--spacing-lg);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
   text-align: center;
 }
 
@@ -1841,101 +2277,99 @@ onMounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f5f7fa;
-  color: #909399;
-}
-
-.image-footer {
-  padding: 4px;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  text-align: center;
+  background: var(--color-surface-secondary);
+  color: var(--color-text-tertiary);
 }
 
 .order-detail-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-height: 85vh;
+  gap: var(--spacing-md);
+  max-height: 60vh;
   overflow-y: auto;
-  padding: 8px 8px 0 0;
+  padding-right: var(--spacing-sm);
 }
 
 .section-card {
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   min-height: 180px;
+  transition: all var(--transition-normal);
+}
+
+.section-card:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .section-card :deep(.el-card__header) {
-  padding: 12px 16px;
-  background-color: #f5f7fa;
-  border-bottom: 1px solid #ebeef5;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface-secondary);
+  border-bottom: 1px solid var(--color-separator);
 }
 
 .section-card :deep(.el-card__body) {
-  padding: 16px;
+  padding: var(--spacing-lg);
   min-height: 120px;
 }
 
 .section-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 15px;
+  gap: var(--spacing-sm);
+  font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--color-text-primary);
 }
 
 .section-header .el-icon {
   font-size: 18px;
-  color: #409eff;
+  color: var(--color-primary);
 }
 
 .section-header.sender .el-icon {
-  color: #67c23a;
+  color: var(--color-success);
 }
 
 .section-header.receiver .el-icon {
-  color: #e6a23c;
+  color: var(--color-warning);
 }
 
 .section-header.goods .el-icon {
-  color: #909399;
+  color: var(--ios-gray);
 }
 
 .section-header.fee .el-icon {
-  color: #f56c6c;
+  color: var(--color-danger);
 }
 
 .sender-card {
-  border-left: 4px solid #67c23a;
+  border-left: 4px solid var(--color-success);
   min-height: 180px;
 }
 
 .receiver-card {
-  border-left: 4px solid #e6a23c;
+  border-left: 4px solid var(--color-warning);
   min-height: 180px;
 }
 
 .goods-card {
-  border-left: 4px solid #909399;
+  border-left: 4px solid var(--ios-gray);
   min-height: 140px;
 }
 
 .fee-card {
-  border-left: 4px solid #f56c6c;
+  border-left: 4px solid var(--color-danger);
   min-height: 140px;
 }
 
 .image-card {
-  border-left: 4px solid #409eff;
-  height: 280px;
+  border-left: 4px solid var(--color-primary);
+  min-height: 280px;
   display: flex;
   flex-direction: column;
 }
 
 .image-card :deep(.el-card__body) {
-  padding: 10px;
+  padding: var(--spacing-sm);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1949,38 +2383,26 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-.uploaded-images-form :deep(.el-form-item__content) {
-  overflow-y: auto;
-}
-
 .upload-form {
   margin-bottom: 0;
 }
 
-.upload-form :deep(.el-upload-dragger) {
-  padding: 10px;
-}
-
 .network-card {
-  border-left: 4px solid #909399;
+  border-left: 4px solid var(--ios-gray);
   min-height: 140px;
 }
 
-.network-card :deep(.el-card__body) {
-  padding: 12px;
-}
-
 .network-list {
-  margin-top: 8px;
+  margin-top: var(--spacing-sm);
 }
 
 .fee-summary {
   display: flex;
   justify-content: center;
-  padding: 20px;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #f56c6c 0%, #e6a23c 100%);
-  border-radius: 8px;
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-warning) 100%);
+  border-radius: var(--radius-lg);
 }
 
 .fee-item.total-fee {
@@ -1998,57 +2420,49 @@ onMounted(() => {
   display: block;
   font-size: 32px;
   font-weight: 700;
-  color: #fff;
+  color: white;
 }
 
 .image-badge {
-  margin-left: 8px;
+  margin-left: var(--spacing-sm);
 }
 
 .estimated-price {
-  margin-left: 12px;
+  margin-left: auto;
   font-size: 16px;
   font-weight: 600;
-  color: #f56c6c;
-  background-color: #fef0f0;
+  color: var(--color-danger);
+  background: rgba(255, 59, 48, 0.1);
   padding: 4px 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-full);
 }
 
 .no-estimate {
-  padding: 20px;
+  padding: var(--spacing-lg);
   text-align: center;
-  color: #909399;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+  color: var(--color-text-tertiary);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
 }
 
 .price-breakdown {
-  margin-top: 16px;
-  padding: 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-}
-
-.price-breakdown .el-divider {
-  margin: 8px 0;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
 }
 
 .breakdown-item {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: var(--spacing-xs) 0;
   font-size: 14px;
-  color: #606266;
+  color: var(--color-text-secondary);
 }
 
 .breakdown-item span:last-child {
-  font-weight: 500;
-  color: #303133;
-}
-
-.upload-demo :deep(.el-upload-dragger) {
-  padding: 20px;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 .qrcode-container {
@@ -2056,17 +2470,82 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
+  padding: var(--spacing-sm);
+  background: var(--color-surface-secondary);
+  border-radius: var(--radius-md);
   height: 100%;
 }
 
 .qrcode-canvas {
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   width: 80px;
   height: 80px;
+}
+
+:deep(.el-table) {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+:deep(.el-tag) {
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+:deep(.el-button) {
+  border-radius: var(--radius-md);
+  font-weight: 500;
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+:deep(.el-select) {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .order-page {
+    padding: var(--spacing-md);
+  }
+  
+  .card-header-custom {
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-item {
+    max-width: none;
+  }
+  
+  .pagination-container {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  
+  .section-card {
+    min-height: auto;
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .sender-card,
+  .receiver-card {
+    min-height: auto;
+  }
 }
 </style>
 

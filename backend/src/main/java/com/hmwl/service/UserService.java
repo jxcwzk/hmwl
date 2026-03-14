@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 public interface UserService extends IService<User> {
 
+    User login(String username, String password);
+
     User wxLogin(String code);
 
     User getUserByOpenid(String openid);

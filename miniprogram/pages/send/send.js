@@ -1,5 +1,6 @@
 const app = getApp();
 const api = require('../../utils/api.js');
+const config = require('../../utils/config.js');
 
 Page({
   data: {
@@ -304,10 +305,9 @@ Page({
 
     const token = wx.getStorageSync('token');
     const businessUserId = this.data.businessUserId;
-    const BASE_URL = require('../../utils/config.js').dev.baseUrl;
 
     wx.request({
-      url: `${BASE_URL}/order`,
+      url: `${config.getApiUrl()}/order`,
       method: 'POST',
       header: {
         'Authorization': `Bearer ${token}`,
@@ -367,12 +367,11 @@ Page({
     }
 
     const token = wx.getStorageSync('token');
-    const BASE_URL = require('../../utils/config.js').dev.baseUrl;
     let uploadedCount = 0;
 
     for (let i = 0; i < this.data.goodsPhotos.length; i++) {
       wx.uploadFile({
-        url: `${BASE_URL}/order/goods-image/upload/cos`,
+        url: `${config.getApiUrl()}/order/goods-image/upload/cos`,
         filePath: this.data.goodsPhotos[i],
         name: 'file',
         header: {

@@ -8,7 +8,9 @@
     "pages/address/address",
     "pages/logistics/logistics",
     "pages/network-point/network-point",
-    "pages/activity/activity"
+    "pages/activity/activity",
+    "pages/driver-orders/driver-orders",
+    "pages/driver-order-detail/driver-order-detail"
   ],
   "window": {
     "backgroundTextStyle": "light",

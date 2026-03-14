@@ -1,13 +1,88 @@
+const app = getApp();
+const api = require('../../utils/api.js');
+
 Page({
   data: {
     logisticsList: [],
     activityList: [],
     loading: true,
-    error: false
+    error: false,
+    isLoggedIn: false,
+    userInfo: null,
+    userTypeText: '',
+    orderStats: {
+      total: 0,
+      pending: 0,
+      completed: 0
+    }
   },
 
   onLoad() {
+    this.checkLoginStatus();
     this.loadData();
+  },
+
+  onShow() {
+    this.checkLoginStatus();
+  },
+
+  checkLoginStatus() {
+    const userInfo = wx.getStorageSync('userInfo');
+    const token = wx.getStorageSync('token');
+    
+    if (userInfo && token) {
+      const userTypeMap = {
+        1: '管理员',
+        2: '客户',
+        3: '司机',
+        4: '网点'
+      };
+      
+      this.setData({
+        isLoggedIn: true,
+        userInfo: userInfo,
+        userTypeText: userTypeMap[userInfo.userType] || '用户'
+      });
+      
+      this.loadOrderStats();
+    } else {
+      this.setData({
+        isLoggedIn: false,
+        userInfo: null,
+        orderStats: { total: 0, pending: 0, completed: 0 }
+      });
+    }
+  },
+
+  async loadOrderStats() {
+    try {
+      const userInfo = this.data.userInfo;
+      let stats = { total: 0, pending: 0, completed: 0 };
+      
+      if (userInfo.userType === 3) {
+        const res = await api.request({
+          url: '/order/driver-list',
+          data: { driverId: userInfo.id }
+        });
+        const orders = res.data || res || [];
+        stats.total = orders.length;
+        stats.pending = orders.filter(o => o.status < 2).length;
+        stats.completed = orders.filter(o => o.status === 2).length;
+      } else {
+        const res = await api.request({
+          url: '/order/list',
+          data: { businessUserId: userInfo.id }
+        });
+        const orders = res.data || res || [];
+        stats.total = orders.length;
+        stats.pending = orders.filter(o => o.status < 2).length;
+        stats.completed = orders.filter(o => o.status === 2).length;
+      }
+      
+      this.setData({ orderStats: stats });
+    } catch (error) {
+      console.error('获取订单统计失败:', error);
+    }
   },
 
   async loadData() {
@@ -104,6 +179,30 @@ Page({
   navigateToActivity() {
     wx.navigateTo({
       url: '/pages/activity/activity'
+    });
+  },
+
+  navigateToDriverOrders() {
+    wx.navigateTo({
+      url: '/pages/driver-orders/driver-orders'
+    });
+  },
+
+  navigateToSettlement() {
+    wx.navigateTo({
+      url: '/pages/settlement/settlement'
+    });
+  },
+
+  navigateToStatistics() {
+    wx.navigateTo({
+      url: '/pages/statistics/statistics'
+    });
+  },
+
+  navigateToCustomer() {
+    wx.navigateTo({
+      url: '/pages/customer/customer'
     });
   },
 

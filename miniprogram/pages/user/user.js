@@ -192,6 +192,19 @@ Page({
     })
   },
 
+  navigateToDriverOrders() {
+    wx.navigateTo({
+      url: '/pages/driver-orders/driver-orders'
+    })
+  },
+
+  navigateToDriverStats() {
+    wx.showToast({
+      title: '统计功能开发中',
+      icon: 'none'
+    })
+  },
+
   logout() {
     this.handleLogout()
   }

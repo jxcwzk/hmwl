@@ -1,12 +1,15 @@
 <view class="container">
+  <!-- 用户信息区域 -->
   <view class="user-info-section">
     <view class="user-avatar">
-      <text class="avatar-icon">👤</text>
+      <text class="avatar-icon">{{userInfo && userInfo.username ? userInfo.username[0] : '👤'}}</text>
     </view>
     <view class="user-details" wx:if="{{isLoggedIn && userInfo}}">
       <text class="user-name">{{userInfo.username || '微信用户'}}</text>
-      <text class="user-level">身份：{{userTypeText}}</text>
-      <text class="user-status" wx:if="{{statusText === '未激活' || userTypeText === '未分配身份'}}">请等待管理员分配身份</text>
+      <view class="user-tags">
+        <text class="user-tag role-tag">{{userTypeText}}</text>
+        <text class="user-tag status-tag" wx:if="{{statusText === '未激活' || userTypeText === '未分配身份'}}">待审核</text>
+      </view>
     </view>
     <view class="user-details" wx:else>
       <text class="user-name">点击登录</text>
@@ -14,25 +17,92 @@
     </view>
   </view>
 
-  <button wx:if="{{!isLoggedIn}}" class="login-btn" bindtap="handleLogin">微信登录</button>
+  <!-- 司机工作台 -->
+  <view class="driver-section" wx:if="{{isLoggedIn && userInfo && userInfo.userType === 3}}">
+    <view class="section-header">
+      <text class="section-title">🚚 司机工作台</text>
+    </view>
+    <view class="driver-menu">
+      <view class="driver-menu-item" bindtap="navigateToDriverOrders">
+        <view class="menu-icon-wrapper order-bg">
+          <text class="menu-icon">📋</text>
+        </view>
+        <text class="menu-text">我的订单</text>
+        <text class="menu-badge" wx:if="{{driverStats.pending > 0}}">{{driverStats.pending}}</text>
+      </view>
+      <view class="driver-menu-item" bindtap="navigateToDriverStats">
+        <view class="menu-icon-wrapper stats-bg">
+          <text class="menu-icon">📊</text>
+        </view>
+        <text class="menu-text">我的统计</text>
+      </view>
+      <view class="driver-menu-item" bindtap="navigateToVehicle">
+        <view class="menu-icon-wrapper vehicle-bg">
+          <text class="menu-icon">🚛</text>
+        </view>
+        <text class="menu-text">车辆管理</text>
+      </view>
+      <view class="driver-menu-item" bindtap="navigateToSettlement">
+        <view class="menu-icon-wrapper settlement-bg">
+          <text class="menu-icon">💰</text>
+        </view>
+        <text class="menu-text">结算明细</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 管理员工作台 -->
+  <view class="admin-section" wx:if="{{isLoggedIn && userInfo && userInfo.userType === 1}}">
+    <view class="section-header">
+      <text class="section-title">⚡ 管理中心</text>
+    </view>
+    <view class="admin-grid">
+      <view class="admin-item" bindtap="navigateToDriver">
+        <view class="admin-icon driver-icon">🚚</view>
+        <text class="admin-text">司机管理</text>
+      </view>
+      <view class="admin-item" bindtap="navigateToNetwork">
+        <view class="admin-icon network-icon">🏪</view>
+        <text class="admin-text">网点管理</text>
+      </view>
+      <view class="admin-item" bindtap="navigateToStatistics">
+        <view class="admin-icon stats-icon">📊</view>
+        <text class="admin-text">运营报表</text>
+      </view>
+      <view class="admin-item" bindtap="navigateToSettlement">
+        <view class="admin-icon settlement-icon">💰</view>
+        <text class="admin-text">财务结算</text>
+      </view>
+    </view>
+  </view>
+
+  <button wx:if="{{!isLoggedIn}}" class="login-btn" bindtap="handleLogin">微信授权登录</button>
 
   <view class="service-section" wx:if="{{isLoggedIn}}">
-    <text class="section-title">我的服务</text>
+    <text class="section-title">💡 我的服务</text>
     <view class="service-grid">
       <view class="service-item" bindtap="navigateToCoupons">
-        <text class="service-icon">🎫</text>
-        <text class="service-text">我的优惠券</text>
+        <view class="service-icon-wrapper coupon-bg">
+          <text class="service-icon">🎫</text>
+        </view>
+        <text class="service-text">优惠券</text>
       </view>
       <view class="service-item" bindtap="navigateToPoints">
-        <text class="service-icon">⭐</text>
+        <view class="service-icon-wrapper points-bg">
+          <text class="service-icon">⭐</text>
+        </view>
         <text class="service-text">我的积分</text>
       </view>
       <view class="service-item" bindtap="navigateToAddress">
-        <text class="service-icon">📍</text>
+        <view class="service-icon-wrapper address-bg">
+          <text class="service-icon">📍</text>
+        </view>
         <text class="service-text">地址管理</text>
       </view>
       <view class="service-item" bindtap="navigateToCustomerService">
-        <text class="service-icon">💬</text>
+        <view class="service-icon-wrapper service-bg">
+          <text class="service-icon">💬</text>
+        </view>
         <text class="service-text">客服中心</text>
       </view>
     </view>

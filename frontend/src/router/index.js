@@ -6,77 +6,127 @@ const routes = [
     redirect: '/home'
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/Home.vue')
+    component: () => import('../views/Home.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/order',
     name: 'Order',
-    component: () => import('../views/Order.vue')
+    component: () => import('../views/Order.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/route',
     name: 'Route',
-    component: () => import('../views/Route.vue')
+    component: () => import('../views/Route.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/driver',
     name: 'Driver',
-    component: () => import('../views/Driver.vue')
+    component: () => import('../views/Driver.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/vehicle',
     name: 'Vehicle',
-    component: () => import('../views/Vehicle.vue')
+    component: () => import('../views/Vehicle.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/network-point',
     name: 'NetworkPoint',
-    component: () => import('../views/NetworkPoint.vue')
+    component: () => import('../views/NetworkPoint.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/settlement',
     name: 'Settlement',
-    component: () => import('../views/Settlement.vue')
+    component: () => import('../views/Settlement.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/invoice',
     name: 'Invoice',
-    component: () => import('../views/Invoice.vue')
+    component: () => import('../views/Invoice.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/system',
     name: 'System',
-    component: () => import('../views/System.vue')
+    component: () => import('../views/System.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/user',
     name: 'User',
-    component: () => import('../views/User.vue')
+    component: () => import('../views/User.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/customer',
     name: 'Customer',
     component: () => import('../views/Customer.vue'),
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'business-user',
         name: 'BusinessUser',
-        component: () => import('../views/BusinessUser.vue')
+        component: () => import('../views/BusinessUser.vue'),
+        meta: { requiresAuth: true }
       },
       {
         path: 'business-customer',
         name: 'BusinessCustomer',
-        component: () => import('../views/BusinessCustomer.vue')
+        component: () => import('../views/BusinessCustomer.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'profile',
+        name: 'CustomerProfile',
+        component: () => import('../views/CustomerProfile.vue'),
+        meta: { requiresAuth: true }
       }
     ]
+  },
+  {
+    path: '/operation-statistics',
+    name: 'OperationStatistics',
+    component: () => import('../views/OperationStatistics.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/order-assign',
+    name: 'OrderAssign',
+    component: () => import('../views/OrderAssign.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  
+  if (requiresAuth && !token) {
+    next('/login')
+  } else if (to.path === '/login' && token) {
+    next('/home')
+  } else {
+    next()
+  }
 })
 
 export default router

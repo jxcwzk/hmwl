@@ -2,7 +2,9 @@
   <!-- 寄件人信息 -->
   <view class="contact-section">
     <view class="contact-item sender">
-      <view class="contact-icon sender-icon">寄</view>
+      <view class="contact-icon sender-icon">
+        <text class="icon-text">寄</text>
+      </view>
       <view class="contact-content">
         <view class="contact-main" wx:if="{{senderIndex >= 0}}">
           <view class="contact-header">
@@ -15,14 +17,18 @@
           <view class="picker-text">请选择发件人</view>
         </picker>
       </view>
-      <text class="address-book-btn" bindtap="addSender">地址簿</text>
+      <view class="address-book-btn" bindtap="addSender">
+        <text class="btn-text">地址簿</text>
+      </view>
     </view>
   </view>
 
   <!-- 收件人信息 -->
   <view class="contact-section">
     <view class="contact-item receiver">
-      <view class="contact-icon receiver-icon">收</view>
+      <view class="contact-icon receiver-icon">
+        <text class="icon-text">收</text>
+      </view>
       <view class="contact-content">
         <view class="contact-main" wx:if="{{receiverIndex >= 0}}">
           <view class="contact-header">
@@ -35,31 +41,35 @@
           <view class="picker-text">请选择收件人</view>
         </picker>
       </view>
-      <text class="address-book-btn" bindtap="addReceiver">地址簿</text>
+      <view class="address-book-btn" bindtap="addReceiver">
+        <text class="btn-text">地址簿</text>
+      </view>
     </view>
   </view>
 
   <!-- 货物信息 -->
   <view class="section">
     <view class="goods-section">
-      <text class="section-label">物品信息</text>
-      <text class="required-mark">必填</text>
+      <view class="section-header">
+        <text class="section-label">物品信息</text>
+        <text class="required-mark">必填</text>
+      </view>
       <view class="goods-inputs">
         <view class="form-item form-item-full">
-          <input class="form-input" placeholder="请输入货物描述" value="{{goods.description}}" bindinput="bindGoodsInput" data-field="description" />
+          <input class="form-input" placeholder="请输入货物描述（如：衣服、书籍、电子产品）" value="{{goods.description}}" bindinput="bindGoodsInput" data-field="description" />
         </view>
         <view class="form-item-row">
           <view class="form-item half">
             <text class="form-label">重量(kg)</text>
-            <input class="form-input" type="digit" placeholder="请输入重量" value="{{goods.weight}}" bindinput="bindGoodsInput" data-field="weight" />
+            <input class="form-input" type="digit" placeholder="请输入" value="{{goods.weight}}" bindinput="bindGoodsInput" data-field="weight" />
           </view>
           <view class="form-item half">
             <text class="form-label">体积(m³)</text>
-            <input class="form-input" type="digit" placeholder="请输入体积" value="{{goods.volume}}" bindinput="bindGoodsInput" data-field="volume" />
+            <input class="form-input" type="digit" placeholder="请输入" value="{{goods.volume}}" bindinput="bindGoodsInput" data-field="volume" />
           </view>
         </view>
         <view class="form-item form-item-full">
-          <input class="form-input" placeholder="请输入备注" value="{{goods.remark}}" bindinput="bindGoodsInput" data-field="remark" />
+          <input class="form-input" placeholder="请输入备注（如：易碎品、贵重物品）" value="{{goods.remark}}" bindinput="bindGoodsInput" data-field="remark" />
         </view>
       </view>
     </view>

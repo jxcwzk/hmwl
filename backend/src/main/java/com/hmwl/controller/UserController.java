@@ -2,6 +2,7 @@ package com.hmwl.controller;
 
 import com.hmwl.entity.User;
 import com.hmwl.service.UserService;
+import com.hmwl.utils.JwtUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,57 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    /**
+     * 用户名密码登录
+     * @param params 包含username, password
+     * @return 登录结果
+     */
+    @PostMapping("/login")
+    public Result login(@RequestBody Map<String, String> params) {
+        String username = params.get("username");
+        String password = params.get("password");
+
+        if (username == null || username.isEmpty()) {
+            return Result.error("用户名不能为空");
+        }
+        if (password == null || password.isEmpty()) {
+            return Result.error("密码不能为空");
+        }
+
+        try {
+            User user = userService.login(username, password);
+            if (user == null) {
+                return Result.error("用户名或密码错误");
+            }
+
+            if (user.getStatus() != null && user.getStatus() == 0) {
+                return Result.error("账号已被禁用，请联系管理员");
+            }
+
+            String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getUserType());
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", token);
+            data.put("id", user.getId());
+            data.put("username", user.getUsername());
+            data.put("userType", user.getUserType());
+            data.put("status", user.getStatus());
+            data.put("phone", user.getPhone());
+            data.put("wechat", user.getWechat());
+            data.put("remark", user.getRemark());
+            data.put("businessUserId", user.getBusinessUserId());
+            data.put("driverId", user.getDriverId());
+
+            return Result.success(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("登录异常: " + e.getMessage());
+        }
+    }
+
     /**
      * 小程序微信登录
      * @param code 微信登录code
@@ -42,7 +94,10 @@ public class UserController {
                 return Result.error("微信登录失败");
             }
 
+            String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getUserType());
+
             Map<String, Object> data = new HashMap<>();
+            data.put("token", token);
             data.put("id", user.getId());
             data.put("username", user.getUsername());
             data.put("userType", user.getUserType());
@@ -66,23 +121,38 @@ public class UserController {
      * @return 用户信息
      */
     @GetMapping("/info")
-    public Result getUserInfo(@RequestParam Long userId) {
-        User user = userService.getById(userId);
-        if (user == null) {
-            return Result.error("用户不存在");
+    public Result getUserInfo(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.error("未授权，请先登录");
         }
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", user.getId());
-        data.put("username", user.getUsername());
-        data.put("userType", user.getUserType());
-        data.put("status", user.getStatus());
-        data.put("phone", user.getPhone());
-        data.put("wechat", user.getWechat());
-        data.put("remark", user.getRemark());
-        data.put("createTime", user.getCreateTime());
+        String token = authHeader.substring(7);
+        if (!jwtUtil.validateToken(token)) {
+            return Result.error("Token已过期，请重新登录");
+        }
 
-        return Result.success(data);
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(token);
+            User user = userService.getById(userId);
+            if (user == null) {
+                return Result.error("用户不存在");
+            }
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("id", user.getId());
+            data.put("username", user.getUsername());
+            data.put("userType", user.getUserType());
+            data.put("status", user.getStatus());
+            data.put("phone", user.getPhone());
+            data.put("wechat", user.getWechat());
+            data.put("remark", user.getRemark());
+            data.put("createTime", user.getCreateTime());
+
+            return Result.success(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("获取用户信息异常: " + e.getMessage());
+        }
     }
 
     /**

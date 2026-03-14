@@ -483,3 +483,120 @@ git push -u origin main --force
 4. **文档示例使用占位符**：文档中的配置示例使用占位符，不要使用真实值
 5. **敏感凭证轮换**：如果凭证泄露，立即在腾讯云控制台更换新的密钥
 6. **GitHub 推送保护**：启用 GitHub 机密扫描，及时发现并修复问题
+
+---
+
+## 11. 微信小程序真机调试网络连接问题
+
+### 问题描述
+- 微信小程序在真机（手机）上调试时显示 `ERR_CONNECTION_REFUSED` 错误
+- 登录功能失败：`app.js:52 登录失败: {errMsg: "request:fail errcode:-102 cronet_error_code:-102 error_msg:net::ERR_CONNECTION_REFUSED", errno: 600001}`
+- 订单提交失败：`send.js:351 提交订单失败`
+
+### 根本原因
+
+#### 11.1 localhost 无法在真机上访问
+- 开发者电脑上的 `localhost:8081` 或 `127.0.0.1:8081` 地址只能在本机访问
+- 真机（手机）无法访问开发者电脑的 localhost 地址
+- 需要使用开发者电脑的局域网 IP 地址
+
+#### 11.2 硬编码的 localhost URL
+- `config.js` 中只配置了 `localhost:8081`
+- `send.js` 中直接使用了 `require('../../utils/config.js').dev.baseUrl`，导致 localhost 被直接使用
+
+### 解决方案
+
+#### 11.3 获取开发者电脑的局域网 IP
+在终端运行以下命令：
+- **macOS**: `ifconfig | grep "inet " | grep -v 127.0.0.1`
+- **Windows**: `ipconfig`
+
+获取到的 IP 地址示例：`192.168.31.230`
+
+#### 11.4 修改 config.js 添加 IP 地址配置
+```javascript
+module.exports = {
+  dev: {
+    baseUrl: 'http://localhost:8081/api',
+    // 添加真机可访问的 IP 地址
+    ipUrl: 'http://192.168.31.230:8081/api'
+  },
+  // 添加自动获取正确 URL 的方法
+  getApiUrl: function() {
+    try {
+      const systemInfo = wx.getSystemInfoSync()
+      const platform = systemInfo.platform
+      // 微信开发者工具使用 localhost，真机使用 IP 地址
+      if (platform === 'devtools') {
+        return this.dev.baseUrl
+      }
+      return this.dev.ipUrl || this.dev.baseUrl
+    } catch (e) {
+      return this.dev.baseUrl
+    }
+  }
+}
+```
+
+#### 11.5 修改 api.js 使用平台检测
+```javascript
+const config = require('./config.js')
+
+const getBaseUrl = () => {
+  const systemInfo = wx.getSystemInfoSync()
+  const platform = systemInfo.platform
+  if (platform === 'devtools') {
+    return config.dev.baseUrl
+  }
+  return config.dev.ipUrl || config.dev.baseUrl
+}
+```
+
+#### 11.6 修改 send.js 使用统一配置
+```javascript
+const config = require('../../utils/config.js')
+
+// 修改前（错误）
+const BASE_URL = require('../../utils/config.js').dev.baseUrl
+
+// 修改后（正确）
+// 直接调用 config.getApiUrl() 获取正确的 URL
+url: `${config.getApiUrl()}/order`
+```
+
+#### 11.7 确保后端允许跨域
+确保后端配置了 CORS，允许来自真机的请求：
+```java
+@Configuration
+public class CorsConfig {
+  @Bean
+  public CorsFilter corsFilter() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.addAllowedOriginPattern("*");
+    config.setAllowCredentials(true);
+    config.addAllowedHeader("*");
+    config.addAllowedMethod("*");
+    config.setMaxAge(3600L);
+    
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return new CorsFilter(source);
+  }
+}
+```
+
+#### 11.8 微信开发者工具开启不校验合法域名
+在微信开发者工具中：`详情` -> `本地设置` -> 勾选 `不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书`
+
+### 涉及的文件
+- `miniprogram/utils/config.js` - 添加 ipUrl 和 getApiUrl() 方法
+- `miniprogram/utils/api.js` - 使用平台检测选择正确的 URL
+- `miniprogram/pages/send/send.js` - 修改为使用 config.getApiUrl()
+
+### 预防措施
+1. **统一配置管理**：所有 API URL 都通过统一的配置模块管理，不要在各个页面直接硬编码
+2. **平台检测**：使用 `wx.getSystemInfoSync()` 检测运行环境，自动选择合适的 URL
+3. **真机调试准备**：开发初期就配置好 IP 地址，方便真机调试
+4. **环境变量**：可以使用环境变量或配置文件区分开发、测试、生产环境
+5. **文档记录**：记录开发者电脑的 IP 地址，方便团队成员使用
+6. **代码审查**：检查所有网络请求 URL，确保没有遗漏的 localhost 硬编码
