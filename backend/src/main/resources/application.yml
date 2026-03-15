@@ -50,6 +50,9 @@ wechat:
     appid: wx02245e195631eabb
     secret: ${WECHAT_MINIPROGRAM_SECRET:}
 
+jwt:
+  secret: ${JWT_SECRET_KEY:hmwl2024hongmeiwuliuverysecrettokenkey123456}
+
 distance:
   mode: straight
   map:

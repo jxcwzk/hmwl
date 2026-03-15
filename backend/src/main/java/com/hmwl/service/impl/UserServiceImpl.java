@@ -9,6 +9,8 @@ import com.hmwl.mapper.BusinessUserMapper;
 import com.hmwl.mapper.DriverMapper;
 import com.hmwl.mapper.UserMapper;
 import com.hmwl.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -21,8 +23,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Value("${wechat.miniprogram.appid}")
     private String appid;
@@ -54,8 +60,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (user == null) {
             return null;
         }
-        
-        if (user.getPassword() != null && user.getPassword().equals(password)) {
+
+        if (user.getPassword() != null && BCrypt.checkpw(password, user.getPassword())) {
             return user;
         }
         
@@ -64,19 +70,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User wxLogin(String code) {
-        System.out.println("========== 微信登录开始 ==========");
-        System.out.println("AppID: " + appid);
-        System.out.println("Secret: " + (secret != null && !secret.isEmpty() ? "已配置" : "未配置"));
-        System.out.println("Code: " + code);
+        logger.info("========== 微信登录开始 ==========");
         
         String openid = getOpenidFromWechat(code);
 
         if (openid == null) {
-            System.out.println("========== 获取openid失败 ==========");
+            logger.warn("========== 获取openid失败 ==========");
             return null;
         }
 
-        System.out.println("Openid: " + openid);
+        logger.info("微信登录成功, openid: {}", openid.substring(0, 8) + "****");
         
         User user = getUserByOpenid(openid);
 
@@ -147,31 +150,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private String getOpenidFromWechat(String code) {
         try {
             String url = String.format(
-                "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
-                appid, secret, code
-            );
-
-            System.out.println("微信API URL: " + url);
+                "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=******&js_code=%s&grant_type=authorization_code",
+                appid, code);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
             String responseStr = restTemplate.getForObject(url, String.class);
             
-            System.out.println("微信返回原始: " + responseStr);
+            logger.debug("微信返回原始: [已脱敏]");
             
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
             Map<String, Object> response = mapper.readValue(responseStr, Map.class);
 
-            System.out.println("微信返回: " + response);
-
             if (response != null && response.get("openid") != null) {
                 return (String) response.get("openid");
             } else if (response != null) {
-                System.out.println("微信登录失败: " + response.get("errcode") + " - " + response.get("errmsg"));
+                logger.warn("微信登录失败: errcode={}, errmsg={}", response.get("errcode"), response.get("errmsg"));
             }
         } catch (Exception e) {
-            System.out.println("调用微信API异常: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("调用微信API异常", e);
         }
         return null;
     }

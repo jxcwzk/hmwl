@@ -253,6 +253,9 @@ public class OrderController {
      */
     @PostMapping(value = "/assign-driver", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result assignDriver(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("driverId") == null) {
+            return Result.error("参数错误：缺少orderId或driverId");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Long driverId = Long.valueOf(params.get("driverId").toString());
         
@@ -280,6 +283,9 @@ public class OrderController {
      */
     @PostMapping(value = "/assign-network", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result assignNetwork(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("networkPointId") == null) {
+            return Result.error("参数错误：缺少orderId或networkPointId");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Long networkPointId = Long.valueOf(params.get("networkPointId").toString());
         
@@ -308,6 +314,9 @@ public class OrderController {
     @PostMapping(value = "/update-logistics", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result updateLogistics(@RequestBody Map<String, Object> params) {
         try {
+            if (params.get("orderId") == null) {
+                return Result.error("参数错误：缺少orderId");
+            }
             Long orderId = Long.valueOf(params.get("orderId").toString());
             String logisticsStatus = params.get("logisticsStatus") != null ? (String) params.get("logisticsStatus") : "";
             String logisticsProgress = params.get("logisticsProgress") != null ? (String) params.get("logisticsProgress") : "";
@@ -341,6 +350,9 @@ public class OrderController {
      */
     @PostMapping(value = "/provide-price", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result providePrice(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("baseFee") == null) {
+            return Result.error("参数错误：缺少orderId或baseFee");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Double baseFee = Double.valueOf(params.get("baseFee").toString());
         
@@ -372,6 +384,9 @@ public class OrderController {
      */
     @PostMapping(value = "/update-price", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result updatePrice(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("totalFee") == null) {
+            return Result.error("参数错误：缺少orderId或totalFee");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Double totalFee = Double.valueOf(params.get("totalFee").toString());
         
@@ -545,6 +560,9 @@ public class OrderController {
      */
     @PostMapping(value = "/driver/accept", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result driverAccept(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("driverId") == null) {
+            return Result.error("参数错误：缺少orderId或driverId");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Long driverId = Long.valueOf(params.get("driverId").toString());
         
@@ -578,6 +596,9 @@ public class OrderController {
      */
     @PostMapping(value = "/driver/reject", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result driverReject(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("driverId") == null) {
+            return Result.error("参数错误：缺少orderId或driverId");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Long driverId = Long.valueOf(params.get("driverId").toString());
         String reason = params.get("reason") != null ? params.get("reason").toString() : "司机拒单";
@@ -613,6 +634,9 @@ public class OrderController {
      */
     @PostMapping(value = "/driver/update-status", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Result driverUpdateStatus(@RequestBody Map<String, Object> params) {
+        if (params.get("orderId") == null || params.get("status") == null) {
+            return Result.error("参数错误：缺少orderId或status");
+        }
         Long orderId = Long.valueOf(params.get("orderId").toString());
         Integer newStatus = Integer.valueOf(params.get("status").toString());
         String remark = params.get("remark") != null ? params.get("remark").toString() : "";

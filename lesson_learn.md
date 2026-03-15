@@ -600,3 +600,149 @@ public class CorsConfig {
 4. **环境变量**：可以使用环境变量或配置文件区分开发、测试、生产环境
 5. **文档记录**：记录开发者电脑的 IP 地址，方便团队成员使用
 6. **代码审查**：检查所有网络请求 URL，确保没有遗漏的 localhost 硬编码
+
+---
+
+## 12. 代码安全审查与修复
+
+### 背景
+使用 Superpowers 技能框架的 `requesting-code-review` 技能对后端代码进行审查，发现多个安全问题和代码质量问题。
+
+### 发现的问题
+
+#### Critical（必须修复）
+
+| 问题 | 位置 | 描述 |
+|------|------|------|
+| 密码明文存储 | UserServiceImpl.java:58 | 使用明文比较密码，安全风险极高 |
+| JWT 密钥硬编码 | JwtUtil.java:18 | 密钥直接写在代码中，泄露到 Git 仓库 |
+| 敏感信息泄露 | UserServiceImpl.java:67-175 | System.out.println 打印 AppID、Secret、openid 等 |
+| 参数空指针风险 | OrderController.java 多处 | 8 个方法的 params.get() 未做空值校验 |
+
+#### Important（应该修复）
+
+| 问题 | 位置 | 描述 |
+|------|------|------|
+| 性能问题 | OrderController.java:79-85 | 内存遍历过滤订单，应使用数据库查询 |
+| 统计重复计算 | StatisticsController.java:35-38 | 每次请求重新生成统计 |
+| 缺少事务控制 | OrderController.java:456-478 | 批量操作无事务原子性 |
+| System.out.println | 多处 | 违反生产环境日志规范 |
+
+### 解决方案
+
+#### 12.1 添加 BCrypt 密码加密依赖
+
+在 `pom.xml` 中添加：
+```xml
+<dependency>
+    <groupId>org.mindrot</groupId>
+    <artifactId>jbcrypt</artifactId>
+    <version>0.4</version>
+</dependency>
+```
+
+#### 12.2 修改密码验证逻辑
+
+```java
+// 修改前（不安全）
+if (user.getPassword() != null && user.getPassword().equals(password)) {
+    return user;
+}
+
+// 修改后（安全）
+if (user.getPassword() != null && BCrypt.checkpw(password, user.getPassword())) {
+    return user;
+}
+```
+
+#### 12.3 修改 JWT 密钥为环境变量
+
+```java
+// 修改前（硬编码）
+private static final String SECRET_KEY = "hmwl2024hongmeiwuliuverysecrettokenkey123456";
+
+// 修改后（环境变量）
+@Value("${jwt.secret:hmwl2024hongmeiwuliuverysecrettokenkey123456}")
+private String secretKey;
+```
+
+在 `application.yml` 中添加：
+```yaml
+jwt:
+  secret: ${JWT_SECRET_KEY:hmwl2024hongmeiwuliuverysecrettokenkey123456}
+```
+
+#### 12.4 替换 System.out.println 为 SLF4J
+
+```java
+// 修改前
+System.out.println("AppID: " + appid);
+System.out.println("Secret: " + (secret != null && !secret.isEmpty() ? "已配置" : "未配置"));
+System.out.println("Openid: " + openid);
+
+// 修改后
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+logger.info("========== 微信登录开始 ==========");
+logger.info("微信登录成功, openid: {}", openid.substring(0, 8) + "****");
+logger.warn("微信登录失败: errcode={}, errmsg={}", response.get("errcode"), response.get("errmsg"));
+logger.error("调用微信API异常", e);
+```
+
+#### 12.5 添加参数空指针校验
+
+在 OrderController.java 的 8 个方法中添加参数校验：
+```java
+// 修改前
+Long orderId = Long.valueOf(params.get("orderId").toString());
+
+// 修改后
+if (params.get("orderId") == null || params.get("driverId") == null) {
+    return Result.error("参数错误：缺少orderId或driverId");
+}
+Long orderId = Long.valueOf(params.get("orderId").toString());
+```
+
+涉及的方法：
+- assignDriver - 指派司机
+- assignNetwork - 指派网点
+- updateLogistics - 更新物流
+- providePrice - 报价
+- updatePrice - 修改价格
+- driverAccept - 司机接单
+- driverReject - 司机拒单
+- driverUpdateStatus - 更新状态
+
+### 涉及的文件
+
+| 文件 | 修改内容 |
+|------|---------|
+| pom.xml | 添加 jBCrypt 依赖 |
+| UserServiceImpl.java | BCrypt 密码验证、SLF4J 日志 |
+| JwtUtil.java | 环境变量配置 JWT 密钥 |
+| OrderController.java | 8 个方法添加参数校验 |
+| application.yml | 添加 JWT 配置项 |
+
+### ⚠️ 重要注意事项
+
+由于密码现在使用 BCrypt 加密，**现有用户的密码将无法登录**！
+
+解决方案：
+1. 重置所有用户密码
+2. 或在数据库中将现有密码使用 BCrypt 重新哈希：
+```java
+String hash = BCrypt.hashpw("原始密码", BCrypt.gensalt());
+```
+
+### 预防措施
+
+1. **代码审查**：使用 Superpowers 技能框架进行定期代码审查
+2. **安全扫描**：使用工具扫描代码中的安全漏洞
+3. **密码安全**：所有密码必须使用 BCrypt 或类似算法加密存储
+4. **密钥管理**：敏感配置必须使用环境变量，禁止硬编码
+5. **日志规范**：生产环境必须使用日志框架，禁止 System.out.println
+6. **参数校验**：所有用户输入必须进行空值和类型校验
+
