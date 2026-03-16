@@ -7,16 +7,19 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName("network_route")
-public class Route {
+@TableName("network_quote")
+public class NetworkQuote {
     @TableId(type = IdType.AUTO)
     private Long id;
+    private Long orderId;
     private Long networkPointId;
-    private String startCity;
-    private String destinationCity;
-    private Double basePrice;
-    private Double pricePerKg;
+    private String networkName;
+    private Double baseFee;
+    private Double finalPrice;
     private Integer transitDays;
+    private String remark;
+    private Date quoteTime;
+    private Integer status;
     private Date createTime;
     private Date updateTime;
 }

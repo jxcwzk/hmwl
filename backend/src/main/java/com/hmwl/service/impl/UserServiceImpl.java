@@ -61,8 +61,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return null;
         }
 
-        if (user.getPassword() != null && BCrypt.checkpw(password, user.getPassword())) {
-            return user;
+        if (user.getPassword() != null) {
+            // 兼容明文密码和 BCrypt 哈希密码
+            if (user.getPassword().startsWith("$2")) {
+                if (BCrypt.checkpw(password, user.getPassword())) {
+                    return user;
+                }
+            } else if (user.getPassword().equals(password)) {
+                return user;
+            }
         }
         
         return null;

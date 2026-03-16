@@ -66,6 +66,10 @@
               <el-icon><i class="el-icon-user"></i></el-icon>
               <span>客户管理</span>
             </el-menu-item>
+            <el-menu-item index="9" v-if="currentUserType === 1 || currentUserType === 4">
+              <el-icon><i class="el-icon-s-management"></i></el-icon>
+              <span>调度管理</span>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>
@@ -97,12 +101,14 @@ const activeIndex = ref('1')
 const loading = ref(false)
 
 const currentUserName = ref('')
+const currentUserType = ref(0)
 
 onMounted(() => {
   const userInfo = localStorage.getItem('userInfo')
   if (userInfo) {
     const user = JSON.parse(userInfo)
     currentUserName.value = user.username || '用户'
+    currentUserType.value = user.userType || 0
   }
 })
 
@@ -191,6 +197,8 @@ const currentPageName = computed(() => {
       return '业务用户管理'
     case '/customer/business-customer':
       return '业务客户管理'
+    case '/dispatch':
+      return '调度管理'
     default:
       return '首页'
   }
@@ -229,6 +237,9 @@ const handleSelect = (key) => {
         break
       case '8':
         router.push('/customer')
+        break
+      case '9':
+        router.push('/dispatch')
         break
     }
     loading.value = false

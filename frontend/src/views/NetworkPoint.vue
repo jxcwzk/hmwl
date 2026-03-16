@@ -8,13 +8,14 @@
         </div>
       </template>
       <el-table v-loading="loading" :data="networkPointList" style="width: 100%">
-        <el-table-column prop="id" label="网点ID" width="100"></el-table-column>
-        <el-table-column prop="code" label="网点编码"></el-table-column>
-        <el-table-column prop="name" label="网点名称"></el-table-column>
-        <el-table-column prop="contactPerson" label="联系人"></el-table-column>
-        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="id" label="网点ID" width="80"></el-table-column>
+        <el-table-column prop="code" label="网点编码" width="100"></el-table-column>
+        <el-table-column prop="name" label="网点名称" width="150"></el-table-column>
+        <el-table-column prop="city" label="所在城市" width="120"></el-table-column>
+        <el-table-column prop="contactPerson" label="联系人" width="100"></el-table-column>
+        <el-table-column prop="phone" label="电话" width="120"></el-table-column>
         <el-table-column prop="address" label="地址"></el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column label="操作" width="150">
           <template #default="scope">
             <el-button type="primary" size="small" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" size="small" @click="handleDelete(scope.row.id)">删除</el-button>
@@ -32,13 +33,16 @@
       ></el-pagination>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" title="网点详情">
-      <el-form :model="form" label-width="120px">
+    <el-dialog v-model="dialogVisible" title="网点详情" width="500px">
+      <el-form :model="form" label-width="100px">
         <el-form-item label="网点编码">
-          <el-input v-model="form.code"></el-input>
+          <el-input v-model="form.code" placeholder="如：WX001"></el-input>
         </el-form-item>
         <el-form-item label="网点名称">
-          <el-input v-model="form.name"></el-input>
+          <el-input v-model="form.name" placeholder="如：无锡天际物流"></el-input>
+        </el-form-item>
+        <el-form-item label="所在城市">
+          <el-input v-model="form.city" placeholder="如：无锡市"></el-input>
         </el-form-item>
         <el-form-item label="联系人">
           <el-input v-model="form.contactPerson"></el-input>
@@ -116,6 +120,10 @@ const handleDelete = async (id) => {
 
 const handleSubmit = async () => {
   try {
+    if (!form.value.name || !form.value.city) {
+      ElMessage.warning('请填写网点名称和所在城市')
+      return
+    }
     if (form.value.id) {
       await request.put('/network-point', form.value)
       ElMessage.success('更新网点成功')

@@ -108,6 +108,12 @@ const routes = [
     name: 'OrderAssign',
     component: () => import('../views/OrderAssign.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/dispatch',
+    name: 'Dispatch',
+    component: () => import('../views/Dispatch.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

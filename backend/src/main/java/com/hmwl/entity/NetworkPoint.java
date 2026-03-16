@@ -10,6 +10,7 @@ public class NetworkPoint {
     private Long id;
     private String code;
     private String name;
+    private String city;
     private String contactPerson;
     private String phone;
     private String address;

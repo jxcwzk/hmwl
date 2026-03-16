@@ -10,12 +10,18 @@ import com.hmwl.entity.Order;
 import com.hmwl.entity.Settlement;
 import com.hmwl.entity.OrderAssignHistory;
 import com.hmwl.entity.Driver;
+import com.hmwl.entity.NetworkPoint;
+import com.hmwl.entity.Route;
+import com.hmwl.entity.NetworkQuote;
 import com.hmwl.service.OrderService;
 import com.hmwl.service.QrCodeService;
+import com.hmwl.service.RouteService;
+import com.hmwl.service.NetworkQuoteService;
 import com.hmwl.service.DistanceCalculatorService;
 import com.hmwl.service.SettlementService;
 import com.hmwl.service.OrderAssignHistoryService;
 import com.hmwl.service.DriverService;
+import com.hmwl.service.NetworkPointService;
 import com.hmwl.dto.DistanceCalculateRequest;
 import com.hmwl.dto.DistanceCalculateResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -49,6 +55,9 @@ public class OrderController {
 
     @Autowired
     private DriverService driverService;
+
+    @Autowired
+    private NetworkPointService networkPointService;
 
     /**
      * 获取订单列表，根据用户角色返回不同的订单
@@ -354,7 +363,7 @@ public class OrderController {
             return Result.error("参数错误：缺少orderId或baseFee");
         }
         Long orderId = Long.valueOf(params.get("orderId").toString());
-        Double baseFee = Double.valueOf(params.get("baseFee").toString());
+        Double baseFee = Math.round(Double.valueOf(params.get("baseFee").toString()) * 100.0) / 100.0;
         
         Order order = orderService.getById(orderId);
         if (order == null) {
@@ -362,10 +371,13 @@ public class OrderController {
         }
         
         order.setBaseFee(baseFee);
-        // 默认系数为1.4286
         order.setCoefficient(1.4286);
-        // 计算客户报价
-        order.setTotalFee(baseFee * 1.4286);
+        order.setTotalFee(Math.round(baseFee * 1.4286 * 100.0) / 100.0);
+        
+        if (params.get("networkPaymentMethod") != null) {
+            order.setNetworkPaymentMethod(Integer.valueOf(params.get("networkPaymentMethod").toString()));
+        }
+        
         order.setUpdateTime(new Date());
         boolean success = orderService.updateById(order);
         
@@ -679,6 +691,208 @@ public class OrderController {
             return Result.success("状态更新成功");
         } else {
             return Result.error("状态更新失败");
+        }
+    }
+
+    @Autowired
+    private RouteService routeService;
+    
+    @Autowired
+    private NetworkQuoteService networkQuoteService;
+
+    @PostMapping(value = "/request-quotes", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result requestQuotes(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("orderId") == null) {
+                return Result.error("参数错误：缺少orderId");
+            }
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+            
+            String receiverCity = extractCity(order.getReceiverAddress());
+            List<Route> routes = routeService.findRoutesByDestination(receiverCity);
+            
+            if (routes == null || routes.isEmpty()) {
+                return Result.error("未找到目的地的路线: " + receiverCity);
+            }
+            
+            List<NetworkQuote> quotes = new ArrayList<>();
+            
+            for (Route route : routes) {
+                Long networkId = route.getNetworkPointId();
+                NetworkPoint network = networkPointService.getById(networkId);
+                String networkName = network != null && network.getName() != null ? network.getName() : "网点" + networkId;
+                
+                double baseFee = Math.round((route.getBasePrice() + (order.getWeight() != null ? order.getWeight() * route.getPricePerKg() : 0)) * 100.0) / 100.0;
+                double finalPrice = Math.round(baseFee * 1.4286 * 100.0) / 100.0;
+                
+                NetworkQuote quote = new NetworkQuote();
+                quote.setNetworkPointId(networkId);
+                quote.setNetworkName(networkName);
+                quote.setBaseFee(baseFee);
+                quote.setFinalPrice(finalPrice);
+                quote.setTransitDays(route.getTransitDays());
+                quote.setStatus(1);
+                quote.setQuoteTime(new Date());
+                quotes.add(quote);
+            }
+            
+            if (!quotes.isEmpty()) {
+                networkQuoteService.saveQuotes(orderId, quotes);
+            }
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("quotes", quotes);
+            result.put("destinationCity", receiverCity);
+            result.put("message", "已生成报价，请调度员选择最低价");
+            
+            return Result.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("获取报价失败: " + e.getMessage());
+        }
+    }
+    
+    private String extractCity(String address) {
+        if (address == null || address.isEmpty()) {
+            return "";
+        }
+        if (address.contains("内蒙古")) return "内蒙古";
+        if (address.contains("新疆")) return "新疆";
+        if (address.contains("西藏")) return "西藏";
+        if (address.contains("宁夏")) return "宁夏";
+        if (address.contains("广西")) return "广西";
+        if (address.contains("黑龙江")) return "黑龙江";
+        if (address.contains("吉林")) return "吉林";
+        if (address.contains("辽宁")) return "辽宁";
+        if (address.contains("河北")) return "河北";
+        if (address.contains("山西")) return "山西";
+        if (address.contains("陕西")) return "陕西";
+        if (address.contains("甘肃")) return "甘肃";
+        if (address.contains("青海")) return "青海";
+        if (address.contains("山东")) return "山东";
+        if (address.contains("河南")) return "河南";
+        if (address.contains("江苏")) return "江苏";
+        if (address.contains("浙江")) return "浙江";
+        if (address.contains("安徽")) return "安徽";
+        if (address.contains("江西")) return "江西";
+        if (address.contains("福建")) return "福建";
+        if (address.contains("台湾")) return "台湾";
+        if (address.contains("湖北")) return "湖北";
+        if (address.contains("湖南")) return "湖南";
+        if (address.contains("广东")) return "广东";
+        if (address.contains("海南")) return "海南";
+        if (address.contains("四川")) return "四川";
+        if (address.contains("贵州")) return "贵州";
+        if (address.contains("云南")) return "云南";
+        if (address.contains("重庆")) return "重庆市";
+        if (address.contains("天津")) return "天津市";
+        if (address.contains("上海")) return "上海市";
+        if (address.contains("北京")) return "北京市";
+        if (address.contains("广州")) return "广州市";
+        if (address.contains("深圳")) return "深圳市";
+        if (address.contains("杭州")) return "杭州市";
+        if (address.contains("南京")) return "南京市";
+        if (address.contains("武汉")) return "武汉市";
+        if (address.contains("成都")) return "成都市";
+        if (address.contains("西安")) return "西安市";
+        if (address.contains("苏州")) return "苏州市";
+        return address;
+    }
+    
+    @GetMapping("/dispatch/quotes")
+    public Object getDispatchQuotes(@RequestParam(required = false) Long orderId,
+                                   @RequestParam(required = false) Integer status) {
+        List<NetworkQuote> quotes;
+        
+        if (orderId != null) {
+            quotes = networkQuoteService.getQuotesByOrderId(orderId);
+        } else if (status != null) {
+            quotes = networkQuoteService.list();
+            List<NetworkQuote> filtered = new ArrayList<>();
+            for (NetworkQuote q : quotes) {
+                if (q.getStatus() != null && q.getStatus().equals(status)) {
+                    filtered.add(q);
+                }
+            }
+            quotes = filtered;
+        } else {
+            quotes = networkQuoteService.list();
+        }
+        
+        return Result.success(quotes);
+    }
+    
+    @GetMapping("/dispatch/orders/pending-quote")
+    public Object getOrdersPendingQuote() {
+        List<Order> allOrders = orderService.list();
+        List<Order> pendingOrders = new ArrayList<>();
+        
+        for (Order order : allOrders) {
+            List<NetworkQuote> quotes = networkQuoteService.getQuotesByOrderId(order.getId());
+            boolean hasQuotes = quotes != null && !quotes.isEmpty();
+            boolean hasSelected = false;
+            
+            if (hasQuotes) {
+                for (NetworkQuote q : quotes) {
+                    if (q.getStatus() != null && q.getStatus() == 2) {
+                        hasSelected = true;
+                        break;
+                    }
+                }
+            }
+            
+            if (hasQuotes && !hasSelected) {
+                pendingOrders.add(order);
+            }
+        }
+        
+        return Result.success(pendingOrders);
+    }
+    
+    @PostMapping("/dispatch/select-quote")
+    public Object selectDispatchQuote(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("quoteId") == null || params.get("orderId") == null) {
+                return Result.error("参数错误：缺少quoteId或orderId");
+            }
+            
+            Long quoteId = Long.valueOf(params.get("quoteId").toString());
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            
+            NetworkQuote selectedQuote = networkQuoteService.getById(quoteId);
+            if (selectedQuote == null) {
+                return Result.error("报价不存在");
+            }
+            
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+            
+            order.setBaseFee(selectedQuote.getBaseFee());
+            order.setTotalFee(selectedQuote.getFinalPrice());
+            order.setNetworkPointId(selectedQuote.getNetworkPointId());
+            order.setStatus(1);
+            order.setLogisticsProgress("调度已确认报价，等待网点确认");
+            order.setUpdateTime(new Date());
+            orderService.updateById(order);
+            
+            networkQuoteService.selectBestQuote(orderId, quoteId);
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("selectedQuote", selectedQuote);
+            result.put("order", order);
+            result.put("message", "已选择报价，订单已更新");
+            
+            return Result.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("选择报价失败: " + e.getMessage());
         }
     }
 }
