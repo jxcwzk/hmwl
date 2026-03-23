@@ -141,6 +141,9 @@ public class OrderController {
      */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public Order save(@RequestBody Order order) {
+        if (order.getPricingStatus() == null) {
+            order.setPricingStatus(0);
+        }
         orderService.save(order);
         if (order.getOrderNo() != null && !order.getOrderNo().isEmpty()) {
             String qrCodeUrl = qrCodeService.generateAndUploadQrCode(order.getOrderNo());

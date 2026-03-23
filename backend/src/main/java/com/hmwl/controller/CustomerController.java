@@ -28,7 +28,11 @@ public class CustomerController {
      */
     @GetMapping("/list")
     public List<Customer> list() {
-        return customerService.list();
+        try {
+            return customerService.list();
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
     /**

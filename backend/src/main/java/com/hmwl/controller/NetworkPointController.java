@@ -1,85 +1,194 @@
 package com.hmwl.controller;
 
 import com.hmwl.entity.NetworkPoint;
+import com.hmwl.entity.NetworkQuote;
+import com.hmwl.entity.Order;
 import com.hmwl.service.NetworkPointService;
+import com.hmwl.service.NetworkQuoteService;
+import com.hmwl.service.OrderService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
-/**
- * 网点控制器
- * 处理网点相关的HTTP请求
- * @author system
- * @date 2024-01-01
- */
 @RestController
-@RequestMapping("/network-point")
+@RequestMapping("/network")
 public class NetworkPointController {
 
     @Autowired
     private NetworkPointService networkPointService;
 
-    /**
-     * 获取所有网点列表
-     * @return 网点列表
-     */
+    @Autowired
+    private NetworkQuoteService networkQuoteService;
+
+    @Autowired
+    private OrderService orderService;
+
     @GetMapping("/list")
     public List<NetworkPoint> list() {
         return networkPointService.list();
     }
 
-    /**
-     * 分页获取网点列表
-     * @param current 当前页码
-     * @param size 每页大小
-     * @return 分页后的网点列表
-     */
     @GetMapping("/page")
     public IPage<NetworkPoint> page(@RequestParam(defaultValue = "1") Integer current, @RequestParam(defaultValue = "10") Integer size) {
         Page<NetworkPoint> page = new Page<>(current, size);
         return networkPointService.page(page);
     }
 
-    /**
-     * 根据ID获取网点详情
-     * @param id 网点ID
-     * @return 网点详情
-     */
     @GetMapping("/{id}")
     public NetworkPoint getById(@PathVariable Long id) {
         return networkPointService.getById(id);
     }
 
-    /**
-     * 保存网点信息
-     * @param networkPoint 网点信息
-     * @return 保存是否成功
-     */
     @PostMapping
     public boolean save(@RequestBody NetworkPoint networkPoint) {
         return networkPointService.save(networkPoint);
     }
 
-    /**
-     * 更新网点信息
-     * @param networkPoint 网点信息
-     * @return 更新是否成功
-     */
     @PutMapping
     public boolean update(@RequestBody NetworkPoint networkPoint) {
         return networkPointService.updateById(networkPoint);
     }
 
-    /**
-     * 删除网点
-     * @param id 网点ID
-     * @return 删除是否成功
-     */
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable Long id) {
         return networkPointService.removeById(id);
+    }
+
+    @PostMapping("/quote")
+    public Object submitQuote(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("orderId") == null || params.get("networkId") == null) {
+                return Result.error("参数错误：缺少orderId或networkId");
+            }
+
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            Long networkId = Long.valueOf(params.get("networkId").toString());
+            Double baseFee = params.get("baseFee") != null ?
+                Double.valueOf(params.get("baseFee").toString()) : 0.0;
+            Double finalPrice = params.get("finalPrice") != null ?
+                Double.valueOf(params.get("finalPrice").toString()) : 0.0;
+            Integer transitDays = params.get("transitDays") != null ?
+                Integer.valueOf(params.get("transitDays").toString()) : 1;
+
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+
+            NetworkQuote quote = new NetworkQuote();
+            quote.setOrderId(orderId);
+            quote.setNetworkPointId(networkId);
+            quote.setBaseFee(baseFee);
+            quote.setFinalPrice(finalPrice);
+            quote.setTransitDays(transitDays);
+            quote.setStatus(1);
+            quote.setCreateTime(new Date());
+            quote.setUpdateTime(new Date());
+            networkQuoteService.save(quote);
+
+            order.setPricingStatus(1);
+            order.setUpdateTime(new Date());
+            orderService.updateById(order);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("quoteId", quote.getId());
+            result.put("orderId", orderId);
+            result.put("networkId", networkId);
+            result.put("message", "报价已提交");
+
+            return Result.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("提交报价失败: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/confirm-receive")
+    public Object confirmReceive(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("orderId") == null || params.get("networkId") == null) {
+                return Result.error("参数错误：缺少orderId或networkId");
+            }
+
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            Long networkId = Long.valueOf(params.get("networkId").toString());
+            String checkResult = params.get("checkResult") != null ?
+                params.get("checkResult").toString() : "ok";
+            String remark = params.get("remark") != null ?
+                params.get("remark").toString() : "";
+
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+
+            order.setWarehouseStatus(1);
+            order.setStatus(9);
+            order.setWarehouseConfirmTime(new Date().toString());
+            order.setLogisticsProgress("网点已确认收货，货物已入库");
+            order.setUpdateTime(new Date());
+            orderService.updateById(order);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("orderId", orderId);
+            result.put("networkId", networkId);
+            result.put("checkResult", checkResult);
+            result.put("message", "网点已确认收货");
+            result.put("warehouseStatus", "已入库");
+
+            return Result.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("确认收货失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/orders")
+    public Object getNetworkOrders(@RequestParam Long networkId,
+                                   @RequestParam(required = false) Integer status) {
+        try {
+            List<Order> allOrders = orderService.list();
+            List<Order> networkOrders = new ArrayList<>();
+
+            for (Order order : allOrders) {
+                boolean matchNetwork = order.getSelectedNetworkId() != null &&
+                    order.getSelectedNetworkId().equals(networkId);
+                boolean matchStatus = status == null ||
+                    (order.getStatus() != null && order.getStatus().equals(status));
+
+                if (matchNetwork && matchStatus) {
+                    networkOrders.add(order);
+                }
+            }
+
+            return Result.success(networkOrders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("获取网点订单失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/quotes/pending")
+    public Object getPendingQuotes(@RequestParam Long networkId) {
+        try {
+            List<NetworkQuote> allQuotes = networkQuoteService.list();
+            List<NetworkQuote> pendingQuotes = new ArrayList<>();
+
+            for (NetworkQuote quote : allQuotes) {
+                if (quote.getNetworkPointId() != null &&
+                    quote.getNetworkPointId().equals(networkId) &&
+                    quote.getStatus() != null && quote.getStatus() == 0) {
+                    pendingQuotes.add(quote);
+                }
+            }
+
+            return Result.success(pendingQuotes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("获取待报价订单失败: " + e.getMessage());
+        }
     }
 }

@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/invoice")
+@RequestMapping("/invoice")
 public class InvoiceController {
     private static final Logger log = LoggerFactory.getLogger(InvoiceController.class);
 

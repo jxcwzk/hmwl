@@ -114,6 +114,12 @@ const routes = [
     name: 'Dispatch',
     component: () => import('../views/Dispatch.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/network-confirm',
+    name: 'NetworkConfirm',
+    component: () => import('../views/NetworkConfirm.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

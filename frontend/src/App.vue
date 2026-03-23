@@ -70,6 +70,10 @@
               <el-icon><i class="el-icon-s-management"></i></el-icon>
               <span>调度管理</span>
             </el-menu-item>
+            <el-menu-item index="10" v-if="currentUserType === 2 || currentUserType === 4">
+              <el-icon><i class="el-icon-box"></i></el-icon>
+              <span>网点确认</span>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-main>
@@ -166,6 +170,12 @@ const updateActiveIndex = (path) => {
     case '/customer/business-customer':
       activeIndex.value = '8'
       break
+    case '/dispatch':
+      activeIndex.value = '9'
+      break
+    case '/network-confirm':
+      activeIndex.value = '10'
+      break
     default:
       activeIndex.value = '1'
   }
@@ -199,6 +209,8 @@ const currentPageName = computed(() => {
       return '业务客户管理'
     case '/dispatch':
       return '调度管理'
+    case '/network-confirm':
+      return '网点确认收货'
     default:
       return '首页'
   }
@@ -240,6 +252,9 @@ const handleSelect = (key) => {
         break
       case '9':
         router.push('/dispatch')
+        break
+      case '10':
+        router.push('/network-confirm')
         break
     }
     loading.value = false

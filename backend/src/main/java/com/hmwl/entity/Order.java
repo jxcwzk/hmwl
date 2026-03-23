@@ -37,6 +37,15 @@ public class Order {
     private String logisticsProgress;
     private Date createTime;
     private Date updateTime;
+    private Long pickupDriverId;
+    private Long deliveryDriverId;
+    private Long selectedNetworkId;
+    private Integer pricingStatus;
+    private Integer warehouseStatus;
+    private String priceConfirmedTime;
+    private String pickedUpTime;
+    private String deliveredToNetworkTime;
+    private String warehouseConfirmTime;
 
     public Long getId() {
         return id;
@@ -292,5 +301,77 @@ public class Order {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Long getPickupDriverId() {
+        return pickupDriverId;
+    }
+
+    public void setPickupDriverId(Long pickupDriverId) {
+        this.pickupDriverId = pickupDriverId;
+    }
+
+    public Long getDeliveryDriverId() {
+        return deliveryDriverId;
+    }
+
+    public void setDeliveryDriverId(Long deliveryDriverId) {
+        this.deliveryDriverId = deliveryDriverId;
+    }
+
+    public Long getSelectedNetworkId() {
+        return selectedNetworkId;
+    }
+
+    public void setSelectedNetworkId(Long selectedNetworkId) {
+        this.selectedNetworkId = selectedNetworkId;
+    }
+
+    public Integer getPricingStatus() {
+        return pricingStatus;
+    }
+
+    public void setPricingStatus(Integer pricingStatus) {
+        this.pricingStatus = pricingStatus;
+    }
+
+    public Integer getWarehouseStatus() {
+        return warehouseStatus;
+    }
+
+    public void setWarehouseStatus(Integer warehouseStatus) {
+        this.warehouseStatus = warehouseStatus;
+    }
+
+    public String getPriceConfirmedTime() {
+        return priceConfirmedTime;
+    }
+
+    public void setPriceConfirmedTime(String priceConfirmedTime) {
+        this.priceConfirmedTime = priceConfirmedTime;
+    }
+
+    public String getPickedUpTime() {
+        return pickedUpTime;
+    }
+
+    public void setPickedUpTime(String pickedUpTime) {
+        this.pickedUpTime = pickedUpTime;
+    }
+
+    public String getDeliveredToNetworkTime() {
+        return deliveredToNetworkTime;
+    }
+
+    public void setDeliveredToNetworkTime(String deliveredToNetworkTime) {
+        this.deliveredToNetworkTime = deliveredToNetworkTime;
+    }
+
+    public String getWarehouseConfirmTime() {
+        return warehouseConfirmTime;
+    }
+
+    public void setWarehouseConfirmTime(String warehouseConfirmTime) {
+        this.warehouseConfirmTime = warehouseConfirmTime;
     }
 }
