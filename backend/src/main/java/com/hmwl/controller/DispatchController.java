@@ -4,6 +4,8 @@ import com.hmwl.entity.Order;
 import com.hmwl.entity.NetworkQuote;
 import com.hmwl.service.OrderService;
 import com.hmwl.service.NetworkQuoteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
@@ -11,6 +13,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/dispatch")
 public class DispatchController {
+    private static final Logger log = LoggerFactory.getLogger(DispatchController.class);
 
     @Autowired
     private OrderService orderService;
@@ -129,13 +132,58 @@ public class DispatchController {
         return result;
     }
 
+    @PostMapping("/push-quote")
+    public Object pushQuote(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("orderId") == null) {
+                return Result.error("参数错误：缺少orderId");
+            }
+
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+
+            order.setStatus(4);
+            order.setLogisticsProgress("调度已推送报价，等待客户确认价格");
+            order.setUpdateTime(new Date());
+            orderService.updateById(order);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("orderId", orderId);
+            result.put("status", 4);
+            result.put("message", "报价已推送给客户");
+
+            return Result.success(result);
+        } catch (Exception e) {
+            log.error("推送报价失败", e);
+            return Result.error("推送报价失败: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/assign-delivery-driver")
     public Map<String, Object> assignDeliveryDriver(@RequestBody Map<String, Object> params) {
         Map<String, Object> result = new HashMap<>();
+
+        if (params.get("orderId") == null) {
+            result.put("success", false);
+            result.put("message", "参数错误：缺少orderId");
+            return result;
+        }
+
+        if (params.get("driverId") == null) {
+            result.put("success", false);
+            result.put("message", "参数错误：缺少driverId");
+            return result;
+        }
+
         Long orderId = Long.valueOf(params.get("orderId").toString());
+        Long driverId = Long.valueOf(params.get("driverId").toString());
 
         Order order = orderService.getById(orderId);
         if (order != null) {
+            order.setDeliveryDriverId(driverId);
             order.setPricingStatus(6);
             orderService.updateById(order);
         }

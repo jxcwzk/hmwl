@@ -898,4 +898,36 @@ public class OrderController {
             return Result.error("选择报价失败: " + e.getMessage());
         }
     }
+
+    @PostMapping("/confirm-price")
+    public Object confirmPrice(@RequestBody Map<String, Object> params) {
+        try {
+            if (params.get("orderId") == null) {
+                return Result.error("参数错误：缺少orderId");
+            }
+
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            Order order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+
+            order.setStatus(5);
+            order.setPriceConfirmedTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            order.setLogisticsProgress("客户已确认价格，等待安排提货");
+            order.setUpdateTime(new Date());
+            orderService.updateById(order);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("orderId", orderId);
+            result.put("status", 5);
+            result.put("message", "价格已确认");
+            result.put("priceConfirmedTime", order.getPriceConfirmedTime());
+
+            return Result.success(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("确认价格失败: " + e.getMessage());
+        }
+    }
 }

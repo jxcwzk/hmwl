@@ -1,5 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+const getOrderPageByUserType = () => {
+  const userType = localStorage.getItem('userType')
+  switch (userType) {
+    case '2':
+      return () => import('../views/CustomerOrder.vue')
+    case '3':
+      return () => import('../views/DriverOrder.vue')
+    case '4':
+      return () => import('../views/NetworkOrder.vue')
+    default:
+      return () => import('../views/DispatcherOrder.vue')
+  }
+}
+
 const routes = [
   {
     path: '/',
@@ -20,7 +34,7 @@ const routes = [
   {
     path: '/order',
     name: 'Order',
-    component: () => import('../views/Order.vue'),
+    component: getOrderPageByUserType(),
     meta: { requiresAuth: true }
   },
   {
@@ -131,7 +145,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  
+
   if (requiresAuth && !token) {
     next('/login')
   } else if (to.path === '/login' && token) {

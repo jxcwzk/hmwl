@@ -111,9 +111,13 @@ const handleLogin = async () => {
       if (res.code === 200) {
         localStorage.setItem('token', res.data.token)
         localStorage.setItem('userInfo', JSON.stringify(res.data))
-        
+        localStorage.setItem('userType', res.data.userType)
+        localStorage.setItem('userId', res.data.id)
+        localStorage.setItem('businessUserId', res.data.businessUserId || '')
+        localStorage.setItem('driverId', res.data.driverId || '')
+
         ElMessage.success('登录成功')
-        
+
         router.push('/home')
       } else {
         errorMsg.value = res.msg || '用户名或密码错误'

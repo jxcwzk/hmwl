@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -127,7 +128,7 @@ public class NetworkPointController {
 
             order.setWarehouseStatus(1);
             order.setStatus(9);
-            order.setWarehouseConfirmTime(new Date().toString());
+            order.setWarehouseConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             order.setLogisticsProgress("网点已确认收货，货物已入库");
             order.setUpdateTime(new Date());
             orderService.updateById(order);
