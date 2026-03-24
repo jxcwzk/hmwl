@@ -1,19 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-const getOrderPageByUserType = () => {
-  const userType = localStorage.getItem('userType')
-  switch (userType) {
-    case '2':
-      return () => import('../views/CustomerOrder.vue')
-    case '3':
-      return () => import('../views/DriverOrder.vue')
-    case '4':
-      return () => import('../views/NetworkOrder.vue')
-    default:
-      return () => import('../views/DispatcherOrder.vue')
-  }
-}
-
 const routes = [
   {
     path: '/',
@@ -34,7 +20,7 @@ const routes = [
   {
     path: '/order',
     name: 'Order',
-    component: getOrderPageByUserType(),
+    component: () => import('../views/Order.vue'),
     meta: { requiresAuth: true }
   },
   {
@@ -145,13 +131,19 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const userType = localStorage.getItem('userType')
 
   if (requiresAuth && !token) {
     next('/login')
   } else if (to.path === '/login' && token) {
     next('/home')
   } else {
-    next()
+    // 权限控制：只有调度(userType=1)才能访问客户管理页面
+    if (to.path.startsWith('/customer') && to.path !== '/customer/profile' && userType !== '1') {
+      next('/home')
+    } else {
+      next()
+    }
   }
 })
 

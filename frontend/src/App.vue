@@ -30,50 +30,109 @@
             text-color="#303133"
             active-text-color="#409EFF"
           >
-            <el-menu-item index="0">
-              <el-icon><i class="el-icon-s-home"></i></el-icon>
-              <span>首页</span>
-            </el-menu-item>
-            <el-menu-item index="1">
-              <el-icon><i class="el-icon-s-order"></i></el-icon>
-              <span>订单管理</span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <el-icon><i class="el-icon-s-grid"></i></el-icon>
-              <span>线路管理</span>
-            </el-menu-item>
-            <el-menu-item index="3">
-              <el-icon><i class="el-icon-user"></i></el-icon>
-              <span>司机管理</span>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <el-icon><i class="el-icon-truck"></i></el-icon>
-              <span>车辆管理</span>
-            </el-menu-item>
-            <el-menu-item index="5">
-              <el-icon><i class="el-icon-location"></i></el-icon>
-              <span>网点管理</span>
-            </el-menu-item>
-            <el-menu-item index="6">
-              <el-icon><i class="el-icon-s-finance"></i></el-icon>
-              <span>财务结算</span>
-            </el-menu-item>
-            <el-menu-item index="7">
-              <el-icon><i class="el-icon-setting"></i></el-icon>
-              <span>系统管理</span>
-            </el-menu-item>
-            <el-menu-item index="8">
-              <el-icon><i class="el-icon-user"></i></el-icon>
-              <span>客户管理</span>
-            </el-menu-item>
-            <el-menu-item index="9" v-if="currentUserType === 1 || currentUserType === 4">
-              <el-icon><i class="el-icon-s-management"></i></el-icon>
-              <span>调度管理</span>
-            </el-menu-item>
-            <el-menu-item index="10" v-if="currentUserType === 2 || currentUserType === 4">
-              <el-icon><i class="el-icon-box"></i></el-icon>
-              <span>网点确认</span>
-            </el-menu-item>
+            <!-- 客户菜单 (userType=2) -->
+            <template v-if="currentUserType === 2">
+              <el-menu-item index="0">
+                <el-icon><i class="el-icon-s-home"></i></el-icon>
+                <span>首页</span>
+              </el-menu-item>
+              <el-menu-item index="1">
+                <el-icon><i class="el-icon-s-order"></i></el-icon>
+                <span>我的订单</span>
+              </el-menu-item>
+              <el-menu-item index="8">
+                <el-icon><i class="el-icon-user"></i></el-icon>
+                <span>我的信息</span>
+              </el-menu-item>
+            </template>
+
+            <!-- 调度菜单 (userType=1) -->
+            <template v-else-if="currentUserType === 1">
+              <el-menu-item index="0">
+                <el-icon><i class="el-icon-s-home"></i></el-icon>
+                <span>首页</span>
+              </el-menu-item>
+              <el-menu-item index="1">
+                <el-icon><i class="el-icon-s-order"></i></el-icon>
+                <span>订单管理</span>
+              </el-menu-item>
+              <el-menu-item index="2">
+                <el-icon><i class="el-icon-s-grid"></i></el-icon>
+                <span>线路管理</span>
+              </el-menu-item>
+              <el-menu-item index="3">
+                <el-icon><i class="el-icon-user"></i></el-icon>
+                <span>司机管理</span>
+              </el-menu-item>
+              <el-menu-item index="4">
+                <el-icon><i class="el-icon-truck"></i></el-icon>
+                <span>车辆管理</span>
+              </el-menu-item>
+              <el-menu-item index="5">
+                <el-icon><i class="el-icon-location"></i></el-icon>
+                <span>网点管理</span>
+              </el-menu-item>
+              <el-menu-item index="9">
+                <el-icon><i class="el-icon-s-management"></i></el-icon>
+                <span>调度管理</span>
+              </el-menu-item>
+              <el-menu-item index="6">
+                <el-icon><i class="el-icon-s-finance"></i></el-icon>
+                <span>财务结算</span>
+              </el-menu-item>
+              <el-menu-item index="7">
+                <el-icon><i class="el-icon-setting"></i></el-icon>
+                <span>系统管理</span>
+              </el-menu-item>
+            </template>
+
+            <!-- 网点菜单 (userType=4) -->
+            <template v-else-if="currentUserType === 4">
+              <el-menu-item index="0">
+                <el-icon><i class="el-icon-s-home"></i></el-icon>
+                <span>首页</span>
+              </el-menu-item>
+              <el-menu-item index="1">
+                <el-icon><i class="el-icon-s-order"></i></el-icon>
+                <span>我的订单</span>
+              </el-menu-item>
+              <el-menu-item index="10">
+                <el-icon><i class="el-icon-box"></i></el-icon>
+                <span>确认收货</span>
+              </el-menu-item>
+              <el-menu-item index="8">
+                <el-icon><i class="el-icon-user"></i></el-icon>
+                <span>网点信息</span>
+              </el-menu-item>
+            </template>
+
+            <!-- 司机菜单 (userType=3) -->
+            <template v-else-if="currentUserType === 3">
+              <el-menu-item index="0">
+                <el-icon><i class="el-icon-s-home"></i></el-icon>
+                <span>首页</span>
+              </el-menu-item>
+              <el-menu-item index="1">
+                <el-icon><i class="el-icon-s-order"></i></el-icon>
+                <span>我的订单</span>
+              </el-menu-item>
+              <el-menu-item index="8">
+                <el-icon><i class="el-icon-user"></i></el-icon>
+                <span>个人信息</span>
+              </el-menu-item>
+            </template>
+
+            <!-- 默认菜单 -->
+            <template v-else>
+              <el-menu-item index="0">
+                <el-icon><i class="el-icon-s-home"></i></el-icon>
+                <span>首页</span>
+              </el-menu-item>
+              <el-menu-item index="1">
+                <el-icon><i class="el-icon-s-order"></i></el-icon>
+                <span>订单管理</span>
+              </el-menu-item>
+            </template>
           </el-menu>
         </el-aside>
         <el-main>
@@ -107,13 +166,17 @@ const loading = ref(false)
 const currentUserName = ref('')
 const currentUserType = ref(0)
 
-onMounted(() => {
+const loadUserInfo = () => {
   const userInfo = localStorage.getItem('userInfo')
   if (userInfo) {
     const user = JSON.parse(userInfo)
     currentUserName.value = user.username || '用户'
     currentUserType.value = user.userType || 0
   }
+}
+
+onMounted(() => {
+  loadUserInfo()
 })
 
 const handleUserCommand = (command) => {
@@ -125,17 +188,30 @@ const handleUserCommand = (command) => {
     }).then(() => {
       localStorage.removeItem('token')
       localStorage.removeItem('userInfo')
+      localStorage.removeItem('userType')
+      localStorage.removeItem('userId')
+      localStorage.removeItem('businessUserId')
+      localStorage.removeItem('driverId')
       ElMessage.success('已退出登录')
       router.push('/login')
     }).catch(() => {})
   } else if (command === 'profile') {
-    ElMessage.info('个人中心功能开发中')
+    // 客户跳转到个人信息页面
+    if (currentUserType.value === 2) {
+      router.push('/customer/profile')
+    } else {
+      ElMessage.info('个人中心功能开发中')
+    }
   }
 }
 
 // 监听路由变化，更新活动菜单和页面标题
-watch(() => route.path, (newPath) => {
+watch(() => route.path, (newPath, oldPath) => {
   updateActiveIndex(newPath)
+  // 如果从登录页跳转过来，重新读取用户信息（切换账号后）
+  if (oldPath === '/login' && newPath !== '/login') {
+    loadUserInfo()
+  }
 })
 
 // 根据当前路由更新活动菜单索引
@@ -168,6 +244,7 @@ const updateActiveIndex = (path) => {
     case '/customer':
     case '/customer/business-user':
     case '/customer/business-customer':
+    case '/customer/profile':
       activeIndex.value = '8'
       break
     case '/dispatch':
@@ -184,10 +261,16 @@ const updateActiveIndex = (path) => {
 // 获取当前页面名称
 const currentPageName = computed(() => {
   const path = route.path
+  const userType = currentUserType.value
+  
   switch (path) {
     case '/home':
       return '首页'
     case '/order':
+      // 根据角色显示不同的标题
+      if (userType === 2 || userType === 3 || userType === 4) {
+        return '我的订单'
+      }
       return '订单管理'
     case '/route':
       return '线路管理'
@@ -207,6 +290,11 @@ const currentPageName = computed(() => {
       return '业务用户管理'
     case '/customer/business-customer':
       return '业务客户管理'
+    case '/customer/profile':
+      if (userType === 2) return '个人信息'
+      if (userType === 3) return '个人信息'
+      if (userType === 4) return '网点信息'
+      return '个人中心'
     case '/dispatch':
       return '调度管理'
     case '/network-confirm':
@@ -248,7 +336,14 @@ const handleSelect = (key) => {
         router.push('/system')
         break
       case '8':
-        router.push('/customer')
+        // 客户跳转到个人信息页面，调度跳转到客户管理
+        if (currentUserType.value === 2) {
+          router.push('/customer/profile')
+        } else if (currentUserType.value === 1) {
+          router.push('/customer')
+        } else {
+          router.push('/home')
+        }
         break
       case '9':
         router.push('/dispatch')

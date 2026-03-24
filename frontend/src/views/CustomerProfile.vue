@@ -1,273 +1,287 @@
 <template>
-  <div>
+  <div class="profile-page">
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>客户档案管理</span>
-          <el-button type="primary" @click="handleAdd">新增档案</el-button>
+          <span>基本信息</span>
+          <el-button type="primary" @click="handleEdit">编辑信息</el-button>
         </div>
       </template>
+      
+      <el-descriptions :column="2" border>
+        <el-descriptions-item label="用户名">{{ userInfo.username }}</el-descriptions-item>
+        <el-descriptions-item label="姓名">{{ userInfo.name }}</el-descriptions-item>
+        <el-descriptions-item label="电话">{{ userInfo.phone }}</el-descriptions-item>
+        <el-descriptions-item label="邮箱">{{ userInfo.email }}</el-descriptions-item>
+        <el-descriptions-item label="公司名称">{{ userInfo.company }}</el-descriptions-item>
+        <el-descriptions-item label="公司地址">{{ userInfo.companyAddress }}</el-descriptions-item>
+      </el-descriptions>
+    </el-card>
 
-      <el-form :inline="true" :model="filterForm" class="filter-form">
-        <el-form-item label="公司名称">
-          <el-input v-model="filterForm.companyName" placeholder="请输入公司名称" clearable style="width: 180px;"></el-input>
-        </el-form-item>
-        <el-form-item label="信用评级">
-          <el-select v-model="filterForm.creditRating" placeholder="请选择评级" clearable style="width: 150px;">
-            <el-option label="1星" :value="1"></el-option>
-            <el-option label="2星" :value="2"></el-option>
-            <el-option label="3星" :value="3"></el-option>
-            <el-option label="4星" :value="4"></el-option>
-            <el-option label="5星" :value="5"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleFilter">筛选</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-
-      <el-table v-loading="loading" :data="customerProfileList" style="width: 100%">
-        <el-table-column prop="id" label="档案ID" width="80"></el-table-column>
-        <el-table-column prop="companyName" label="公司名称" width="180"></el-table-column>
-        <el-table-column prop="contactPerson" label="联系人" width="100"></el-table-column>
-        <el-table-column prop="contactPhone" label="联系电话" width="120"></el-table-column>
-        <el-table-column prop="address" label="地址" width="200"></el-table-column>
-        <el-table-column prop="cooperationDuration" label="合作时长" width="100">
+    <el-card style="margin-top: 20px;">
+      <template #header>
+        <div class="card-header">
+          <span>常用发货人</span>
+          <el-button type="primary" @click="handleAddSender">新增发货人</el-button>
+        </div>
+      </template>
+      
+      <el-table :data="senderList" v-loading="loading">
+        <el-table-column prop="name" label="姓名"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="address" label="地址"></el-table-column>
+        <el-table-column label="操作" width="150">
           <template #default="scope">
-            {{ scope.row.cooperationDuration ? scope.row.cooperationDuration + '个月' : '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="totalOrders" label="历史订单" width="100"></el-table-column>
-        <el-table-column prop="totalAmount" label="历史金额" width="120">
-          <template #default="scope">
-            ¥{{ (scope.row.totalAmount || 0).toFixed(2) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="creditRating" label="信用评级" width="100">
-          <template #default="scope">
-            <el-rate v-model="scope.row.creditRating" disabled :max="5"></el-rate>
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="80">
-          <template #default="scope">
-            <el-tag v-if="scope.row.status === 1" type="success">有效</el-tag>
-            <el-tag v-else type="info">无效</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="200">
-          <template #default="scope">
-            <el-button link type="primary" @click="handleView(scope.row)">查看</el-button>
-            <el-button link type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button link type="primary" @click="handleHistory(scope.row)">历史</el-button>
+            <el-button type="primary" size="small" @click="handleEditSender(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDeleteSender(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
-      <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
-        <el-form-item label="业务用户" prop="businessUserId">
-          <el-select v-model="form.businessUserId" placeholder="请选择业务用户" style="width: 100%;">
-            <el-option v-for="user in businessUserList" :key="user.id" :label="user.username" :value="user.id"></el-option>
-          </el-select>
+    <el-card style="margin-top: 20px;">
+      <template #header>
+        <div class="card-header">
+          <span>常用收货人</span>
+          <el-button type="primary" @click="handleAddReceiver">新增收货人</el-button>
+        </div>
+      </template>
+      
+      <el-table :data="receiverList" v-loading="loading">
+        <el-table-column prop="name" label="姓名"></el-table-column>
+        <el-table-column prop="phone" label="电话"></el-table-column>
+        <el-table-column prop="address" label="地址"></el-table-column>
+        <el-table-column label="操作" width="150">
+          <template #default="scope">
+            <el-button type="primary" size="small" @click="handleEditReceiver(scope.row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDeleteReceiver(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
+    <!-- 编辑基本信息对话框 -->
+    <el-dialog v-model="editDialogVisible" title="编辑基本信息" width="500px">
+      <el-form :model="editForm" label-width="100px">
+        <el-form-item label="用户名">
+          <el-input v-model="editForm.username" disabled></el-input>
         </el-form-item>
-        <el-form-item label="公司名称" prop="companyName">
-          <el-input v-model="form.companyName" placeholder="请输入公司名称"></el-input>
+        <el-form-item label="姓名">
+          <el-input v-model="editForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="联系人" prop="contactPerson">
-          <el-input v-model="form.contactPerson" placeholder="请输入联系人"></el-input>
+        <el-form-item label="电话">
+          <el-input v-model="editForm.phone"></el-input>
         </el-form-item>
-        <el-form-item label="联系电话" prop="contactPhone">
-          <el-input v-model="form.contactPhone" placeholder="请输入联系电话"></el-input>
+        <el-form-item label="邮箱">
+          <el-input v-model="editForm.email"></el-input>
         </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址"></el-input>
+        <el-form-item label="公司名称">
+          <el-input v-model="editForm.company"></el-input>
         </el-form-item>
-        <el-form-item label="合作时长">
-          <el-input-number v-model="form.cooperationDuration" :min="0" placeholder="月"></el-input-number>
-        </el-form-item>
-        <el-form-item label="信用评级">
-          <el-rate v-model="form.creditRating" :max="5"></el-rate>
-        </el-form-item>
-        <el-form-item label="收货习惯">
-          <el-input v-model="form.receivingHabits" type="textarea" placeholder="请输入收货习惯"></el-input>
-        </el-form-item>
-        <el-form-item label="特殊要求">
-          <el-input v-model="form.specialRequirements" type="textarea" placeholder="请输入特殊要求"></el-input>
+        <el-form-item label="公司地址">
+          <el-input v-model="editForm.companyAddress" type="textarea"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveProfile">保存</el-button>
       </template>
     </el-dialog>
 
-    <el-dialog v-model="historyDialogVisible" title="客户历史订单" width="800px">
-      <el-table :data="orderHistoryList" v-loading="historyLoading">
-        <el-table-column prop="orderNo" label="订单号" width="180"></el-table-column>
-        <el-table-column prop="senderName" label="发货人" width="100"></el-table-column>
-        <el-table-column prop="receiverName" label="收货人" width="100"></el-table-column>
-        <el-table-column prop="goodsName" label="货物" width="120"></el-table-column>
-        <el-table-column prop="totalFee" label="金额" width="100">
-          <template #default="scope">
-            ¥{{ (scope.row.totalFee || 0).toFixed(2) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="status" label="状态" width="100">
-          <template #default="scope">
-            <el-tag v-if="scope.row.status === 0" type="info">待处理</el-tag>
-            <el-tag v-else-if="scope.row.status === 1" type="primary">已指派</el-tag>
-            <el-tag v-else-if="scope.row.status === 5" type="success">已完成</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
-      </el-table>
+    <!-- 发货人/收货人对话框 -->
+    <el-dialog v-model="contactDialogVisible" :title="contactDialogTitle" width="500px">
+      <el-form :model="contactForm" label-width="100px">
+        <el-form-item label="姓名">
+          <el-input v-model="contactForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="contactForm.phone"></el-input>
+        </el-form-item>
+        <el-form-item label="地址">
+          <el-input v-model="contactForm.address" type="textarea"></el-input>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="contactDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveContact">保存</el-button>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import request from '../utils/request'
 
 const loading = ref(false)
-const dialogVisible = ref(false)
-const historyDialogVisible = ref(false)
-const historyLoading = ref(false)
-const dialogTitle = ref('新增档案')
-const customerProfileList = ref([])
-const businessUserList = ref([])
-const orderHistoryList = ref([])
-const formRef = ref(null)
+const userInfo = ref({})
+const senderList = ref([])
+const receiverList = ref([])
 
-const filterForm = ref({
-  companyName: '',
-  creditRating: null
-})
+const editDialogVisible = ref(false)
+const editForm = ref({})
 
-const form = ref({
-  id: null,
-  businessUserId: null,
-  companyName: '',
-  contactPerson: '',
-  contactPhone: '',
-  address: '',
-  cooperationDuration: 0,
-  creditRating: 3,
-  receivingHabits: '',
-  specialRequirements: '',
-  status: 1
-})
+const contactDialogVisible = ref(false)
+const contactDialogTitle = ref('')
+const contactForm = ref({})
+const contactType = ref('') // 'sender' 或 'receiver'
 
-const formRules = {
-  businessUserId: [{ required: true, message: '请选择业务用户', trigger: 'change' }],
-  companyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
-  contactPerson: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
-  contactPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }]
-}
-
-const loadData = async () => {
-  loading.value = true
+const getUserInfo = async () => {
   try {
-    const res = await request.get('/customer-profile/list')
-    customerProfileList.value = res.data || res || []
+    const userId = localStorage.getItem('userId')
+    const res = await request.get(`/user/${userId}`)
+    userInfo.value = res.data || res
   } catch (error) {
-    console.error('加载失败:', error)
-  } finally {
-    loading.value = false
+    // 使用本地存储的信息作为备用
+    const info = localStorage.getItem('userInfo')
+    if (info) {
+      userInfo.value = JSON.parse(info)
+    }
   }
 }
 
-const loadBusinessUsers = async () => {
+const getSenderList = async () => {
   try {
-    const res = await request.get('/business-user/list')
-    businessUserList.value = res.data || res || []
+    const businessUserId = localStorage.getItem('businessUserId')
+    const res = await request.get('/business-customer/list', {
+      params: {
+        businessUserId,
+        type: 0 // 发件人
+      }
+    })
+    senderList.value = res.data || res || []
   } catch (error) {
-    console.error('加载业务用户失败:', error)
+    senderList.value = []
   }
 }
 
-const handleFilter = () => {
-  loadData()
-}
-
-const handleReset = () => {
-  filterForm.value = { companyName: '', creditRating: null }
-  loadData()
-}
-
-const handleAdd = () => {
-  form.value = {
-    id: null,
-    businessUserId: null,
-    companyName: '',
-    contactPerson: '',
-    contactPhone: '',
-    address: '',
-    cooperationDuration: 0,
-    creditRating: 3,
-    receivingHabits: '',
-    specialRequirements: '',
-    status: 1
-  }
-  dialogTitle.value = '新增档案'
-  dialogVisible.value = true
-}
-
-const handleEdit = (row) => {
-  form.value = { ...row }
-  dialogTitle.value = '编辑档案'
-  dialogVisible.value = true
-}
-
-const handleView = (row) => {
-  handleEdit(row)
-}
-
-const handleSubmit = async () => {
+const getReceiverList = async () => {
   try {
-    if (form.value.id) {
-      await request.put('/customer-profile', form.value)
+    const businessUserId = localStorage.getItem('businessUserId')
+    const res = await request.get('/business-customer/list', {
+      params: {
+        businessUserId,
+        type: 1 // 收件人
+      }
+    })
+    receiverList.value = res.data || res || []
+  } catch (error) {
+    receiverList.value = []
+  }
+}
+
+const handleEdit = () => {
+  editForm.value = { ...userInfo.value }
+  editDialogVisible.value = true
+}
+
+const handleSaveProfile = async () => {
+  try {
+    await request.put('/user', editForm.value)
+    ElMessage.success('保存成功')
+    editDialogVisible.value = false
+    getUserInfo()
+  } catch (error) {
+    ElMessage.error('保存失败')
+  }
+}
+
+const handleAddSender = () => {
+  contactType.value = 'sender'
+  contactDialogTitle.value = '新增发货人'
+  contactForm.value = { type: 0 }
+  contactDialogVisible.value = true
+}
+
+const handleEditSender = (row) => {
+  contactType.value = 'sender'
+  contactDialogTitle.value = '编辑发货人'
+  contactForm.value = { ...row }
+  contactDialogVisible.value = true
+}
+
+const handleDeleteSender = async (id) => {
+  try {
+    await ElMessageBox.confirm('确定要删除该发货人吗？', '提示', { type: 'warning' })
+    await request.delete(`/business-customer/${id}`)
+    ElMessage.success('删除成功')
+    getSenderList()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
+const handleAddReceiver = () => {
+  contactType.value = 'receiver'
+  contactDialogTitle.value = '新增收货人'
+  contactForm.value = { type: 1 }
+  contactDialogVisible.value = true
+}
+
+const handleEditReceiver = (row) => {
+  contactType.value = 'receiver'
+  contactDialogTitle.value = '编辑收货人'
+  contactForm.value = { ...row }
+  contactDialogVisible.value = true
+}
+
+const handleDeleteReceiver = async (id) => {
+  try {
+    await ElMessageBox.confirm('确定要删除该收货人吗？', '提示', { type: 'warning' })
+    await request.delete(`/business-customer/${id}`)
+    ElMessage.success('删除成功')
+    getReceiverList()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('删除失败')
+    }
+  }
+}
+
+const handleSaveContact = async () => {
+  try {
+    const businessUserId = localStorage.getItem('businessUserId')
+    const data = {
+      ...contactForm.value,
+      businessUserId
+    }
+    
+    if (contactForm.value.id) {
+      await request.put('/business-customer', data)
       ElMessage.success('更新成功')
     } else {
-      await request.post('/customer-profile', form.value)
-      ElMessage.success('创建成功')
+      await request.post('/business-customer', data)
+      ElMessage.success('新增成功')
     }
-    dialogVisible.value = false
-    loadData()
+    
+    contactDialogVisible.value = false
+    if (contactType.value === 'sender') {
+      getSenderList()
+    } else {
+      getReceiverList()
+    }
   } catch (error) {
-    console.error('操作失败:', error)
-  }
-}
-
-const handleHistory = async (row) => {
-  historyDialogVisible.value = true
-  historyLoading.value = true
-  try {
-    const res = await request.get(`/customer-profile/${row.id}/history`)
-    orderHistoryList.value = res.orders || []
-  } catch (error) {
-    console.error('加载历史订单失败:', error)
-  } finally {
-    historyLoading.value = false
+    ElMessage.error('保存失败')
   }
 }
 
 onMounted(() => {
-  loadData()
-  loadBusinessUsers()
+  getUserInfo()
+  getSenderList()
+  getReceiverList()
 })
 </script>
 
 <style scoped>
+.profile-page {
+  padding: 20px;
+}
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.filter-form {
-  margin-bottom: 20px;
 }
 </style>

@@ -1,0 +1,20 @@
+{
+  "name": "05-test-loop",
+  "version": "1.0.0",
+  "description": "前端页面测试 - 客户、网点、司机、调度员角色",
+  "main": "customer-puppeteer-test.js",
+  "type": "module",
+  "scripts": {
+    "test:customer": "node customer-puppeteer-test.js",
+    "test:network": "node network-puppeteer-test.js",
+    "test:driver": "node driver-puppeteer-test.js",
+    "test:dispatcher": "node dispatcher-puppeteer-test.js",
+    "test": "npm run test:customer"
+  },
+  "keywords": ["puppeteer", "testing", "e2e"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^24.4.0"
+  }
+}
