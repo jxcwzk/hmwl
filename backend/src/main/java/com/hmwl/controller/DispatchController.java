@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -234,6 +235,37 @@ public class DispatchController {
 
         result.put("success", true);
         result.put("message", "Delivery driver assigned");
+        return result;
+    }
+
+    @PostMapping("/confirm-price")
+    public Map<String, Object> confirmPrice(@RequestBody Map<String, Object> params) {
+        Map<String, Object> result = new HashMap<>();
+
+        if (params.get("orderId") == null) {
+            result.put("success", false);
+            result.put("message", "参数错误：缺少orderId");
+            return result;
+        }
+
+        Long orderId = Long.valueOf(params.get("orderId").toString());
+        Order order = orderService.getById(orderId);
+
+        if (order == null) {
+            result.put("success", false);
+            result.put("message", "订单不存在");
+            return result;
+        }
+
+        order.setPricingStatus(3);
+        order.setStatus(5);
+        order.setPriceConfirmedTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        order.setLogisticsProgress("客户已确认价格，等待安排提货");
+        order.setUpdateTime(new Date());
+        orderService.updateById(order);
+
+        result.put("success", true);
+        result.put("message", "价格确认成功");
         return result;
     }
 }
