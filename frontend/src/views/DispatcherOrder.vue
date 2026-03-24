@@ -184,6 +184,7 @@ const handleDispatch = async () => {
     })
     ElMessage.success('派发比价成功')
     dispatchDialogVisible.value = false
+    activeTab.value = '1'
     getOrderList()
   } catch (error) {
     ElMessage.error('派发比价失败')

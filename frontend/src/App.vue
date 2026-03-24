@@ -192,6 +192,8 @@ const handleUserCommand = (command) => {
       localStorage.removeItem('userId')
       localStorage.removeItem('businessUserId')
       localStorage.removeItem('driverId')
+      currentUserName.value = ''
+      currentUserType.value = 0
       ElMessage.success('已退出登录')
       router.push('/login')
     }).catch(() => {})

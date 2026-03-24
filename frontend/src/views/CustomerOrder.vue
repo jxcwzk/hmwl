@@ -87,6 +87,81 @@
         <el-descriptions-item label="物流进度" :span="2">{{ currentOrder.logisticsProgress || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
+
+    <!-- 新增订单对话框 -->
+    <el-dialog v-model="addDialogVisible" title="新增订单" width="600px">
+      <el-form :model="addForm" label-width="100px">
+        <el-divider content-position="left">发件人信息</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="发件人">
+              <el-input v-model="addForm.senderName" placeholder="请输入发件人姓名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="发件人电话">
+              <el-input v-model="addForm.senderPhone" placeholder="请输入发件人电话" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="发件人地址">
+          <el-input v-model="addForm.senderAddress" placeholder="请输入发件人地址" />
+        </el-form-item>
+
+        <el-divider content-position="left">收件人信息</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="收件人">
+              <el-input v-model="addForm.receiverName" placeholder="请输入收件人姓名" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收件人电话">
+              <el-input v-model="addForm.receiverPhone" placeholder="请输入收件人电话" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-form-item label="收件人地址">
+          <el-input v-model="addForm.receiverAddress" placeholder="请输入收件人地址" />
+        </el-form-item>
+
+        <el-divider content-position="left">货物信息</el-divider>
+        <el-form-item label="货物名称">
+          <el-input v-model="addForm.goodsName" placeholder="请输入货物名称" />
+        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="重量(kg)">
+              <el-input-number v-model="addForm.weight" :min="0" :precision="2" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="体积(m³)">
+              <el-input-number v-model="addForm.volume" :min="0" :precision="2" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="数量">
+              <el-input-number v-model="addForm.quantity" :min="1" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="付款方式">
+              <el-select v-model="addForm.paymentMethod" style="width: 100%">
+                <el-option label="现结" :value="0" />
+                <el-option label="月结" :value="1" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
+        <el-button @click="addDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitAddOrder" :loading="submitLoading">提交</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -103,6 +178,22 @@ const orderList = ref([])
 const searchKeyword = ref('')
 const detailDialogVisible = ref(false)
 const currentOrder = ref(null)
+const addDialogVisible = ref(false)
+const submitLoading = ref(false)
+
+const addForm = ref({
+  senderName: '',
+  senderPhone: '',
+  senderAddress: '',
+  receiverName: '',
+  receiverPhone: '',
+  receiverAddress: '',
+  goodsName: '',
+  weight: 1,
+  volume: 0.01,
+  quantity: 1,
+  paymentMethod: 0
+})
 
 const getOrderList = async () => {
   loading.value = true
@@ -148,7 +239,57 @@ const getStatusText = (status) => {
 }
 
 const handleAddOrder = () => {
-  router.push('/order/create')
+  addForm.value = {
+    senderName: '',
+    senderPhone: '',
+    senderAddress: '',
+    receiverName: '',
+    receiverPhone: '',
+    receiverAddress: '',
+    goodsName: '',
+    weight: 1,
+    volume: 0.01,
+    quantity: 1,
+    paymentMethod: 0
+  }
+  addDialogVisible.value = true
+}
+
+const submitAddOrder = async () => {
+  if (!addForm.value.senderName || !addForm.value.receiverName) {
+    ElMessage.warning('请填写发件人和收件人信息')
+    return
+  }
+  if (!addForm.value.senderPhone || !addForm.value.receiverPhone) {
+    ElMessage.warning('请填写发件人和收件人电话')
+    return
+  }
+  if (!addForm.value.senderAddress || !addForm.value.receiverAddress) {
+    ElMessage.warning('请填写发件人和收件人地址')
+    return
+  }
+  if (!addForm.value.goodsName) {
+    ElMessage.warning('请填写货物名称')
+    return
+  }
+
+  submitLoading.value = true
+  try {
+    const businessUserId = localStorage.getItem('businessUserId') || 1
+    await request.post('/order', {
+      ...addForm.value,
+      businessUserId: Number(businessUserId),
+      status: 0,
+      pricingStatus: 0
+    })
+    ElMessage.success('订单创建成功')
+    addDialogVisible.value = false
+    getOrderList()
+  } catch (error) {
+    ElMessage.error('订单创建失败')
+  } finally {
+    submitLoading.value = false
+  }
 }
 
 const handleView = (row) => {

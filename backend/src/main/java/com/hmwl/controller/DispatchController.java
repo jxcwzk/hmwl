@@ -2,8 +2,10 @@ package com.hmwl.controller;
 
 import com.hmwl.entity.Order;
 import com.hmwl.entity.NetworkQuote;
+import com.hmwl.entity.NetworkPoint;
 import com.hmwl.service.OrderService;
 import com.hmwl.service.NetworkQuoteService;
+import com.hmwl.service.NetworkPointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,9 @@ public class DispatchController {
 
     @Autowired
     private NetworkQuoteService networkQuoteService;
+
+    @Autowired
+    private NetworkPointService networkPointService;
 
     @GetMapping("/test")
     public Map<String, String> test() {
@@ -47,16 +52,54 @@ public class DispatchController {
         Map<String, Object> result = new HashMap<>();
         Long orderId = Long.valueOf(params.get("orderId").toString());
         @SuppressWarnings("unchecked")
-        List<Long> networkIds = (List<Long>) params.get("networkIds");
+        List<Long> networkPointIds = (List<Long>) params.get("networkPointIds");
+
+        log.info("派发比价请求：orderId={}, networkPointIds={}", orderId, networkPointIds);
 
         Order order = orderService.getById(orderId);
-        if (order != null) {
-            order.setPricingStatus(1);
-            orderService.updateById(order);
+        if (order == null) {
+            result.put("success", false);
+            result.put("message", "订单不存在");
+            return result;
         }
 
+        order.setStatus(1);
+        order.setPricingStatus(1);
+        orderService.updateById(order);
+
+        if (networkPointIds != null && !networkPointIds.isEmpty()) {
+            List<NetworkQuote> quotes = new ArrayList<>();
+            for (Number networkIdNum : networkPointIds) {
+                Long networkId = networkIdNum.longValue();
+                NetworkPoint network = networkPointService.getById(networkId);
+                String networkName = network != null && network.getName() != null ? network.getName() : "网点" + networkId;
+
+                double baseFee = 100.0;
+                double finalPrice = 150.0;
+                if (order.getWeight() != null) {
+                    baseFee = Math.round((50.0 + order.getWeight() * 2.0) * 100.0) / 100.0;
+                    finalPrice = Math.round(baseFee * 1.4286 * 100.0) / 100.0;
+                }
+
+                NetworkQuote quote = new NetworkQuote();
+                quote.setNetworkPointId(networkId);
+                quote.setNetworkName(networkName);
+                quote.setBaseFee(baseFee);
+                quote.setFinalPrice(finalPrice);
+                quote.setTransitDays(3);
+                quote.setStatus(1);
+                quote.setQuoteTime(new Date());
+                quotes.add(quote);
+            }
+
+            if (!quotes.isEmpty()) {
+                networkQuoteService.saveQuotes(orderId, quotes);
+            }
+        }
+
+        log.info("订单状态已更新为待确认报价：orderId={}", orderId);
         result.put("success", true);
-        result.put("message", "Quote request submitted successfully");
+        result.put("message", "派发比价成功");
         return result;
     }
 
@@ -88,6 +131,7 @@ public class DispatchController {
 
         Order order = orderService.getById(orderId);
         if (order != null) {
+            order.setNetworkPointId(quote.getNetworkPointId());
             order.setPricingStatus(2);
             orderService.updateById(order);
         }

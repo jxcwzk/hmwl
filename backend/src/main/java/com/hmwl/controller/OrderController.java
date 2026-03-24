@@ -23,6 +23,7 @@ import com.hmwl.service.OrderAssignHistoryService;
 import com.hmwl.service.DriverService;
 import com.hmwl.service.NetworkPointService;
 import com.hmwl.dto.DistanceCalculateRequest;
+import java.util.stream.Collectors;
 import com.hmwl.dto.DistanceCalculateResponse;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -435,14 +436,28 @@ public class OrderController {
 
     /**
      * 获取网点的订单列表
-     * 
+     *
      * @param networkPointId 网点ID
      * @return 订单列表
      */
     @GetMapping(value = "/network-list", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     public List<Order> getNetworkOrderList(@RequestParam Long networkPointId) {
-        return orderService.list(new QueryWrapper<Order>()
-                .eq("network_point_id", networkPointId));
+        List<Order> orders = orderService.list(new QueryWrapper<Order>()
+                .eq("network_point_id", networkPointId)
+                .or()
+                .in("id", networkQuoteService.list(
+                    new QueryWrapper<NetworkQuote>()
+                        .eq("network_point_id", networkPointId)
+                        .eq("status", 1)
+                        .select("order_id")
+                ).stream().map(NetworkQuote::getOrderId).collect(Collectors.toList())));
+
+        for (Order order : orders) {
+            order.setSenderName("郭红美");
+            order.setSenderPhone("15050854783");
+            order.setSenderAddress("深圳市宝安区福永街道");
+        }
+        return orders;
     }
 
     // ========== 订单分配优化相关API ==========
