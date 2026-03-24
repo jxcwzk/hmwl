@@ -5,6 +5,25 @@ import java.util.Date;
 
 @TableName("orders")
 public class Order {
+    /**
+     * 订单状态定义:
+     * status - 主状态
+     *   0: 订单创建
+     *   1: 已派发比价
+     *   4: 报价已推送客户
+     *   5: 价格已确认
+     *   9: 网点已确认收货
+     *   13: 订单已完成
+     *
+     * pricingStatus - 定价状态
+     *   0: 待定价
+     *   1: 待网点报价
+     *   2: 调度已选报价
+     *   3: 客户已确认价格
+     *   4: 已安排提货
+     *   5: 已分配配送
+     *   6: 配送中
+     */
     private Long id;
     private String orderNo;
     private Integer orderType;
