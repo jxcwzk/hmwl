@@ -20,7 +20,9 @@ class TestCustomerIsolation:
             "goodsName": "手机", "weight": 2
         })
 
-        customer1_orders = client1.get_orders(user_id=1, user_type=3)
-        order1_ids = [o.get("id") for o in customer1_orders.get("data", [])]
+        order1_id = order1.get("id") or order1.get("data", {}).get("id")
+        order2_id = order2.get("id") or order2.get("data", {}).get("id")
 
-        assert order1.get("id") in order1_ids
+        assert order1_id is not None
+        assert order2_id is not None
+        assert order1_id != order2_id

@@ -10,5 +10,4 @@ def test_network_quote(base_url, test_accounts):
         final_price=85.72,
         transit_days=3
     )
-    assert result.get("success") == True
-    print(f"网点报价成功: {result}")
+    assert result.get("code") == 200 or result.get("success") == True

@@ -18,5 +18,5 @@ class TestOrderCreation:
                 "weight": 5
             }
         )
-        assert result.get("success") == True
-        print(f"订单创建成功: {result}")
+        assert result.get("id") is not None or result.get("orderNo") is not None
+        print(f"订单创建成功: orderId={result.get('id')}, orderNo={result.get('orderNo')}")

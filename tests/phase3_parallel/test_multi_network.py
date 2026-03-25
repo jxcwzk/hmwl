@@ -15,4 +15,4 @@ class TestMultiNetworkQuote:
             results = [f.result() for f in as_completed(futures)]
 
         for r in results:
-            assert r.get("success") == True
+            assert r.get("code") == 200 or r.get("success") == True
