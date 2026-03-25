@@ -1,0 +1,10 @@
+{
+  "name": "logistics-ui-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node puppeteer-runner.js"
+  },
+  "dependencies": {
+    "puppeteer": "^19.0.0"
+  }
+}
