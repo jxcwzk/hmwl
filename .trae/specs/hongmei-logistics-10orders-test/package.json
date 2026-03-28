@@ -1,0 +1,12 @@
+{
+  "name": "hongmei-logistics-10orders-test",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "scripts/10orders-test.js",
+  "scripts": {
+    "test": "node scripts/10orders-test.js"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.42.0"
+  }
+}

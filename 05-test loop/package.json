@@ -11,10 +11,17 @@
     "test:dispatcher": "node dispatcher-puppeteer-test.js",
     "test": "npm run test:customer"
   },
-  "keywords": ["puppeteer", "testing", "e2e"],
+  "keywords": [
+    "puppeteer",
+    "testing",
+    "e2e"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "puppeteer": "^24.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

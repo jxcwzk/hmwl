@@ -62,7 +62,8 @@ async function runTest() {
   try {
     // 启动浏览器
     browser = await chromium.launch({
-      headless: true
+      headless: true,
+      executablePath: '/Users/jiangxiaochun/Library/Caches/ms-playwright/chromium-1105/chrome-mac/Chromium.app/Contents/MacOS/Chromium'
     });
     
     page = await browser.newPage();

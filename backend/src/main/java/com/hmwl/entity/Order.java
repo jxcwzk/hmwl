@@ -65,6 +65,7 @@ public class Order {
     private String pickedUpTime;
     private String deliveredToNetworkTime;
     private String warehouseConfirmTime;
+    private String deliveryCompletedTime;
 
     public Long getId() {
         return id;
@@ -392,5 +393,13 @@ public class Order {
 
     public void setWarehouseConfirmTime(String warehouseConfirmTime) {
         this.warehouseConfirmTime = warehouseConfirmTime;
+    }
+
+    public String getDeliveryCompletedTime() {
+        return deliveryCompletedTime;
+    }
+
+    public void setDeliveryCompletedTime(String deliveryCompletedTime) {
+        this.deliveryCompletedTime = deliveryCompletedTime;
     }
 }

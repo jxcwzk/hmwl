@@ -1,0 +1,12 @@
+{
+  "name": "business-tester-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "full-workflow-test.js",
+  "scripts": {
+    "test:full": "node full-workflow-test.js"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.42.0"
+  }
+}

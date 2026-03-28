@@ -1,0 +1,20 @@
+{
+  "name": "playwright-testing",
+  "version": "1.0.0",
+  "description": "Playwright testing skill for API and UI testing",
+  "type": "module",
+  "main": "scripts/ui-test.js",
+  "scripts": {
+    "test:api": "node scripts/api-test.js",
+    "test:ui": "node scripts/ui-test.js",
+    "test:e2e": "node scripts/e2e-test.js",
+    "test:login": "node scripts/login-test.js",
+    "test:all": "npm run test:api && npm run test:ui && npm run test:e2e && npm run test:login"
+  },
+  "keywords": ["playwright", "testing", "e2e", "api", "ui"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@playwright/test": "^1.42.0"
+  }
+}

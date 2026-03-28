@@ -25,6 +25,9 @@
                 <el-tag v-else type="info">未开始</el-tag>
               </template>
             </el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160">
+              <template #default="scope">{{ formatTime(scope.row.createTime) }}</template>
+            </el-table-column>
             <el-table-column label="操作" width="150">
               <template #default="scope">
                 <el-button type="primary" size="small" @click="showNetworks(scope.row)">
@@ -48,6 +51,9 @@
                 <el-tag>{{ getQuoteCount(scope.row.id) }}</el-tag>
               </template>
             </el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160">
+              <template #default="scope">{{ formatTime(scope.row.createTime) }}</template>
+            </el-table-column>
             <el-table-column label="操作" width="100">
               <template #default="scope">
                 <el-button type="primary" size="small" @click="showQuotes(scope.row)">
@@ -69,6 +75,9 @@
               </template>
             </el-table-column>
             <el-table-column prop="logisticsProgress" label="状态" width="200"></el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160">
+              <template #default="scope">{{ formatTime(scope.row.createTime) }}</template>
+            </el-table-column>
           </el-table>
         </el-tab-pane>
 
@@ -91,6 +100,9 @@
                 <el-tag v-else-if="scope.row.status === 7" type="success">已提货</el-tag>
                 <el-tag v-else type="info">其他</el-tag>
               </template>
+            </el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160">
+              <template #default="scope">{{ formatTime(scope.row.createTime) }}</template>
             </el-table-column>
             <el-table-column label="操作" width="150">
               <template #default="scope">
@@ -123,6 +135,9 @@
                 <span v-if="scope.row.deliveryDriverId">司机{{ scope.row.deliveryDriverId }}</span>
                 <el-tag v-else type="warning">待分配</el-tag>
               </template>
+            </el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160">
+              <template #default="scope">{{ formatTime(scope.row.createTime) }}</template>
             </el-table-column>
             <el-table-column label="操作" width="150">
               <template #default="scope">
@@ -273,6 +288,17 @@ const driverType = ref('')
 
 const getQuoteCount = (orderId) => {
   return quoteCountMap.value[orderId] || 0
+}
+
+const formatTime = (time) => {
+  if (!time) return '-'
+  try {
+    const date = new Date(time)
+    if (isNaN(date.getTime())) return '-'
+    return date.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+  } catch (e) {
+    return String(time)
+  }
 }
 
 const loadData = async () => {

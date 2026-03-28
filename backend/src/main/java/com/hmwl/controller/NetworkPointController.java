@@ -6,6 +6,7 @@ import com.hmwl.entity.Order;
 import com.hmwl.service.NetworkPointService;
 import com.hmwl.service.NetworkQuoteService;
 import com.hmwl.service.OrderService;
+import com.hmwl.service.OrderTimelineService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class NetworkPointController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrderTimelineService orderTimelineService;
 
     @GetMapping("/list")
     public List<NetworkPoint> list() {
@@ -132,6 +136,15 @@ public class NetworkPointController {
             order.setLogisticsProgress("网点已确认收货，货物已入库");
             order.setUpdateTime(new Date());
             orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                networkId,
+                "NETWORK",
+                "NETWORK_CONFIRMED",
+                "网点已确认",
+                "网点确认收货"
+            );
 
             Map<String, Object> result = new HashMap<>();
             result.put("orderId", orderId);

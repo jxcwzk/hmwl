@@ -22,6 +22,7 @@ import com.hmwl.service.SettlementService;
 import com.hmwl.service.OrderAssignHistoryService;
 import com.hmwl.service.DriverService;
 import com.hmwl.service.NetworkPointService;
+import com.hmwl.service.OrderTimelineService;
 import com.hmwl.dto.DistanceCalculateRequest;
 import java.util.stream.Collectors;
 import com.hmwl.dto.DistanceCalculateResponse;
@@ -60,10 +61,14 @@ public class OrderController {
     @Autowired
     private NetworkPointService networkPointService;
 
+    @Autowired
+    private OrderTimelineService orderTimelineService;
+
+    @Autowired
+    private RouteService routeService;
+
     /**
      * 获取订单列表，根据用户角色返回不同的订单
-     * 
-     * @param userId 用户ID
      * @param userType 用户类型
      * @param businessUserId 业务用户ID
      * @param driverId 司机ID
@@ -150,6 +155,14 @@ public class OrderController {
             String qrCodeUrl = qrCodeService.generateAndUploadQrCode(order.getOrderNo());
             order.setQrCodeUrl(qrCodeUrl);
             orderService.updateById(order);
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                order.getBusinessUserId(),
+                "CUSTOMER",
+                "ORDER_CREATED",
+                "已下单",
+                "客户创建订单"
+            );
         }
         return order;
     }
@@ -384,8 +397,17 @@ public class OrderController {
         
         order.setUpdateTime(new Date());
         boolean success = orderService.updateById(order);
-        
+
         if (success) {
+            Long networkId = params.get("networkId") != null ? Long.valueOf(params.get("networkId").toString()) : 0L;
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                networkId,
+                "NETWORK",
+                "NETWORK_QUOTED",
+                "已报价",
+                "网点提交报价"
+            );
             return Result.success("报价成功");
         } else {
             return Result.error("报价失败");
@@ -498,11 +520,19 @@ public class OrderController {
             order.setStatus(1);
             order.setUpdateTime(new Date());
             boolean success = orderService.updateById(order);
-            
+
             if (success) {
                 orderAssignHistoryService.saveAssignRecord(
                     orderId, order.getOrderNo(), driverId, driver.getName(),
                     operatorId, operatorName, 1, "批量分配"
+                );
+                orderTimelineService.recordTimeline(
+                    order.getOrderNo(),
+                    operatorId,
+                    "DISPATCHER",
+                    "DELIVERY_ASSIGNED",
+                    "已分配配送",
+                    "调度分配配送任务"
                 );
                 successCount++;
             }
@@ -608,10 +638,18 @@ public class OrderController {
         order.setDriverId(driverId);
         order.setStatus(1);
         order.setUpdateTime(new Date());
-        
+
         boolean success = orderService.updateById(order);
-        
+
         if (success) {
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                driverId,
+                "DRIVER",
+                "PICKUP_ARRANGED",
+                "已安排提货",
+                "司机接单"
+            );
             return Result.success("接单成功");
         } else {
             return Result.error("接单失败");
@@ -690,6 +728,14 @@ public class OrderController {
             case 5:
                 statusText = "已完成";
                 break;
+            case 7:
+                statusText = "已提货";
+                order.setPickedUpTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                break;
+            case 13:
+                statusText = "已签收";
+                order.setDeliveryCompletedTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                break;
             default:
                 statusText = "状态更新";
         }
@@ -702,19 +748,49 @@ public class OrderController {
         
         order.setStatus(newStatus);
         order.setUpdateTime(new Date());
-        
+
         boolean success = orderService.updateById(order);
-        
+
         if (success) {
+            String statusCode = "";
+            String statusName = statusText;
+            String timelineRemark = "";
+            switch (newStatus) {
+                case 7:
+                    statusCode = "DRIVER_PICKED";
+                    timelineRemark = "司机提货";
+                    break;
+                case 2:
+                    statusCode = "IN_DELIVERY";
+                    timelineRemark = "配送中";
+                    break;
+                case 4:
+                    statusCode = "ARRIVED_NETWORK";
+                    timelineRemark = "送达网点";
+                    break;
+                case 13:
+                    statusCode = "CUSTOMER_SIGNED";
+                    timelineRemark = "客户签收";
+                    break;
+                default:
+                    statusCode = "STATUS_UPDATE";
+                    timelineRemark = "状态更新";
+            }
+            Long operatorId = params.get("driverId") != null ? Long.valueOf(params.get("driverId").toString()) : 0L;
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                operatorId,
+                "DRIVER",
+                statusCode,
+                statusName,
+                timelineRemark
+            );
             return Result.success("状态更新成功");
         } else {
             return Result.error("状态更新失败");
         }
     }
 
-    @Autowired
-    private RouteService routeService;
-    
     @Autowired
     private NetworkQuoteService networkQuoteService;
 
@@ -899,14 +975,23 @@ public class OrderController {
             order.setLogisticsProgress("调度已确认报价，等待网点确认");
             order.setUpdateTime(new Date());
             orderService.updateById(order);
-            
+
             networkQuoteService.selectBestQuote(orderId, quoteId);
-            
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                0L,
+                "DISPATCHER",
+                "ORDER_DISPATCHED",
+                "已派发",
+                "调度选择报价并派发"
+            );
+
             Map<String, Object> result = new HashMap<>();
             result.put("selectedQuote", selectedQuote);
             result.put("order", order);
             result.put("message", "已选择报价，订单已更新");
-            
+
             return Result.success(result);
         } catch (Exception e) {
             e.printStackTrace();
@@ -933,6 +1018,16 @@ public class OrderController {
             order.setUpdateTime(new Date());
             orderService.updateById(order);
 
+            Long customerId = order.getBusinessUserId();
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                customerId,
+                "CUSTOMER",
+                "CUSTOMER_CONFIRMED",
+                "已确认",
+                "客户确认价格"
+            );
+
             Map<String, Object> result = new HashMap<>();
             result.put("orderId", orderId);
             result.put("status", 5);
@@ -944,5 +1039,13 @@ public class OrderController {
             e.printStackTrace();
             return Result.error("确认价格失败: " + e.getMessage());
         }
+    }
+
+    @GetMapping(value = "/timeline/{orderNo}", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
+    public Result getTimeline(@PathVariable String orderNo) {
+        if (orderNo == null || orderNo.isEmpty()) {
+            return Result.error("订单号不能为空");
+        }
+        return Result.success(orderTimelineService.getTimelineByOrderNo(orderNo));
     }
 }

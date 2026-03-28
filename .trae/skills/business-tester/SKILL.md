@@ -1,7 +1,8 @@
----
+***
+
 name: "business-tester"
 description: "Executes multi-role business workflow tests for order lifecycle. Invoke when user says '业务员干活' to run end-to-end business scenario testing."
----
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # Business Tester
 
@@ -10,6 +11,7 @@ This skill executes comprehensive multi-role business workflow tests for the log
 ## When to Use
 
 **Trigger**: User says "业务员干活" or asks to:
+
 - Run business workflow tests
 - Test multi-role order processing
 - Generate business test reports
@@ -18,7 +20,7 @@ This skill executes comprehensive multi-role business workflow tests for the log
 ## Directory Structure
 
 ```
-05-test-loop/    - 测试报告输出目录
+/Users/jiangxiaochun/Desktop/hmwl/hmwl/05-test loop/    - 测试报告输出目录
 ```
 
 ## Test Workflow
@@ -26,60 +28,102 @@ This skill executes comprehensive multi-role business workflow tests for the log
 ### Test Scenarios
 
 #### Scenario 1: Complete Order Lifecycle
+
 1. **客户(客户角色)** - 创建订单
    - 登录小程序
-   - 填写发货信息（发货人、收货人、货物信息）
+   - 填写发货信息（选择发货人、选择收货人、填写货物信息/重量/体积/数量/备注）
    - 提交订单
-
-2. **管理员(管理员角色)** - 分配订单
+   - 订单状态：待报价
+2. **管理员(管理员角色)** - 派发比价
    - 登录管理后台
    - 查看待分配订单
-   - 指派网点
-   - 指派司机
-
-3. **司机(司机角色)** - 执行配送
+   - 指派网点报价
+   - 更新状态：待比价
+3. **网点(网点角色)** - 提供报价
+   - 登录网点端小程序
+   - 查看分配订单
+   - 确认报价
+   - 更新状态：已报价
+4. **管理员(管理员角色)** - 确认价格
+   - 登录管理后台
+   - 查看网点报价
+   - 选择最低报价的网点
+   - 请求客户确认价格是否可以接受
+   - 更新状态：已反馈报价
+5. **客户(客户角色)** - 确认发货
+   - 查看订单详情
+   - 确认价格
+   - 更新状态：可发货
+6. **管理员(管理员角色)** - 分配订单
+   - 登录管理后台
+   - 查看待分配订单
+   - 指派提货司机去客户处提货
+   - 更新状态：已安排提货司机
+7. **司机(提货司机角色)** - 客户处提货
    - 登录司机端小程序
    - 查看分配订单
    - 接单
-   - 更新状态：已取货→配送中→已送达
-   - 上传回单
-
-4. **客户(客户角色)** - 确认收货
-   - 查看物流进度
-   - 确认收货
-
-5. **财务(财务角色)** - 结算
-   - 登录管理后台
-   - 查看已完成订单
-   - 创建结算记录
-   - 开票
+   - 更新状态：已取货
+   - 上传接单照片
+   - 拉回仓库待拼车
+   - 更新状态：已拼车
+   - 上传拼车照片
+   - 确认拼车
+   - 更新状态：已确认拼车
+8. **网点(网点角色)** - 安排运输
+   - 登录网点端小程序
+   - 查看分配订单
+   - 确认收到提货司机的货物
+   - 更新状态：已收货
+   - 安排货物运输到客户指定地址
+   - 指派配送司机
+   - 更新状态：已配送
+9. **司机(配送司机角色)** - 执行配送
+   - 登录司机端小程序
+   - 查看分配订单
+   - 接单
+   - 更新状态：配送中
+   - 收件人确认收货
+   - 更新状态：已送达
+   - 上传回单照片
+10. **客户(客户角色)** - 确认收货
+    - 查看物流进度
+    - 确认收货
+11. **财务(财务角色)** - 结算
+    - 登录管理后台
+    - 查看已完成订单
+    - 创建结算记录
+    - 开票
 
 ### Test Cases to Validate
 
 | Test Case | Expected Result | Validation |
-|-----------|---------------|------------|
-| 客户创建订单 | 订单创建成功，状态为"待处理" | 订单号生成 |
-| 管理员指派网点 | 订单关联网点，状态更新 | 网点信息显示 |
-| 管理员指派司机 | 订单关联司机，状态为"已指派" | 司机信息显示 |
-| 司机接单 | 订单状态变为"已接单" | 状态更新 |
-| 司机更新状态 | 物流进度更新 | 进度记录 |
-| 上传回单 | 回单图片关联订单 | 图片显示 |
-| 客户查看进度 | 实时显示最新状态 | 状态同步 |
-| 财务结算 | 结算记录创建 | 金额计算正确 |
+| --------- | --------------- | ---------- |
+| 客户创建订单    | 订单创建成功，状态为"待处理" | 订单号生成      |
+| 管理员指派网点   | 订单关联网点，状态更新     | 网点信息显示     |
+| 管理员指派司机   | 订单关联司机，状态为"已指派" | 司机信息显示     |
+| 司机接单      | 订单状态变为"已接单"     | 状态更新       |
+| 司机更新状态    | 物流进度更新          | 进度记录       |
+| 上传回单      | 回单图片关联订单        | 图片显示       |
+| 客户查看进度    | 实时显示最新状态        | 状态同步       |
+| 财务结算      | 结算记录创建          | 金额计算正确     |
 
 ## Execution Process
 
 ### Step 1: Prepare Test Environment
+
 - Check system availability
 - Verify database connection
 - Ensure all services are running
 
 ### Step 2: Execute Test Scenarios
+
 - Run each role's actions sequentially
 - Record test data and results
 - Capture screenshots for evidence
 
 ### Step 3: Generate Test Report
+
 - Compile test results
 - Calculate pass/fail rates
 - Identify issues and risks
@@ -143,7 +187,7 @@ This skill executes comprehensive multi-role business workflow tests for the log
 
 ## Output Location
 
-Test reports are saved to: `05-test-loop/业务测试报告-{日期}.md`
+Test reports are saved to: `/Users/jiangxiaochun/Desktop/hmwl/hmwl/05-test loop/test-results/业务测试报告-{日期}.md`
 
 ## Key Features
 
@@ -159,3 +203,4 @@ Test reports are saved to: `05-test-loop/业务测试报告-{日期}.md`
 - Technical performance testing is out of scope
 - Tests can be run incrementally or full suite
 - Report generation is automatic after test completion
+
