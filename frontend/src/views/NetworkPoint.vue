@@ -80,14 +80,14 @@ const form = ref({})
 const getNetworkPointList = async () => {
   loading.value = true
   try {
-    const res = await request.get('/network-point/page', {
+    const res = await request.get('/network/page', {
       params: {
         current: currentPage.value,
         size: pageSize.value
       }
     })
-    networkPointList.value = res.records || res.data?.records || []
-    total.value = res.total || res.data?.total || 0
+    networkPointList.value = res.records || []
+    total.value = res.total || 0
   } finally {
     loading.value = false
   }
@@ -125,10 +125,10 @@ const handleSubmit = async () => {
       return
     }
     if (form.value.id) {
-      await request.put('/network-point', form.value)
+      await request.put('/network', form.value)
       ElMessage.success('更新网点成功')
     } else {
-      await request.post('/network-point', form.value)
+      await request.post('/network', form.value)
       ElMessage.success('新增网点成功')
     }
     dialogVisible.value = false

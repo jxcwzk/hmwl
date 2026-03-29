@@ -52,10 +52,6 @@
                 <el-icon><i class="el-icon-s-home"></i></el-icon>
                 <span>首页</span>
               </el-menu-item>
-              <el-menu-item index="1">
-                <el-icon><i class="el-icon-s-order"></i></el-icon>
-                <span>订单管理</span>
-              </el-menu-item>
               <el-menu-item index="2">
                 <el-icon><i class="el-icon-s-grid"></i></el-icon>
                 <span>线路管理</span>

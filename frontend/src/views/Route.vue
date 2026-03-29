@@ -108,7 +108,7 @@ const getNetworkName = (id) => {
 
 const getNetworkList = async () => {
   try {
-    const res = await request.get('/network-point/list')
+    const res = await request.get('/network/list')
     networkList.value = res || []
   } catch (error) {
     console.error('获取网点列表失败', error)

@@ -329,7 +329,11 @@ const loadPricingOrders = async () => {
 
 const loadOrders = async () => {
   try {
-    const res = await request.get('/order/list')
+    const userId = localStorage.getItem('userId')
+    const userType = localStorage.getItem('userType')
+    const res = await request.get('/order/list', {
+      params: { userId, userType }
+    })
     const orders = res || []
 
     const pending = []

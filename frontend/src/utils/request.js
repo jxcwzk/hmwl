@@ -22,7 +22,7 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     const res = response.data
-    if (res.code !== undefined && res.code !== 200) {
+    if (res && res.code !== undefined && res.code !== 200) {
       if (res.code === 401 || res.msg?.includes('未授权') || res.msg?.includes('Token已过期')) {
         localStorage.removeItem('token')
         localStorage.removeItem('userInfo')
@@ -31,7 +31,7 @@ request.interceptors.response.use(
       ElMessage.error(res.message || res.msg || '请求失败')
       return Promise.reject(new Error(res.message || res.msg || '请求失败'))
     }
-    return res
+    return res && res.data !== undefined ? res.data : res
   },
   error => {
     if (error.response?.status === 401) {
