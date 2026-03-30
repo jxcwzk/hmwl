@@ -7,7 +7,27 @@
           <el-button type="primary" @click="handleAdd">新增网点</el-button>
         </div>
       </template>
-      <el-table v-loading="loading" :data="networkPointList" style="width: 100%">
+
+      <div class="search-bar">
+        <el-input
+          v-model="searchForm.name"
+          placeholder="网点名称"
+          style="width: 150px; margin-right: 10px;"
+          clearable
+          @keyup.enter="handleSearch"
+        ></el-input>
+        <el-input
+          v-model="searchForm.city"
+          placeholder="所在城市"
+          style="width: 150px; margin-right: 10px;"
+          clearable
+          @keyup.enter="handleSearch"
+        ></el-input>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="handleReset">重置</el-button>
+      </div>
+
+      <el-table v-loading="loading" :data="networkPointList" style="width: 100%; margin-top: 15px;">
         <el-table-column prop="id" label="网点ID" width="80"></el-table-column>
         <el-table-column prop="code" label="网点编码" width="100"></el-table-column>
         <el-table-column prop="name" label="网点名称" width="150"></el-table-column>
@@ -76,6 +96,10 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const form = ref({})
+const searchForm = ref({
+  name: '',
+  city: ''
+})
 
 const getNetworkPointList = async () => {
   loading.value = true
@@ -83,7 +107,9 @@ const getNetworkPointList = async () => {
     const res = await request.get('/network/page', {
       params: {
         current: currentPage.value,
-        size: pageSize.value
+        size: pageSize.value,
+        name: searchForm.value.name || null,
+        city: searchForm.value.city || null
       }
     })
     networkPointList.value = res.records || []
@@ -91,6 +117,19 @@ const getNetworkPointList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleSearch = () => {
+  currentPage.value = 1
+  getNetworkPointList()
+}
+
+const handleReset = () => {
+  searchForm.value = {
+    name: '',
+    city: ''
+  }
+  handleSearch()
 }
 
 const handleAdd = () => {
@@ -158,6 +197,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .dialog-footer {

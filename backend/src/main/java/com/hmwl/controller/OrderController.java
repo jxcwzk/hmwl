@@ -807,32 +807,37 @@ public class OrderController {
                 return Result.error("订单不存在");
             }
             
+            String senderCity = extractCity(order.getSenderAddress());
             String receiverCity = extractCity(order.getReceiverAddress());
-            List<Route> routes = routeService.findRoutesByDestination(receiverCity);
-            
+            List<Route> routes = routeService.matchRoutesByCities(senderCity, receiverCity);
+
             if (routes == null || routes.isEmpty()) {
-                return Result.error("未找到目的地的路线: " + receiverCity);
+                return Result.error("未找到匹配" + senderCity + "到" + receiverCity + "的路线");
             }
-            
+
             List<NetworkQuote> quotes = new ArrayList<>();
-            
+
             for (Route route : routes) {
-                Long networkId = route.getNetworkPointId();
-                NetworkPoint network = networkPointService.getById(networkId);
-                String networkName = network != null && network.getName() != null ? network.getName() : "网点" + networkId;
-                
-                double baseFee = Math.round((route.getBasePrice() + (order.getWeight() != null ? order.getWeight() * route.getPricePerKg() : 0)) * 100.0) / 100.0;
-                double finalPrice = Math.round(baseFee * 1.4286 * 100.0) / 100.0;
-                
-                NetworkQuote quote = new NetworkQuote();
-                quote.setNetworkPointId(networkId);
-                quote.setNetworkName(networkName);
-                quote.setBaseFee(baseFee);
-                quote.setFinalPrice(finalPrice);
-                quote.setTransitDays(route.getTransitDays());
-                quote.setStatus(1);
-                quote.setQuoteTime(new Date());
-                quotes.add(quote);
+                List<NetworkPoint> networkPoints = routeService.getNetworkPointsByRouteId(route.getId());
+
+                if (networkPoints == null || networkPoints.isEmpty()) {
+                    continue;
+                }
+
+                for (NetworkPoint network : networkPoints) {
+                    double baseFee = Math.round((route.getBasePrice() + (order.getWeight() != null ? order.getWeight() * route.getPricePerKg() : 0)) * 100.0) / 100.0;
+                    double finalPrice = Math.round(baseFee * 1.4286 * 100.0) / 100.0;
+
+                    NetworkQuote quote = new NetworkQuote();
+                    quote.setNetworkPointId(network.getId());
+                    quote.setNetworkName(network.getName() != null ? network.getName() : "网点" + network.getId());
+                    quote.setBaseFee(baseFee);
+                    quote.setFinalPrice(finalPrice);
+                    quote.setTransitDays(route.getTransitDays());
+                    quote.setStatus(1);
+                    quote.setQuoteTime(new Date());
+                    quotes.add(quote);
+                }
             }
             
             if (!quotes.isEmpty()) {

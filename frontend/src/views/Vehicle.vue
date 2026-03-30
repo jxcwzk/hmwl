@@ -7,7 +7,27 @@
           <el-button type="primary" @click="handleAdd">新增车辆</el-button>
         </div>
       </template>
-      <el-table v-loading="loading" :data="vehicleList" style="width: 100%">
+
+      <div class="search-bar">
+        <el-input
+          v-model="searchForm.licensePlate"
+          placeholder="车牌号"
+          style="width: 150px; margin-right: 10px;"
+          clearable
+          @keyup.enter="handleSearch"
+        ></el-input>
+        <el-input
+          v-model="searchForm.vehicleType"
+          placeholder="车型"
+          style="width: 120px; margin-right: 10px;"
+          clearable
+          @keyup.enter="handleSearch"
+        ></el-input>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="handleReset">重置</el-button>
+      </div>
+
+      <el-table v-loading="loading" :data="vehicleList" style="width: 100%; margin-top: 15px;">
         <el-table-column prop="id" label="车辆ID" width="100"></el-table-column>
         <el-table-column prop="licensePlate" label="车牌号"></el-table-column>
         <el-table-column prop="vehicleType" label="车型"></el-table-column>
@@ -64,6 +84,10 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const form = ref({})
+const searchForm = ref({
+  licensePlate: '',
+  vehicleType: ''
+})
 
 const getVehicleList = async () => {
   loading.value = true
@@ -71,7 +95,9 @@ const getVehicleList = async () => {
     const res = await request.get('/vehicle/page', {
       params: {
         current: currentPage.value,
-        size: pageSize.value
+        size: pageSize.value,
+        licensePlate: searchForm.value.licensePlate || null,
+        vehicleType: searchForm.value.vehicleType || null
       }
     })
     vehicleList.value = res.records || res.data?.records || []
@@ -79,6 +105,19 @@ const getVehicleList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleSearch = () => {
+  currentPage.value = 1
+  getVehicleList()
+}
+
+const handleReset = () => {
+  searchForm.value = {
+    licensePlate: '',
+    vehicleType: ''
+  }
+  handleSearch()
 }
 
 const handleAdd = () => {
@@ -142,6 +181,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .dialog-footer {

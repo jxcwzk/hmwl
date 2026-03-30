@@ -6,7 +6,9 @@
  */
 package com.hmwl.controller;
 
+import com.hmwl.entity.NetworkPoint;
 import com.hmwl.entity.Route;
+import com.hmwl.service.RouteNetworkPointService;
 import com.hmwl.service.RouteService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +23,9 @@ public class RouteController {
 
     @Autowired
     private RouteService routeService;
+
+    @Autowired
+    private RouteNetworkPointService routeNetworkPointService;
 
     /**
      * 获取所有路线列表
@@ -89,5 +94,56 @@ public class RouteController {
     @DeleteMapping("/{id}")
     public boolean delete(@PathVariable Long id) {
         return routeService.removeById(id);
+    }
+
+    /**
+     * 根据起止城市匹配路线
+     * 
+     * @param startCity 出发城市
+     * @param destinationCity 目的城市
+     * @return 匹配的路线列表（含沿线网点）
+     */
+    @GetMapping("/match")
+    public List<Route> matchRoutes(
+            @RequestParam String startCity,
+            @RequestParam String destinationCity) {
+        return routeService.matchRoutesByCities(startCity, destinationCity);
+    }
+
+    /**
+     * 获取路线关联的网点列表
+     * 
+     * @param id 路线ID
+     * @return 网点列表
+     */
+    @GetMapping("/{id}/networks")
+    public List<NetworkPoint> getRouteNetworks(@PathVariable Long id) {
+        return routeService.getNetworkPointsByRouteId(id);
+    }
+
+    /**
+     * 添加网点到路线
+     * 
+     * @param id 路线ID
+     * @param networkPointId 网点ID
+     */
+    @PostMapping("/{id}/networks/{networkPointId}")
+    public void addNetworkToRoute(
+            @PathVariable Long id,
+            @PathVariable Long networkPointId) {
+        routeNetworkPointService.addNetworkToRoute(id, networkPointId);
+    }
+
+    /**
+     * 从路线移除网点
+     * 
+     * @param id 路线ID
+     * @param networkPointId 网点ID
+     */
+    @DeleteMapping("/{id}/networks/{networkPointId}")
+    public void removeNetworkFromRoute(
+            @PathVariable Long id,
+            @PathVariable Long networkPointId) {
+        routeNetworkPointService.removeNetworkFromRoute(id, networkPointId);
     }
 }

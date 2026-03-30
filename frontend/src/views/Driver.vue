@@ -7,7 +7,27 @@
           <el-button type="primary" @click="handleAdd">新增司机</el-button>
         </div>
       </template>
-      <el-table v-loading="loading" :data="driverList" style="width: 100%">
+
+      <div class="search-bar">
+        <el-input
+          v-model="searchForm.name"
+          placeholder="姓名"
+          style="width: 120px; margin-right: 10px;"
+          clearable
+          @keyup.enter="handleSearch"
+        ></el-input>
+        <el-input
+          v-model="searchForm.phone"
+          placeholder="电话"
+          style="width: 120px; margin-right: 10px;"
+          clearable
+          @keyup.enter="handleSearch"
+        ></el-input>
+        <el-button type="primary" @click="handleSearch">搜索</el-button>
+        <el-button @click="handleReset">重置</el-button>
+      </div>
+
+      <el-table v-loading="loading" :data="driverList" style="width: 100%; margin-top: 15px;">
         <el-table-column prop="id" label="司机ID" width="100"></el-table-column>
         <el-table-column prop="name" label="姓名"></el-table-column>
         <el-table-column prop="phone" label="电话"></el-table-column>
@@ -68,6 +88,10 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const form = ref({})
+const searchForm = ref({
+  name: '',
+  phone: ''
+})
 
 const getDriverList = async () => {
   loading.value = true
@@ -75,7 +99,9 @@ const getDriverList = async () => {
     const res = await request.get('/driver/page', {
       params: {
         current: currentPage.value,
-        size: pageSize.value
+        size: pageSize.value,
+        name: searchForm.value.name || null,
+        phone: searchForm.value.phone || null
       }
     })
     driverList.value = res.records || res.data?.records || []
@@ -83,6 +109,19 @@ const getDriverList = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleSearch = () => {
+  currentPage.value = 1
+  getDriverList()
+}
+
+const handleReset = () => {
+  searchForm.value = {
+    name: '',
+    phone: ''
+  }
+  handleSearch()
 }
 
 const handleAdd = () => {
@@ -146,6 +185,12 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .dialog-footer {
