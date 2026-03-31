@@ -6,6 +6,7 @@ import com.hmwl.entity.NetworkPoint;
 import com.hmwl.service.OrderService;
 import com.hmwl.service.NetworkQuoteService;
 import com.hmwl.service.NetworkPointService;
+import com.hmwl.service.OrderTimelineService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class DispatchController {
 
     @Autowired
     private NetworkPointService networkPointService;
+
+    @Autowired
+    private OrderTimelineService orderTimelineService;
 
     @GetMapping("/test")
     public Map<String, String> test() {
@@ -67,6 +71,15 @@ public class DispatchController {
         order.setStatus(1);
         order.setPricingStatus(1);
         orderService.updateById(order);
+
+        orderTimelineService.recordTimeline(
+            order.getOrderNo(),
+            null,
+            "DISPATCHER",
+            "ORDER_DISPATCHED",
+            "已派发比价",
+            "调度派发订单进行比价"
+        );
 
         if (networkPointIds != null && !networkPointIds.isEmpty()) {
             List<NetworkQuote> quotes = new ArrayList<>();
@@ -135,6 +148,15 @@ public class DispatchController {
             order.setNetworkPointId(quote.getNetworkPointId());
             order.setPricingStatus(2);
             orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                null,
+                "DISPATCHER",
+                "QUOTE_SELECTED",
+                "已选择报价",
+                "调度选择最优报价"
+            );
         }
 
         result.put("success", true);
@@ -151,6 +173,15 @@ public class DispatchController {
         if (order != null) {
             order.setPricingStatus(3);
             orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                null,
+                "DISPATCHER",
+                "PICKUP_CONFIRMED",
+                "已确认提货",
+                "调度确认提货安排"
+            );
         }
 
         result.put("success", true);
@@ -170,6 +201,15 @@ public class DispatchController {
             order.setDriverId(driverId);
             order.setPricingStatus(4);
             orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                driverId,
+                "DISPATCHER",
+                "PICKUP_DRIVER_ASSIGNED",
+                "已安排提货司机",
+                "调度安排提货司机"
+            );
         }
 
         result.put("success", true);
@@ -194,6 +234,15 @@ public class DispatchController {
             order.setLogisticsProgress("调度已推送报价，等待客户确认价格");
             order.setUpdateTime(new Date());
             orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                null,
+                "DISPATCHER",
+                "QUOTE_PUSHED",
+                "已推送报价",
+                "调度推送报价给客户确认"
+            );
 
             Map<String, Object> result = new HashMap<>();
             result.put("orderId", orderId);
@@ -231,6 +280,15 @@ public class DispatchController {
             order.setDeliveryDriverId(driverId);
             order.setPricingStatus(6);
             orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                driverId,
+                "DISPATCHER",
+                "DELIVERY_DRIVER_ASSIGNED",
+                "已安排配送司机",
+                "调度安排配送司机"
+            );
         }
 
         result.put("success", true);
@@ -263,6 +321,15 @@ public class DispatchController {
         order.setLogisticsProgress("客户已确认价格，等待安排提货");
         order.setUpdateTime(new Date());
         orderService.updateById(order);
+
+        orderTimelineService.recordTimeline(
+            order.getOrderNo(),
+            order.getBusinessUserId(),
+            "CUSTOMER",
+            "PRICE_CONFIRMED",
+            "已确认价格",
+            "客户确认价格"
+        );
 
         result.put("success", true);
         result.put("message", "价格确认成功");

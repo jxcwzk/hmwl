@@ -148,23 +148,19 @@
       </el-descriptions>
 
       <el-divider content-position="left">物流时间线</el-divider>
-      <div class="timeline-container" v-if="timeline.length > 0">
-        <el-timeline>
-          <el-timeline-item
-            v-for="(item, index) in timeline"
-            :key="index"
-            :timestamp="formatTimelineTime(item.operateTime)"
-            placement="top"
-          >
-            <el-card shadow="hover">
-              <div class="timeline-item">
-                <div class="timeline-status">{{ item.statusName }}</div>
-                <div class="timeline-operator">操作人：{{ getOperatorTypeName(item.operatorType) }}</div>
-                <div class="timeline-remark" v-if="item.remark">{{ item.remark }}</div>
-              </div>
-            </el-card>
-          </el-timeline-item>
-        </el-timeline>
+      <div class="timeline-snake" v-if="timeline.length > 0">
+        <div
+          v-for="(item, index) in timeline"
+          :key="index"
+          class="snake-node"
+          :class="getStatusClass(item.statusCode)"
+        >
+          <div class="snake-dot"></div>
+          <div class="snake-content">
+            <div class="snake-status">{{ item.statusName }}</div>
+            <div class="snake-time">{{ formatTimelineTime(item.operateTime) }}</div>
+          </div>
+        </div>
       </div>
       <el-empty v-else description="暂无物流时间线数据" />
     </el-dialog>
@@ -629,7 +625,8 @@ const loadOrderTimeline = async (orderNo) => {
   if (!orderNo) return
   try {
     const res = await request.get('/order/timeline/' + orderNo)
-    timeline.value = res.data || []
+    const keyStatuses = ['ORDER_CREATED', 'PRICE_CONFIRMED', 'DRIVER_PICKED', 'ARRIVED_NETWORK', 'NETWORK_CONFIRMED', 'CUSTOMER_SIGNED']
+    timeline.value = (res || []).filter(item => keyStatuses.includes(item.statusCode))
   } catch (error) {
     console.error('加载时间线失败', error)
     timeline.value = []
@@ -694,6 +691,12 @@ const formatTimelineTime = (time) => {
   if (!time) return '-'
   const date = new Date(time)
   return date.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+}
+
+const getStatusClass = (statusCode) => {
+  if (statusCode === 'CUSTOMER_SIGNED') return 'status-success'
+  if (statusCode === 'DRIVER_PICKED' || statusCode === 'ARRIVED_NETWORK') return 'status-active'
+  return 'status-default'
 }
 
 const getOperatorTypeName = (type) => {
@@ -811,5 +814,81 @@ onMounted(() => {
   font-size: 12px;
   color: #606266;
   margin-top: 4px;
+}
+.timeline-snake {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 10px;
+  position: relative;
+}
+.snake-node {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  position: relative;
+}
+.snake-node:nth-child(odd) {
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.snake-node:nth-child(even) {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+}
+.snake-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 3px solid;
+  background: #fff;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.snake-node:nth-child(odd) .snake-dot { margin-right: 12px; }
+.snake-node:nth-child(even) .snake-dot { margin-left: 12px; }
+.status-default .snake-dot { border-color: #909399; }
+.status-active .snake-dot { border-color: #409eff; }
+.status-success .snake-dot { border-color: #67c23a; }
+.snake-content {
+  background: #f5f7fa;
+  padding: 8px 14px;
+  border-radius: 6px;
+  flex: 1;
+}
+.status-default .snake-content { border-left: 3px solid #909399; }
+.status-active .snake-content { border-left: 3px solid #409eff; }
+.status-success .snake-content { border-left: 3px solid #67c23a; }
+.snake-status {
+  font-weight: 500;
+  color: #303133;
+  font-size: 13px;
+}
+.snake-time {
+  font-size: 11px;
+  color: #909399;
+  margin-top: 2px;
+}
+.snake-node:nth-child(odd)::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  width: 4px;
+  height: 2px;
+  background: #409eff;
+}
+.snake-node:nth-child(even)::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 50%;
+  width: 4px;
+  height: 2px;
+  background: #409eff;
+}
+.snake-node:nth-child(4n+3)::after,
+.snake-node:nth-child(4n+4)::after {
+  background: #67c23a;
 }
 </style>

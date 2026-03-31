@@ -6,16 +6,18 @@
  */
 package com.hmwl.controller;
 
-import com.hmwl.entity.NetworkPoint;
-import com.hmwl.entity.Route;
-import com.hmwl.service.RouteNetworkPointService;
-import com.hmwl.service.RouteService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hmwl.entity.NetworkPoint;
+import com.hmwl.entity.Route;
+import com.hmwl.mapper.NetworkPointMapper;
+import com.hmwl.service.DistanceCalculatorService;
+import com.hmwl.service.RouteNetworkPointService;
+import com.hmwl.service.RouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/route")
@@ -26,6 +28,12 @@ public class RouteController {
 
     @Autowired
     private RouteNetworkPointService routeNetworkPointService;
+
+    @Autowired
+    private DistanceCalculatorService distanceCalculatorService;
+
+    @Autowired
+    private NetworkPointMapper networkPointMapper;
 
     /**
      * 获取所有路线列表
@@ -145,5 +153,40 @@ public class RouteController {
             @PathVariable Long id,
             @PathVariable Long networkPointId) {
         routeNetworkPointService.removeNetworkFromRoute(id, networkPointId);
+    }
+
+    @GetMapping("/nearby-networks")
+    public List<NetworkPoint> getNearbyNetworks(
+            @RequestParam String senderAddress,
+            @RequestParam(defaultValue = "5") Integer limit) {
+        double[] senderCoords = distanceCalculatorService.getCoordinatesByAddress(senderAddress);
+
+        List<NetworkPoint> allNetworks = networkPointMapper.selectList(null);
+
+        if (senderCoords == null) {
+            return allNetworks.subList(0, Math.min(limit, allNetworks.size()));
+        }
+
+        Map<Long, Double> networkDistances = new HashMap<>();
+        for (NetworkPoint network : allNetworks) {
+            double[] networkCoords = distanceCalculatorService.getCoordinatesByAddress(network.getAddress());
+            if (networkCoords != null) {
+                double distance = distanceCalculatorService.calculateDistance(
+                    senderCoords[0], senderCoords[1], networkCoords[0], networkCoords[1]);
+                networkDistances.put(network.getId(), distance);
+                network.setAddress(distance + "km"); // 临时存储距离
+            } else {
+                networkDistances.put(network.getId(), Double.MAX_VALUE);
+                network.setAddress("未知距离");
+            }
+        }
+
+        allNetworks.sort((n1, n2) -> {
+            Double d1 = networkDistances.get(n1.getId());
+            Double d2 = networkDistances.get(n2.getId());
+            return d1.compareTo(d2);
+        });
+
+        return allNetworks.subList(0, Math.min(limit, allNetworks.size()));
     }
 }

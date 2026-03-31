@@ -108,19 +108,19 @@ const handleLogin = async () => {
         password: loginForm.password
       })
       
-      if (res.code === 200) {
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('userInfo', JSON.stringify(res.data))
-        localStorage.setItem('userType', res.data.userType)
-        localStorage.setItem('userId', res.data.id)
-        localStorage.setItem('businessUserId', res.data.businessUserId || '')
-        localStorage.setItem('driverId', res.data.driverId || '')
+      if (res && res.token) {
+        localStorage.setItem('token', res.token)
+        localStorage.setItem('userInfo', JSON.stringify(res))
+        localStorage.setItem('userType', res.userType)
+        localStorage.setItem('userId', res.id)
+        localStorage.setItem('businessUserId', res.businessUserId || '')
+        localStorage.setItem('driverId', res.driverId || '')
 
         ElMessage.success('登录成功')
 
         router.push('/home')
       } else {
-        errorMsg.value = res.msg || '用户名或密码错误'
+        errorMsg.value = '用户名或密码错误'
       }
     } catch (error) {
       console.error('登录错误:', error)

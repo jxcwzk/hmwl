@@ -216,7 +216,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog v-model="networkDialogVisible" title="选择网点派发比价" width="700px">
+    <el-dialog v-model="networkDialogVisible" title="选择网点派发比价" width="600px">
       <div v-if="currentOrder" style="margin-bottom: 20px;">
         <el-descriptions :column="1" border>
           <el-descriptions-item label="运单号">{{ currentOrder.orderNo }}</el-descriptions-item>
@@ -226,34 +226,12 @@
         </el-descriptions>
       </div>
 
-      <div v-if="matchedRoutes.length > 0" style="margin-bottom: 20px;">
-        <el-divider content-position="left">匹配线路推荐</el-divider>
-        <el-radio-group v-model="selectedRouteId" @change="handleRouteChange">
-          <div v-for="route in matchedRoutes" :key="route.id" style="margin: 10px 0;">
-            <el-radio :label="route.id">
-              <span style="font-weight: bold;">{{ route.startCity }} → {{ route.destinationCity }}</span>
-              <span style="margin-left: 15px; color: #67C23A;">基础价: ¥{{ route.basePrice }} | 单价: ¥{{ route.pricePerKg }}/kg | 运输: {{ route.transitDays }}天</span>
-            </el-radio>
-          </div>
-        </el-radio-group>
-      </div>
-
-      <div v-if="recommendedNetworks.length > 0">
-        <el-divider content-position="left">
-          <el-tag type="success" size="small">推荐网点</el-tag> - 沿线网点优先
-        </el-divider>
-        <el-checkbox-group v-model="selectedNetworks">
-          <el-checkbox v-for="network in recommendedNetworks" :key="network.id" :label="network.id" style="margin: 10px 0;">
-            <span style="font-weight: bold;">{{ network.name }}</span>
-            <span style="margin-left: 10px; color: #909399;">{{ network.city }} - {{ network.address }}</span>
-          </el-checkbox>
-        </el-checkbox-group>
-      </div>
-
-      <el-divider content-position="left">所有网点</el-divider>
+      <el-divider content-position="left">附近5个网点（按距离排序）</el-divider>
       <el-checkbox-group v-model="selectedNetworks">
-        <el-checkbox v-for="network in allNetworks" :key="network.id" :label="network.id" style="margin: 10px 0;">
-          {{ network.name }} - {{ network.city }} - {{ network.address }}
+        <el-checkbox v-for="network in allNetworks" :key="network.id" :label="network.id" style="margin: 10px 0; display: flex;">
+          <span style="font-weight: bold; min-width: 120px;">{{ network.name }}</span>
+          <span style="color: #67C23A; min-width: 80px;">{{ network.address }}</span>
+          <span style="color: #909399;">{{ network.city }}</span>
         </el-checkbox>
       </el-checkbox-group>
 
@@ -310,10 +288,7 @@ const selectedNetworks = ref([])
 const availableDrivers = ref([])
 const selectedDriver = ref(null)
 const driverType = ref('')
-const matchedRoutes = ref([])
-const recommendedNetworks = ref([])
 const allNetworks = ref([])
-const selectedRouteId = ref(null)
 
 const getQuoteCount = (orderId) => {
   return quoteCountMap.value[orderId] || 0
@@ -434,43 +409,18 @@ const loadDrivers = async () => {
 const showNetworks = async (order) => {
   currentOrder.value = order
   selectedNetworks.value = []
-  selectedRouteId.value = null
-  matchedRoutes.value = []
-  recommendedNetworks.value = []
+  allNetworks.value = []
 
   try {
-    const startCity = extractCity(order.senderAddress)
-    const destCity = extractCity(order.receiverAddress)
-
-    if (startCity && destCity) {
-      const routeRes = await request.get('/route/match', {
-        params: { startCity, destinationCity: destCity }
-      })
-      matchedRoutes.value = routeRes || []
-
-      if (matchedRoutes.value.length > 0) {
-        selectedRouteId.value = matchedRoutes.value[0].id
-        recommendedNetworks.value = matchedRoutes.value[0].networkPoints || []
-      }
-    }
+    const nearbyRes = await request.get('/route/nearby-networks', {
+      params: { senderAddress: order.senderAddress, limit: 5 }
+    })
+    allNetworks.value = nearbyRes || []
   } catch (error) {
-    console.error('匹配线路失败', error)
+    console.error('获取附近网点失败', error)
   }
 
   networkDialogVisible.value = true
-}
-
-const extractCity = (address) => {
-  if (!address) return ''
-  const parts = address.split(/[省市区县]/)
-  return parts.length > 1 ? parts[1] : parts[0]
-}
-
-const handleRouteChange = (routeId) => {
-  const route = matchedRoutes.value.find(r => r.id === routeId)
-  if (route) {
-    recommendedNetworks.value = route.networkPoints || []
-  }
 }
 
 const showDrivers = async (order, type) => {
