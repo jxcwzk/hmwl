@@ -148,18 +148,22 @@
       </el-descriptions>
 
       <el-divider content-position="left">物流时间线</el-divider>
-      <div class="timeline-snake" v-if="timeline.length > 0">
-        <div
-          v-for="(item, index) in timeline"
-          :key="index"
-          class="snake-node"
-          :class="getStatusClass(item.statusCode)"
-        >
-          <div class="snake-dot"></div>
-          <div class="snake-content">
-            <div class="snake-status">{{ item.statusName }}</div>
-            <div class="snake-time">{{ formatTimelineTime(item.operateTime) }}</div>
-          </div>
+      <div class="mermaid-flow" v-if="timeline.length > 0">
+        <div class="flow-line">
+          <template v-for="(item, index) in timeline" :key="index">
+            <div class="flow-step" :class="getFlowStatusClass(item.statusCode)">
+              <div class="flow-node">
+                <div class="flow-icon">
+                  <el-icon><Check v-if="index < timeline.length - 1" /><el-icon><Loading v-else /></el-icon>
+                </div>
+                <div class="flow-label">{{ item.statusName }}</div>
+              </div>
+              <div class="flow-time">{{ formatTimelineTime(item.operateTime) }}</div>
+            </div>
+            <div v-if="index < timeline.length - 1" class="flow-arrow">
+              <el-icon><ArrowRight /></el-icon>
+            </div>
+          </template>
         </div>
       </div>
       <el-empty v-else description="暂无物流时间线数据" />
@@ -328,7 +332,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Tickets, Plus, Search } from '@element-plus/icons-vue'
+import { Tickets, Plus, Search, Check, ArrowRight, Loading } from '@element-plus/icons-vue'
 import request from '../utils/request'
 
 const loading = ref(false)
@@ -699,6 +703,12 @@ const getStatusClass = (statusCode) => {
   return 'status-default'
 }
 
+const getFlowStatusClass = (statusCode) => {
+  if (statusCode === 'CUSTOMER_SIGNED') return 'flow-done'
+  if (statusCode === 'DRIVER_PICKED' || statusCode === 'ARRIVED_NETWORK' || statusCode === 'NETWORK_CONFIRMED') return 'flow-active'
+  return 'flow-pending'
+}
+
 const getOperatorTypeName = (type) => {
   const map = { CUSTOMER: '客户', DISPATCHER: '调度', NETWORK: '网点', DRIVER: '司机', SYSTEM: '系统' }
   return map[type] || type || '未知'
@@ -815,80 +825,87 @@ onMounted(() => {
   color: #606266;
   margin-top: 4px;
 }
-.timeline-snake {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  margin-top: 10px;
-  position: relative;
+.mermaid-flow {
+  padding: 20px 10px;
 }
-.snake-node {
+.flow-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 120px;
+}
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f5f7fa;
+  border: 2px solid #e4e7ed;
+  transition: all 0.3s;
+}
+.flow-pending .flow-node {
+  border-color: #e4e7ed;
+  background: #f5f7fa;
+}
+.flow-active .flow-node {
+  border-color: #409eff;
+  background: #ecf5ff;
+}
+.flow-done .flow-node {
+  border-color: #67c23a;
+  background: #f0f9eb;
+}
+.flow-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  padding: 10px 15px;
-  position: relative;
+  justify-content: center;
+  margin-bottom: 8px;
+  font-size: 16px;
 }
-.snake-node:nth-child(odd) {
-  flex-direction: row;
-  justify-content: flex-start;
+.flow-pending .flow-icon {
+  background: #e4e7ed;
+  color: #909399;
 }
-.snake-node:nth-child(even) {
-  flex-direction: row-reverse;
-  justify-content: flex-start;
+.flow-active .flow-icon {
+  background: #409eff;
+  color: #fff;
 }
-.snake-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 3px solid;
-  background: #fff;
-  flex-shrink: 0;
-  z-index: 2;
+.flow-done .flow-icon {
+  background: #67c23a;
+  color: #fff;
 }
-.snake-node:nth-child(odd) .snake-dot { margin-right: 12px; }
-.snake-node:nth-child(even) .snake-dot { margin-left: 12px; }
-.status-default .snake-dot { border-color: #909399; }
-.status-active .snake-dot { border-color: #409eff; }
-.status-success .snake-dot { border-color: #67c23a; }
-.snake-content {
-  background: #f5f7fa;
-  padding: 8px 14px;
-  border-radius: 6px;
-  flex: 1;
-}
-.status-default .snake-content { border-left: 3px solid #909399; }
-.status-active .snake-content { border-left: 3px solid #409eff; }
-.status-success .snake-content { border-left: 3px solid #67c23a; }
-.snake-status {
+.flow-label {
+  font-size: 13px;
   font-weight: 500;
   color: #303133;
-  font-size: 13px;
+  text-align: center;
 }
-.snake-time {
-  font-size: 11px;
+.flow-pending .flow-label { color: #909399; }
+.flow-active .flow-label { color: #409eff; }
+.flow-done .flow-label { color: #67c23a; }
+.flow-time {
+  font-size: 12px;
   color: #909399;
-  margin-top: 2px;
+  margin-top: 8px;
+  text-align: center;
 }
-.snake-node:nth-child(odd)::after {
-  content: '';
-  position: absolute;
-  right: -2px;
-  top: 50%;
-  width: 4px;
-  height: 2px;
-  background: #409eff;
-}
-.snake-node:nth-child(even)::after {
-  content: '';
-  position: absolute;
-  left: -2px;
-  top: 50%;
-  width: 4px;
-  height: 2px;
-  background: #409eff;
-}
-.snake-node:nth-child(4n+3)::after,
-.snake-node:nth-child(4n+4)::after {
-  background: #67c23a;
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  color: #c0c4cc;
+  font-size: 20px;
+  margin-top: 24px;
 }
 </style>

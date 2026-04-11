@@ -1,19 +1,27 @@
 package com.hmwl.controller;
 
+import com.google.gson.Gson;
 import com.hmwl.entity.NetworkPoint;
 import com.hmwl.entity.NetworkQuote;
 import com.hmwl.entity.Order;
+import com.hmwl.entity.Route;
+import com.hmwl.entity.RouteNetworkPoint;
 import com.hmwl.service.NetworkPointService;
 import com.hmwl.service.NetworkQuoteService;
 import com.hmwl.service.OrderService;
 import com.hmwl.service.OrderTimelineService;
+import com.hmwl.service.RouteService;
+import com.hmwl.service.RouteNetworkPointService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/network")
@@ -30,6 +38,12 @@ public class NetworkPointController {
 
     @Autowired
     private OrderTimelineService orderTimelineService;
+
+    @Autowired
+    private RouteService routeService;
+
+    @Autowired
+    private RouteNetworkPointService routeNetworkPointService;
 
     @GetMapping("/list")
     public List<NetworkPoint> list() {
@@ -125,6 +139,14 @@ public class NetworkPointController {
             String remark = params.get("remark") != null ?
                 params.get("remark").toString() : "";
 
+            List<String> receiptPhotosList = null;
+            if (params.get("receiptPhotos") != null) {
+                Object photosObj = params.get("receiptPhotos");
+                if (photosObj instanceof List) {
+                    receiptPhotosList = (List<String>) photosObj;
+                }
+            }
+
             Order order = orderService.getById(orderId);
             if (order == null) {
                 return Result.error("订单不存在");
@@ -135,6 +157,12 @@ public class NetworkPointController {
             order.setWarehouseConfirmTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             order.setLogisticsProgress("网点已确认收货，货物已入库");
             order.setUpdateTime(new Date());
+
+            if (receiptPhotosList != null && !receiptPhotosList.isEmpty()) {
+                String photosJson = new Gson().toJson(receiptPhotosList);
+                order.setReceiptPhotos(photosJson);
+            }
+
             orderService.updateById(order);
 
             orderTimelineService.recordTimeline(
@@ -204,5 +232,75 @@ public class NetworkPointController {
             e.printStackTrace();
             return Result.error("获取待报价订单失败: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/routes")
+    public List<Route> getNetworkRoutes(@RequestParam Long networkId) {
+        try {
+            List<Long> routeIds = routeNetworkPointService.lambdaQuery()
+                .eq(RouteNetworkPoint::getNetworkPointId, networkId)
+                .list()
+                .stream()
+                .map(RouteNetworkPoint::getRouteId)
+                .collect(Collectors.toList());
+            
+            if (routeIds.isEmpty()) {
+                return new ArrayList<>();
+            }
+            
+            return routeService.listByIds(routeIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Object> getNetworkStats(@RequestParam Long networkId) {
+        Map<String, Object> stats = new HashMap<>();
+        
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDateTime startOfDay = today.atStartOfDay();
+            LocalDateTime startOfMonth = today.withDayOfMonth(1).atStartOfDay();
+            
+            long todayOrders = orderService.lambdaQuery()
+                .eq(Order::getNetworkPointId, networkId)
+                .ge(Order::getCreateTime, startOfDay)
+                .count();
+            
+            long monthOrders = orderService.lambdaQuery()
+                .eq(Order::getNetworkPointId, networkId)
+                .ge(Order::getCreateTime, startOfMonth)
+                .count();
+            
+            Double monthRevenue = orderService.lambdaQuery()
+                .eq(Order::getNetworkPointId, networkId)
+                .ge(Order::getCreateTime, startOfMonth)
+                .eq(Order::getStatus, 12)
+                .select(Order::getTotalFee)
+                .list()
+                .stream()
+                .mapToDouble(o -> o.getTotalFee() != null ? o.getTotalFee().doubleValue() : 0)
+                .sum();
+            
+            long pendingOrders = orderService.lambdaQuery()
+                .eq(Order::getNetworkPointId, networkId)
+                .in(Order::getStatus, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+                .count();
+            
+            stats.put("todayOrders", todayOrders);
+            stats.put("monthOrders", monthOrders);
+            stats.put("monthRevenue", String.format("%.2f", monthRevenue));
+            stats.put("pendingOrders", pendingOrders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            stats.put("todayOrders", 0);
+            stats.put("monthOrders", 0);
+            stats.put("monthRevenue", "0.00");
+            stats.put("pendingOrders", 0);
+        }
+        
+        return stats;
     }
 }

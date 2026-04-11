@@ -115,6 +115,7 @@ const handleLogin = async () => {
         localStorage.setItem('userId', res.id)
         localStorage.setItem('businessUserId', res.businessUserId || '')
         localStorage.setItem('driverId', res.driverId || '')
+        localStorage.setItem('networkId', res.networkPointId || res.networkId || '')
 
         ElMessage.success('登录成功')
 

@@ -66,6 +66,9 @@ public class Order {
     private String deliveredToNetworkTime;
     private String warehouseConfirmTime;
     private String deliveryCompletedTime;
+    private String receiptPhotos;
+    private Integer settlementStatus;
+    private Integer receiptConfirmed;
 
     public Long getId() {
         return id;
@@ -401,5 +404,29 @@ public class Order {
 
     public void setDeliveryCompletedTime(String deliveryCompletedTime) {
         this.deliveryCompletedTime = deliveryCompletedTime;
+    }
+
+    public String getReceiptPhotos() {
+        return receiptPhotos;
+    }
+
+    public void setReceiptPhotos(String receiptPhotos) {
+        this.receiptPhotos = receiptPhotos;
+    }
+
+    public Integer getSettlementStatus() {
+        return settlementStatus;
+    }
+
+    public void setSettlementStatus(Integer settlementStatus) {
+        this.settlementStatus = settlementStatus;
+    }
+
+    public Integer getReceiptConfirmed() {
+        return receiptConfirmed;
+    }
+
+    public void setReceiptConfirmed(Integer receiptConfirmed) {
+        this.receiptConfirmed = receiptConfirmed;
     }
 }

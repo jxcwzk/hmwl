@@ -152,6 +152,42 @@
             </el-table-column>
           </el-table>
         </el-tab-pane>
+
+        <el-tab-pane label="回单确认" name="receipt">
+          <el-table v-loading="loading" :data="receiptPendingOrders" style="width: 100%">
+            <el-table-column prop="id" label="订单ID" width="80"></el-table-column>
+            <el-table-column prop="orderNo" label="运单号" width="180"></el-table-column>
+            <el-table-column prop="senderAddress" label="发货地址" width="200"></el-table-column>
+            <el-table-column prop="receiverAddress" label="收货地址" width="200"></el-table-column>
+            <el-table-column prop="goodsName" label="货物" width="100"></el-table-column>
+            <el-table-column label="回单状态" width="100">
+              <template #default="scope">
+                <el-tag v-if="scope.row.receiptConfirmed === 1" type="success">已确认</el-tag>
+                <el-tag v-else type="warning">待确认</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="200">
+              <template #default="scope">
+                <el-button 
+                  v-if="scope.row.receiptPhotos" 
+                  type="info" 
+                  size="small" 
+                  @click="viewReceipt(scope.row)"
+                >
+                  查看回单
+                </el-button>
+                <el-button 
+                  v-if="scope.row.receiptPhotos && scope.row.receiptConfirmed !== 1" 
+                  type="success" 
+                  size="small" 
+                  @click="confirmReceipt(scope.row)"
+                >
+                  确认回单
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
       </el-tabs>
     </el-card>
 
@@ -262,6 +298,22 @@
         <el-button type="primary" @click="assignDriver">确认分配</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="receiptDialogVisible" title="回单凭证" width="600px">
+      <div class="receipt-images">
+        <el-image 
+          v-for="(img, index) in receiptImages" 
+          :key="index"
+          :src="img" 
+          :preview-src-list="receiptImages"
+          fit="contain"
+          style="width: 200px; height: 200px; margin: 10px;"
+        />
+      </div>
+      <template #footer>
+        <el-button @click="receiptDialogVisible = false">关闭</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -286,6 +338,9 @@ const quoteCountMap = ref({})
 const networks = ref([])
 const selectedNetworks = ref([])
 const availableDrivers = ref([])
+const receiptDialogVisible = ref(false)
+const receiptImages = ref([])
+const receiptPendingOrders = ref([])
 const selectedDriver = ref(null)
 const driverType = ref('')
 const allNetworks = ref([])
@@ -312,7 +367,8 @@ const loadData = async () => {
       loadPricingOrders(),
       loadPendingPickupOrders(),
       loadPendingDeliveryOrders(),
-      loadNetworks()
+      loadNetworks(),
+      loadReceiptPendingOrders()
     ])
   } catch (error) {
     console.error('加载数据失败', error)
@@ -384,6 +440,46 @@ const loadPendingDeliveryOrders = async () => {
     pendingDeliveryOrders.value = res || []
   } catch (error) {
     console.error('加载待配送订单失败', error)
+  }
+}
+
+const loadReceiptPendingOrders = async () => {
+  try {
+    const res = await request.get('/dispatch/orders/receipt-pending')
+    receiptPendingOrders.value = res || []
+  } catch (error) {
+    console.error('加载待回单确认订单失败', error)
+  }
+}
+
+const viewReceipt = (row) => {
+  try {
+    const photos = JSON.parse(row.receiptPhotos || '[]')
+    receiptImages.value = photos
+    receiptDialogVisible.value = true
+  } catch (e) {
+    ElMessage.error('回单数据解析失败')
+  }
+}
+
+const confirmReceipt = async (row) => {
+  try {
+    await ElMessageBox.confirm('确认回单已收到，订单将标记为完成，是否继续？', '确认回单', {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    
+    await request.post('/dispatch/confirm-receipt', {
+      orderId: row.id
+    })
+    
+    ElMessage.success('回单确认成功')
+    loadData()
+  } catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error('回单确认失败')
+    }
   }
 }
 

@@ -29,7 +29,10 @@
         <el-tab-pane label="待安排提货" name="5">
           <OrderTable :orders="orderList" :active-tab="activeTab" @action="handleAction" />
         </el-tab-pane>
-        <el-tab-pane label="待分配配送" name="9">
+        <el-tab-pane label="待确认接单" name="11">
+          <OrderTable :orders="orderList" :active-tab="activeTab" @action="handleAction" />
+        </el-tab-pane>
+        <el-tab-pane label="待发往网点" name="transit">
           <OrderTable :orders="orderList" :active-tab="activeTab" @action="handleAction" />
         </el-tab-pane>
       </el-tabs>
@@ -137,7 +140,11 @@ const getOrderList = async () => {
     const res = await request.get('/order/page', { params: { current: 1, size: 100 } })
     let orders = res.records || res.data?.records || []
     if (activeTab.value !== 'all') {
-      orders = orders.filter(o => o.status === parseInt(activeTab.value))
+      if (activeTab.value === 'transit') {
+        orders = orders.filter(o => o.status === 8 || o.status === 4)
+      } else {
+        orders = orders.filter(o => o.status === parseInt(activeTab.value))
+      }
     }
     orderList.value = orders
   } finally {
@@ -172,6 +179,12 @@ const handleAction = ({ type, order }) => {
     // 分配配送
     assignForm.value = { orderId: order.id, orderNo: order.orderNo, type: 'delivery' }
     assignDialogVisible.value = true
+  } else if (type === 'confirmDriverAccept') {
+    // 确认司机接单
+    handleConfirmDriverAccept(order)
+  } else if (type === 'confirmToNetwork') {
+    // 确认发往网点
+    handleConfirmToNetwork(order)
   }
 }
 
@@ -229,6 +242,36 @@ const handleAssignDriver = async () => {
     getOrderList()
   } catch (error) {
     ElMessage.error('分配失败')
+  }
+}
+
+// 确认司机接单
+const handleConfirmDriverAccept = async (order) => {
+  try {
+    await request.post('/order/driver/update-status', {
+      orderId: order.id,
+      status: 7,
+      remark: '调度确认提货'
+    })
+    ElMessage.success('确认成功，司机可以开始提货')
+    getOrderList()
+  } catch (error) {
+    ElMessage.error('确认失败')
+  }
+}
+
+// 确认发往网点
+const handleConfirmToNetwork = async (order) => {
+  try {
+    await request.post('/order/driver/update-status', {
+      orderId: order.id,
+      status: 4,
+      remark: '确认发往网点'
+    })
+    ElMessage.success('确认成功，订单已发往网点')
+    getOrderList()
+  } catch (error) {
+    ElMessage.error('确认失败')
   }
 }
 

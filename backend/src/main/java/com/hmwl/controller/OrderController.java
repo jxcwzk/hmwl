@@ -470,7 +470,6 @@ public class OrderController {
                 .in("id", networkQuoteService.list(
                     new QueryWrapper<NetworkQuote>()
                         .eq("network_point_id", networkPointId)
-                        .eq("status", 1)
                         .select("order_id")
                 ).stream().map(NetworkQuote::getOrderId).collect(Collectors.toList())));
 

@@ -131,6 +131,52 @@ public class DispatchController {
             .list();
     }
 
+    @GetMapping("/orders/receipt-pending")
+    public List<Order> getReceiptPendingOrders() {
+        return orderService.lambdaQuery()
+            .isNotNull(Order::getReceiptPhotos)
+            .eq(Order::getReceiptConfirmed, 0)
+            .list();
+    }
+
+    @PostMapping("/confirm-receipt")
+    public Map<String, Object> confirmReceipt(@RequestBody Map<String, Object> params) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            Long orderId = Long.valueOf(params.get("orderId").toString());
+            Order order = orderService.getById(orderId);
+            
+            if (order == null) {
+                result.put("success", false);
+                result.put("message", "订单不存在");
+                return result;
+            }
+            
+            order.setReceiptConfirmed(1);
+            order.setStatus(12);
+            order.setDeliveryCompletedTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            order.setLogisticsProgress("回单已确认，订单完成");
+            order.setUpdateTime(new Date());
+            orderService.updateById(order);
+
+            orderTimelineService.recordTimeline(
+                order.getOrderNo(),
+                null,
+                "DISPATCHER",
+                "RECEIPT_CONFIRMED",
+                "回单已确认",
+                "调度确认回单，订单完成"
+            );
+            
+            result.put("success", true);
+            result.put("message", "回单确认成功");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "确认失败: " + e.getMessage());
+        }
+        return result;
+    }
+
     @PostMapping("/select-quote")
     public Map<String, Object> selectQuote(@RequestBody Map<String, Object> params) {
         Map<String, Object> result = new HashMap<>();

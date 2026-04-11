@@ -52,9 +52,9 @@
 
 | 页面路径 | 组件文件 | Menu Index | 说明 |
 |----------|----------|------------|------|
-| `/order` | NetworkOrder.vue | 1 | 我的订单 |
-| `/network-confirm` | NetworkConfirm.vue | 10 | 确认收货 |
-| `/customer/profile` | CustomerProfile.vue | 8 | 网点信息 |
+| `/home` | Home.vue | 0 | 首页（显示运营统计） |
+| `/order` | NetworkOrder.vue | 1 | 我的订单（报价、运输、完成） |
+| `/network-info` | NetworkInfo.vue | 8 | 网点信息（基本信息、线路信息） |
 
 ### 1.6 客户管理子页面 (调度专用)
 
@@ -154,10 +154,9 @@ return res && res.data !== undefined ? res.data : res
 
 ### 4.3 网点用户菜单
 ```
-- 首页 (/home)
-- 我的订单 (/order)
-- 确认收货 (/network-confirm)
-- 网点信息 (/customer/profile)
+- 首页 (/home) - 显示运营统计
+- 我的订单 (/order) - 报价、运输、完成
+- 网点信息 (/network-info) - 基本信息、线路信息
 ```
 
 ### 4.4 司机用户菜单
@@ -422,3 +421,218 @@ const loadRouteList = async () => {
 
 **数据库**：
 - `route_network_point` 表 - 线路-网点关联表
+
+---
+
+## 十、司机订单页面 (DriverOrder.vue)
+
+### 10.1 页面概述
+
+**文件路径**：`frontend/src/views/DriverOrder.vue`
+
+**功能**：司机查看和处理自己的订单，支持提货和送达网点的拍照确认功能。
+
+### 10.2 Tab 分类
+
+| Tab | 状态 | 说明 |
+|-----|------|------|
+| 未提货 | 9 | 待接单状态，司机可接单 |
+| 待提货 | 7 | 已接单，等待拍照确认提货 |
+| 待发往网点 | 8 或 4 | 8=待发往网点，4=已到达网点 |
+
+### 10.3 订单状态说明
+
+| 状态码 | 状态名称 | 操作按钮 |
+|--------|----------|----------|
+| 9 | 待接单 | "接单"按钮 → 状态变为 7 |
+| 7 | 待提货 | "拍照确认提货"按钮 → 打开对话框上传照片 → 状态变为 8 |
+| 8 | 待发往网点 | "拍照确认送达网点"按钮 → 打开对话框上传照片 → 状态变为 4 |
+| 4 | 已到达网点 | 标签显示，无操作按钮 |
+
+### 10.4 操作流程
+
+```
+1. 接单：司机点击"接单" → 状态从9变为7
+2. 拍照确认提货：
+   - 点击"拍照确认提货"
+   - 上传提货照片（发件人处货物照片）
+   - 点击"确认提货" → 状态从7变为8
+3. 拍照确认送达网点：
+   - 点击"拍照确认送达网点"
+   - 上传送达网点照片
+   - 点击"确认送达网点" → 状态从8变为4
+```
+
+### 10.5 对话框功能
+
+**拍照确认提货对话框**：
+- 显示订单号、发件人信息、发件地址
+- 支持上传1张提货凭证照片
+- 上传成功后自动更新订单状态
+
+**拍照确认送达网点对话框**：
+- 显示订单号、收货人信息、收货地址
+- 支持上传1张送达网点凭证照片
+- 上传成功后自动更新订单状态
+
+### 10.6 API 调用
+
+| 操作 | API | 方法 | 参数 |
+|------|-----|------|------|
+| 获取订单列表 | `/order/driver-list` | GET | driverId |
+| 接单 | `/order/driver/update-status` | POST | orderId, status=7, remark |
+| 上传提货照片 | `/order/sender-image/upload/cos` | POST | file, orderId, orderNo |
+| 确认提货 | `/order/driver/update-status` | POST | orderId, status=8, remark |
+| 上传送达照片 | `/order/sender-image/upload/cos` | POST | file, orderId, orderNo |
+| 确认送达网点 | `/order/driver/update-status` | POST | orderId, status=4, remark |
+
+### 10.7 调度端配合 (DispatcherOrder.vue)
+
+调度在"待确认接单"Tab中确认司机接单后，司机才能进行提货操作。
+
+| 调度操作 | 状态变化 |
+|----------|----------|
+| 分配司机 | 订单状态变为 9 (待接单) |
+| 确认司机接单 | 订单状态从 9 变为 7 (待提货) |
+| 确认发往网点 | 订单状态从 8 变为 4 (已到达网点) |
+
+---
+
+## 十一、网点订单页面 (NetworkOrder.vue)
+
+### 11.1 页面概述
+
+**文件路径**：`frontend/src/views/NetworkOrder.vue`
+
+**功能**：网点处理报价、揽收、确认收货等操作的对账界面。
+
+### 11.2 Tab 分类
+
+| Tab | 订单状态 | 说明 |
+|-----|----------|------|
+| 报价 | pricingStatus=1, status≠4 | 待报价的订单 |
+| 报价 | status=4 | 已揽收，显示"查看"按钮 |
+| 运输 | status=2, status=5 | 待揽收、运输中 |
+| 完成 | status=12 | 回单已确认，完成 |
+
+### 11.3 报价 Tab 功能
+
+**表格列**：
+- 订单编号、发件人、收件人、货物、重量
+- 报价状态：已揽收(status=4)、待报价(pricingStatus=1)
+- 操作：报价按钮、查看按钮
+
+**逻辑**：
+- status=4（已揽收）：显示"查看"按钮，价格已锁定，不可报价
+- 其他：显示"报价"按钮，可进入报价流程
+
+**报价对话框**：
+- 底价、客户报价、运输天数
+- 提交后更新订单 pricingStatus=2
+
+### 11.4 运输 Tab 功能
+
+**表格列**：
+- 订单编号、发件人、收件人、货物、费用
+- 状态：待揽收(status=2)、运输中(status=5)
+- 操作：确认揽收、确认收货
+
+**确认收货对话框**：
+- 回单凭证上传（最多3张）
+- 检查结果（正常/异常）
+- 备注
+
+**回单上传**：
+- 使用 el-upload 组件
+- 将图片转为 base64 上传
+- 保存到订单 receiptPhotos 字段
+
+### 11.5 完成 Tab 功能
+
+**表格列**：
+- 订单编号、发件人、收件人、货物、费用
+- 状态：已完成（固定显示）
+- 结算状态：已结算(settlementStatus=1)、未结算
+- 操作：查看、回单
+
+**回单查看**：
+- 点击"回单"按钮查看回单照片
+- 使用 el-image 组件，支持预览
+
+### 11.6 API 调用
+
+| 操作 | API | 方法 | 参数 |
+|------|-----|------|------|
+| 获取订单列表 | `/order/network-list` | GET | networkPointId |
+| 提交报价 | `/network/save-quote` | POST | orderId, networkId, baseFee, finalPrice, transitDays |
+| 确认收货 | `/network/confirm-receive` | POST | orderId, networkId, checkResult, remark, receiptPhotos |
+
+### 11.7 调度回单确认 (Dispatch.vue)
+
+调度在"回单确认"Tab中确认回单后，订单状态变为完成(status=12)。
+
+| 调度操作 | 状态变化 |
+|----------|----------|
+| 确认回单 | receiptConfirmed=1, status=12 |
+
+---
+
+## 十二、网点信息页面 (NetworkInfo.vue)
+
+### 12.1 页面概述
+
+**文件路径**：`frontend/src/views/NetworkInfo.vue`
+
+**功能**：网点查看自己的基本信息和线路信息。
+
+### 12.2 内容区域
+
+**基本信息卡**：
+- 网点编码、名称、城市
+- 联系人、电话、地址
+- 创建时间、状态
+
+**线路信息表**：
+- 起点城市、目的城市
+- 基础价格、单价(元/kg)、运输天数
+
+### 12.3 运营统计（首页）
+
+网点首页显示运营统计数据：
+- 今日订单
+- 待处理
+- 本月订单
+- 本月营收
+
+### 12.4 API 调用
+
+| 操作 | API | 方法 | 参数 |
+|------|-----|------|------|
+| 获取网点信息 | `/network/{id}` | GET | id |
+| 获取线路列表 | `/network/routes` | GET | networkId |
+| 获取统计数据 | `/network/stats` | GET | networkId |
+
+---
+
+## 十三、数据库新增字段
+
+### 13.1 订单表新增字段
+
+```sql
+-- 回单照片
+ALTER TABLE orders ADD COLUMN receipt_photos TEXT COMMENT '回单照片(base64 JSON数组)';
+
+-- 回单确认状态
+ALTER TABLE orders ADD COLUMN receipt_confirmed INT DEFAULT 0 COMMENT '回单确认状态 0-未确认 1-已确认';
+
+-- 结算状态
+ALTER TABLE orders ADD COLUMN settlement_status INT DEFAULT 0 COMMENT '结算状态 0-未结算 1-已结算';
+```
+
+### 13.2 字段说明
+
+| 字段 | 说明 | 用途 |
+|------|------|------|
+| receiptPhotos | 回单照片JSON数组 | 网点确认收货时上传 |
+| receiptConfirmed | 回单确认状态 | 调度确认回单后置为1 |
+| settlementStatus | 结算状态 | 调度确认回单后进行结算 |

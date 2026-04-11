@@ -43,18 +43,17 @@ Page({
       const statusMap = {
         0: { text: '待接单', class: 'pending' },
         1: { text: '已接单', class: 'accepted' },
-        2: { text: '已取货', class: 'picked' },
-        3: { text: '配送中', class: 'delivering' },
-        4: { text: '已送达', class: 'delivered' },
-        5: { text: '已完成', class: 'completed' }
+        7: { text: '已提货', class: 'picked' },
+        2: { text: '配送中', class: 'delivering' },
+        4: { text: '已到达网点', class: 'arrived' }
       }
 
       if (this.data.currentTab === 0) {
         filteredOrders = allOrders.filter(o => o.status === 0 || o.status === 1)
       } else if (this.data.currentTab === 1) {
-        filteredOrders = allOrders.filter(o => o.status >= 2 && o.status <= 4)
+        filteredOrders = allOrders.filter(o => o.status === 7)
       } else {
-        filteredOrders = allOrders.filter(o => o.status === 5)
+        filteredOrders = allOrders.filter(o => o.status === 4)
       }
 
       const formattedOrders = filteredOrders.map(order => ({

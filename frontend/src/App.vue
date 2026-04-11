@@ -92,10 +92,6 @@
                 <el-icon><i class="el-icon-s-order"></i></el-icon>
                 <span>我的订单</span>
               </el-menu-item>
-              <el-menu-item index="10">
-                <el-icon><i class="el-icon-box"></i></el-icon>
-                <span>确认收货</span>
-              </el-menu-item>
               <el-menu-item index="8">
                 <el-icon><i class="el-icon-user"></i></el-icon>
                 <span>网点信息</span>
@@ -334,8 +330,9 @@ const handleSelect = (key) => {
         router.push('/system')
         break
       case '8':
-        // 客户跳转到个人信息页面，调度跳转到客户管理
-        if (currentUserType.value === 2) {
+        if (currentUserType.value === 4) {
+          router.push('/network-info')
+        } else if (currentUserType.value === 2) {
           router.push('/customer/profile')
         } else if (currentUserType.value === 1) {
           router.push('/customer')
@@ -345,9 +342,6 @@ const handleSelect = (key) => {
         break
       case '9':
         router.push('/dispatch')
-        break
-      case '10':
-        router.push('/network-confirm')
         break
     }
     loading.value = false

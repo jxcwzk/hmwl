@@ -48,6 +48,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/network-info',
+    name: 'NetworkInfo',
+    component: () => import('../views/NetworkInfo.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/settlement',
     name: 'Settlement',
     component: () => import('../views/Settlement.vue'),

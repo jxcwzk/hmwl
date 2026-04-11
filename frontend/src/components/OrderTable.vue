@@ -50,6 +50,26 @@
             安排提货
           </el-button>
           
+          <!-- 待确认接单标签页显示确认接单按钮 -->
+          <el-button 
+            v-if="activeTab === '11'" 
+            type="success" 
+            size="small" 
+            @click="$emit('action', { type: 'confirmDriverAccept', order: scope.row })"
+          >
+            确认接单
+          </el-button>
+          
+          <!-- 待发往网点标签页显示确认发往网点按钮 -->
+          <el-button 
+            v-if="activeTab === 'transit'" 
+            type="primary" 
+            size="small" 
+            @click="$emit('action', { type: 'confirmToNetwork', order: scope.row })"
+          >
+            确认发往网点
+          </el-button>
+          
           <!-- 待分配配送标签页只显示分配配送按钮 -->
           <el-button 
             v-if="activeTab === '9' && scope.row.status === 9" 
@@ -87,14 +107,22 @@
               安排提货
             </el-button>
             <el-button 
-              v-else-if="scope.row.status === 9" 
-              type="primary" 
-              size="small" 
-              @click="$emit('action', { type: 'assignDelivery', order: scope.row })"
-            >
-              分配配送
-            </el-button>
-            <span v-else>-</span>
+            v-else-if="scope.row.status === 9" 
+            type="primary" 
+            size="small" 
+            @click="$emit('action', { type: 'assignDelivery', order: scope.row })"
+          >
+            分配配送
+          </el-button>
+          <el-button 
+            v-else-if="scope.row.status === 11" 
+            type="success" 
+            size="small" 
+            @click="$emit('action', { type: 'confirmDriverAccept', order: scope.row })"
+          >
+            确认接单
+          </el-button>
+          <span v-else>-</span>
           </template>
         </template>
       </el-table-column>
