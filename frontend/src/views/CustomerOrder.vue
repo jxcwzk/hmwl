@@ -154,15 +154,16 @@
             <div class="flow-step" :class="getFlowStatusClass(item.statusCode)">
               <div class="flow-node">
                 <div class="flow-icon">
-                  <el-icon><Check v-if="index < timeline.length - 1" /><el-icon><Loading v-else /></el-icon>
-                </div>
-                <div class="flow-label">{{ item.statusName }}</div>
+                <el-icon v-if="index < timeline.length - 1"><Check /></el-icon>
+                <el-icon v-else><Loading /></el-icon>
               </div>
-              <div class="flow-time">{{ formatTimelineTime(item.operateTime) }}</div>
+              <div class="flow-label">{{ item.statusName }}</div>
             </div>
-            <div v-if="index < timeline.length - 1" class="flow-arrow">
-              <el-icon><ArrowRight /></el-icon>
-            </div>
+            <div class="flow-time">{{ formatTimelineTime(item.operateTime) }}</div>
+          </div>
+          <div v-if="index < timeline.length - 1" class="flow-arrow">
+            <el-icon><ArrowRight /></el-icon>
+          </div>
           </template>
         </div>
       </div>
