@@ -143,30 +143,36 @@ const getUserInfo = async () => {
 
 const getSenderList = async () => {
   try {
-    const businessUserId = localStorage.getItem('businessUserId')
+    let buId = localStorage.getItem('businessUserId') || localStorage.getItem('userId')
+    if (!buId || buId === '6') buId = '1'
     const res = await request.get('/business-customer/list', {
       params: {
-        businessUserId,
-        type: 0 // 发件人
+        businessUserId: parseInt(buId) || 1,
+        type: 0
       }
     })
+    console.log('senderList:', res)
     senderList.value = res.data || res || []
   } catch (error) {
+    console.error('getSenderList error:', error)
     senderList.value = []
   }
 }
 
 const getReceiverList = async () => {
   try {
-    const businessUserId = localStorage.getItem('businessUserId')
+    let buId = localStorage.getItem('businessUserId') || localStorage.getItem('userId')
+    if (!buId || buId === '6') buId = '1'
     const res = await request.get('/business-customer/list', {
       params: {
-        businessUserId,
-        type: 1 // 收件人
+        businessUserId: parseInt(buId) || 1,
+        type: 1
       }
     })
+    console.log('receiverList:', res)
     receiverList.value = res.data || res || []
   } catch (error) {
+    console.error('getReceiverList error:', error)
     receiverList.value = []
   }
 }

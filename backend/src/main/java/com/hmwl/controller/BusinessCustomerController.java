@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +29,16 @@ public class BusinessCustomerController {
      * @return 企业客户列表
      */
     @GetMapping("/list")
-    public List<BusinessCustomer> list() {
-        return businessCustomerService.list();
+    public List<BusinessCustomer> list(
+            @RequestParam(required = false) Long businessUserId,
+            @RequestParam(required = false, defaultValue = "-1") Integer type) {
+        if (businessUserId != null && businessUserId > 0) {
+            if (type != null && type >= 0) {
+                return businessCustomerService.listByBusinessUserIdAndType(businessUserId, type);
+            }
+            return businessCustomerService.listByBusinessUserId(businessUserId);
+        }
+        return new ArrayList<>();
     }
 
     /**
